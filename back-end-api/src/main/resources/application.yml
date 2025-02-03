@@ -6,9 +6,9 @@ spring:
     name: entertainment-ticketing-system
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    username: yueying
-    password: yueying@Admin123
-    url: jdbc:mysql:// rm-2zel1un0a2xa61n7hlo.mysql.rds.aliyuncs.com:3306/db_yueying
+    username: admin
+    password: admin
+    url: localhost
 
 mybatis-plus:
   global-config:
