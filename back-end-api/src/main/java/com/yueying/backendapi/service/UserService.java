@@ -3,6 +3,7 @@ package com.yueying.backendapi.service;
 import com.yueying.backendapi.model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yueying.backendapi.model.domain.request.UserLoginRequest;
+import com.yueying.backendapi.model.domain.request.UserRegisterRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
@@ -12,6 +13,13 @@ import org.springframework.http.ResponseEntity;
 * @createDate 2025-01-31 16:49:10
 */
 public interface UserService extends IService<User> {
+
+    /**
+     * 用户注册
+     * @param userRegisterRequest 用户注册请求体
+     * @return 是否注册成功
+     */
+    ResponseEntity<Object> userRegister(UserRegisterRequest userRegisterRequest);
 
     /**
      * 用户登录
