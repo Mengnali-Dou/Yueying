@@ -1,8 +1,10 @@
 package com.yueying.backendapi.controller;
 
+import com.yueying.backendapi.model.domain.request.UserLoginRequest;
 import com.yueying.backendapi.model.domain.request.UserRegisterRequest;
 import com.yueying.backendapi.service.UserService;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,5 +21,10 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<Object> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
         return userService.userRegister(userRegisterRequest);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Object> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest httpServletRequest) {
+        return userService.userLogin(userLoginRequest, httpServletRequest);
     }
 }

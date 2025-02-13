@@ -7,6 +7,7 @@ import com.yueying.backendapi.model.domain.request.UserLoginRequest;
 import com.yueying.backendapi.model.domain.request.UserRegisterRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
 import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
+import com.yueying.backendapi.model.domain.response.UserInfoDto;
 import com.yueying.backendapi.service.UserService;
 import com.yueying.backendapi.mapper.UserMapper;
 import com.yueying.backendapi.utils.ResponseData;
@@ -88,7 +89,68 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Override
     public ResponseEntity<Object> userLogin(UserLoginRequest userLoginRequest, HttpServletRequest request) {
-        return null;
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 非空校验
+        if (StringUtils.isAllBlank(userLoginRequest.getUserAccount(), userLoginRequest.getPassword())) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 账号格式校验
+        if (userLoginRequest.getUserAccount().length() < ACCOUNT_LENGTH_MIN) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, LOW_ACCOUNT_LENGTH, errorResponseDto));
+        }
+        if (!UserPublicClass.accountRegx(userLoginRequest.getUserAccount())) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, ACCOUNT_CANNOT_CONTAIN_SPECIAL_CHARACTERS, errorResponseDto));
+        }
+
+        // 密码格式校验
+        if (UserPublicClass.cryptographicStrengthCheck(userLoginRequest.getPassword())) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, LOW_PASSWORD_STRENGTH, errorResponseDto));
+        }
+
+        // 验证用户是否存在
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_account", userLoginRequest.getUserAccount());
+        long num = userMapper.selectCount(queryWrapper);
+        if (num == 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, USER_DOES_NOT_EXISTS, errorResponseDto));
+        }
+
+        // 加密
+        String digestPassword = UserPublicClass.digestPassword(userLoginRequest.getPassword(), userLoginRequest.getUserAccount());
+
+        // 验证密码
+        queryWrapper.eq("user_password", digestPassword);
+        User user = userMapper.selectOne(queryWrapper);
+        if (user == null) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, PASSWORD_ERROR, errorResponseDto));
+        }
+
+        // 记录用户登录状态
+        request.getSession().setAttribute(USER_LOGIN_STATE, user);
+
+        return ResponseEntity.ok(ResponseData.responseData(OK, LOGIN_SUCCESSFULLY, convertToDto(user)));
+    }
+
+    /**
+     * 数据格式转换
+     * @param user 数据库表字段
+     * @return 用户信息dto
+     */
+    private static UserInfoDto convertToDto(User user) {
+        UserInfoDto userInfoDto = new UserInfoDto();
+        userInfoDto.setUserId(user.getUserId());
+        userInfoDto.setUserName(user.getUserName());
+        userInfoDto.setUserAccount(user.getUserAccount());
+        userInfoDto.setAvatarUrl(user.getAvatarUrl());
+        userInfoDto.setGender(user.getGender());
+        userInfoDto.setPhone(user.getPhone());
+        userInfoDto.setEmail(user.getEmail());
+        userInfoDto.setCreateTime(user.getCreateTime());
+        userInfoDto.setUserRole(user.getUserRole() == null ? 0 : user.getUserRole());
+        return userInfoDto;
     }
 }
 

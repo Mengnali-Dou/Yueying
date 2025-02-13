@@ -29,4 +29,27 @@ public class UserConstant {
      * 插入数据成功
      */
     public static final String REGISTER_SUCCESSFULLY = "注册成功";
+
+    /**
+     * http请求错误信息
+     * 用户不存在
+     */
+    public static final String USER_DOES_NOT_EXISTS = "用户不存在";
+
+    /**
+     * http请求错误信息
+     * 密码错误
+     */
+    public static final String PASSWORD_ERROR = "密码错误";
+
+    /**
+     * 用户登陆态键
+     */
+    public static final String USER_LOGIN_STATE = "userLoginState";
+
+    /**
+     * http请求成功信息
+     * 登陆成功
+     */
+    public static final String LOGIN_SUCCESSFULLY = "登陆成功";
 }
