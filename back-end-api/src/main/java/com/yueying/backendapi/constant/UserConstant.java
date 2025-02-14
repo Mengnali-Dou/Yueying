@@ -43,13 +43,37 @@ public class UserConstant {
     public static final String PASSWORD_ERROR = "密码错误";
 
     /**
-     * 用户登陆态键
+     * 用户登录态键
      */
     public static final String USER_LOGIN_STATE = "userLoginState";
 
     /**
      * http请求成功信息
-     * 登陆成功
+     * 登录成功
      */
-    public static final String LOGIN_SUCCESSFULLY = "登陆成功";
+    public static final String LOGIN_SUCCESSFULLY = "登录成功";
+
+    /**
+     * http请求错误信息
+     * 用户ID不能为空
+     */
+    public static final String USER_ID_CANNOT_BE_EMPTY = "用户ID不能为空";
+
+    /**
+     * http请求错误信息
+     * 用户未登录
+     */
+    public static final String USER_NOT_LOGGED_IN = "用户未登录";
+
+    /**
+     * http请求成功信息
+     * 退出成功
+     */
+    public static final String LOGOUT_SUCCESSFULLY = "退出成功";
+
+    /**
+     * http请求错误信息
+     * 发送请求用户和退出登录用户不匹配
+     */
+    public static final String LOGOUT_USER_ID_MISMATCH = "请求的用户ID与要退出登录的用户ID不匹配。请确保使用正确的用户ID进行退出登录操作。";
 }

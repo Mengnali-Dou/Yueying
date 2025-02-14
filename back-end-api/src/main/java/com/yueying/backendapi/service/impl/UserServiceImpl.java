@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yueying.backendapi.model.domain.User;
 import com.yueying.backendapi.model.domain.request.UserLoginRequest;
+import com.yueying.backendapi.model.domain.request.UserLogoutRequest;
 import com.yueying.backendapi.model.domain.request.UserRegisterRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
 import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
@@ -132,6 +133,41 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         request.getSession().setAttribute(USER_LOGIN_STATE, user);
 
         return ResponseEntity.ok(ResponseData.responseData(OK, LOGIN_SUCCESSFULLY, convertToDto(user)));
+    }
+
+    @Override
+    public ResponseEntity<Object> logout(UserLogoutRequest userLogoutRequest, HttpServletRequest request) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // id为空
+        if (userLogoutRequest.getUserId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, USER_ID_CANNOT_BE_EMPTY, errorResponseDto));
+        }
+
+        // 用户未登录
+        if (request.getSession().getAttribute(USER_LOGIN_STATE) == null) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, USER_NOT_LOGGED_IN, errorResponseDto));
+        }
+
+        // 判断用户ID是否存在
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", userLogoutRequest.getUserId());
+        if (userMapper.selectCount(queryWrapper) == 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, USER_DOES_NOT_EXISTS, errorResponseDto));
+        }
+
+        // 判断请求ID和session id是否相同
+        User user = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        if (userLogoutRequest.getUserId() != user.getUserId()) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, LOGOUT_USER_ID_MISMATCH, errorResponseDto));
+        }
+
+        // 退出登陆
+        request.getSession().invalidate();
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, LOGOUT_SUCCESSFULLY, successResponseDto));
     }
 
     /**

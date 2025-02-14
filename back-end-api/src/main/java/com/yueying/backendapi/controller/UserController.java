@@ -1,6 +1,7 @@
 package com.yueying.backendapi.controller;
 
 import com.yueying.backendapi.model.domain.request.UserLoginRequest;
+import com.yueying.backendapi.model.domain.request.UserLogoutRequest;
 import com.yueying.backendapi.model.domain.request.UserRegisterRequest;
 import com.yueying.backendapi.service.UserService;
 import jakarta.annotation.Resource;
@@ -26,5 +27,10 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<Object> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest httpServletRequest) {
         return userService.userLogin(userLoginRequest, httpServletRequest);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Object> logout(@RequestBody UserLogoutRequest userLogoutRequest, HttpServletRequest request) {
+        return userService.logout(userLogoutRequest, request);
     }
 }

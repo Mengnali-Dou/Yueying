@@ -3,6 +3,7 @@ package com.yueying.backendapi.service;
 import com.yueying.backendapi.model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yueying.backendapi.model.domain.request.UserLoginRequest;
+import com.yueying.backendapi.model.domain.request.UserLogoutRequest;
 import com.yueying.backendapi.model.domain.request.UserRegisterRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
@@ -28,4 +29,12 @@ public interface UserService extends IService<User> {
      * @return 登录用户信息（脱敏）
      */
     ResponseEntity<Object> userLogin(UserLoginRequest userLoginRequest, HttpServletRequest request);
+
+    /**
+     * 退出登录
+     * @param userLogoutRequest 退出登录请求体
+     * @param request http请求信息
+     * @return 是否退出成功
+     */
+    ResponseEntity<Object> logout(UserLogoutRequest userLogoutRequest, HttpServletRequest request);
 }
