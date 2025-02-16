@@ -35,4 +35,16 @@ public class UniversalConstant {
      * 插入数据失败
      */
     public static final String FAILED_TO_INSERT = "The server failed to insert data.";
+
+    /**
+     * http请求错误信息
+     * 权限不足
+     */
+    public static final String INSUFFICIENT_AUTHORITY = "权限不足";
+
+    /**
+     * http请求成功信息
+     * 修改成功
+     */
+    public static final String UPDATE_SUCCESSFULLY = "修改成功";
 }

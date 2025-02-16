@@ -3,6 +3,7 @@ package com.yueying.backendapi.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yueying.backendapi.model.domain.User;
+import com.yueying.backendapi.model.domain.request.UpdateUserInfoRequest;
 import com.yueying.backendapi.model.domain.request.UserLoginRequest;
 import com.yueying.backendapi.model.domain.request.UserLogoutRequest;
 import com.yueying.backendapi.model.domain.request.UserRegisterRequest;
@@ -168,6 +169,44 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
         return ResponseEntity.ok(ResponseData.responseData(OK, LOGOUT_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> userInfoUpdate(UpdateUserInfoRequest updateUserInfoRequest, HttpServletRequest request) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        if (updateUserInfoRequest.getUserId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, USER_ID_CANNOT_BE_EMPTY, errorResponseDto));
+        }
+
+        // 验证用户是否存在
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id", updateUserInfoRequest.getUserId());
+        wrapper.eq("user_account", updateUserInfoRequest.getUserAccount());
+        if (userMapper.selectCount(wrapper) == 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, USER_DOES_NOT_EXISTS, errorResponseDto));
+        }
+
+        // 验证修改信息用户权限是否足够
+        Object userObject = request.getSession().getAttribute(USER_LOGIN_STATE);
+        User loginUser = (User) userObject;
+        if (loginUser.getUserRole() == 0 && loginUser.getUserId() != updateUserInfoRequest.getUserId()) {
+            return ResponseEntity.status(FORBIDDEN).body(ResponseData.responseData(FORBIDDEN, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 更新数据
+        User user = new User();
+        user.setUserId(updateUserInfoRequest.getUserId());
+        user.setUserName(updateUserInfoRequest.getUserName());
+        user.setAvatarUrl(updateUserInfoRequest.getAvatarUrl());
+        user.setGender(updateUserInfoRequest.getGender());
+        user.setPhone(updateUserInfoRequest.getPhone());
+        user.setEmail(updateUserInfoRequest.getEmail());
+        userMapper.updateById(user);
+
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", updateUserInfoRequest.getUserId());
+        return ResponseEntity.ok(ResponseData.responseData(OK, UPDATE_SUCCESSFULLY, convertToDto(userMapper.selectOne(queryWrapper))));
     }
 
     /**

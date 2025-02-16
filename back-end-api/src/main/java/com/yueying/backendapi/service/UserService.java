@@ -2,6 +2,7 @@ package com.yueying.backendapi.service;
 
 import com.yueying.backendapi.model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yueying.backendapi.model.domain.request.UpdateUserInfoRequest;
 import com.yueying.backendapi.model.domain.request.UserLoginRequest;
 import com.yueying.backendapi.model.domain.request.UserLogoutRequest;
 import com.yueying.backendapi.model.domain.request.UserRegisterRequest;
@@ -37,4 +38,12 @@ public interface UserService extends IService<User> {
      * @return 是否退出成功
      */
     ResponseEntity<Object> logout(UserLogoutRequest userLogoutRequest, HttpServletRequest request);
+
+    /**
+     * 修改用户信息
+     * @param updateUserInfoRequest 修改用户信息请求体
+     * @param request http请求信息
+     * @return 用户修改后信息（脱敏）
+     */
+    ResponseEntity<Object> userInfoUpdate(UpdateUserInfoRequest updateUserInfoRequest, HttpServletRequest request);
 }
