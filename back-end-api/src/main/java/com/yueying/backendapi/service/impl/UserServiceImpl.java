@@ -3,10 +3,7 @@ package com.yueying.backendapi.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yueying.backendapi.model.domain.User;
-import com.yueying.backendapi.model.domain.request.UpdateUserInfoRequest;
-import com.yueying.backendapi.model.domain.request.UserLoginRequest;
-import com.yueying.backendapi.model.domain.request.UserLogoutRequest;
-import com.yueying.backendapi.model.domain.request.UserRegisterRequest;
+import com.yueying.backendapi.model.domain.request.*;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
 import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
 import com.yueying.backendapi.model.domain.response.UserInfoDto;
@@ -207,6 +204,47 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id", updateUserInfoRequest.getUserId());
         return ResponseEntity.ok(ResponseData.responseData(OK, UPDATE_SUCCESSFULLY, convertToDto(userMapper.selectOne(queryWrapper))));
+    }
+
+    @Override
+    public ResponseEntity<Object> userPasswordReset(PasswordResetRequest passwordResetRequest, HttpServletRequest request) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        if (passwordResetRequest.getUserId() <=0 || StringUtils.isAllBlank(passwordResetRequest.getNewPassword(), passwordResetRequest.getOldPassword())) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 密码强度校验
+        if (UserPublicClass.cryptographicStrengthCheck(passwordResetRequest.getNewPassword()) || UserPublicClass.cryptographicStrengthCheck(passwordResetRequest.getOldPassword())) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, LOW_PASSWORD_STRENGTH, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(request) && UserPublicClass.isCurrentUser(passwordResetRequest.getUserId(), request)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 验证密码是否正确
+        String digestPassword = UserPublicClass.digestPassword(passwordResetRequest.getOldPassword(), passwordResetRequest.getUserAccount());
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", passwordResetRequest.getUserId());
+        queryWrapper.eq("user_password", digestPassword);
+        if (userMapper.selectOne(queryWrapper) == null) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, PASSWORD_ERROR, errorResponseDto));
+        }
+
+        // 加密
+        String digestNewPassword = UserPublicClass.digestPassword(passwordResetRequest.getNewPassword(), passwordResetRequest.getUserAccount());
+
+        // 修改密码
+        User user = new User();
+        user.setUserId(passwordResetRequest.getUserId());
+        user.setUserPassword(digestNewPassword);
+        userMapper.updateById(user);
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, UPDATE_SUCCESSFULLY, successResponseDto));
     }
 
     /**

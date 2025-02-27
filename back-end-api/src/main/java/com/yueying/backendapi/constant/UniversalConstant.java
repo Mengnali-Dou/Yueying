@@ -47,4 +47,9 @@ public class UniversalConstant {
      * 修改成功
      */
     public static final String UPDATE_SUCCESSFULLY = "修改成功";
+
+    /**
+     * 用户角色--管理员
+     */
+    public static final int ROLE_ADMIN = 1;
 }

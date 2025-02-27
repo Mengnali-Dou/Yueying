@@ -2,10 +2,7 @@ package com.yueying.backendapi.service;
 
 import com.yueying.backendapi.model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.yueying.backendapi.model.domain.request.UpdateUserInfoRequest;
-import com.yueying.backendapi.model.domain.request.UserLoginRequest;
-import com.yueying.backendapi.model.domain.request.UserLogoutRequest;
-import com.yueying.backendapi.model.domain.request.UserRegisterRequest;
+import com.yueying.backendapi.model.domain.request.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
@@ -46,4 +43,12 @@ public interface UserService extends IService<User> {
      * @return 用户修改后信息（脱敏）
      */
     ResponseEntity<Object> userInfoUpdate(UpdateUserInfoRequest updateUserInfoRequest, HttpServletRequest request);
+
+    /**
+     * 用户密码修改
+     * @param passwordResetRequest 用户密码修改请求体
+     * @param request http请求信息
+     * @return 是否修改成功
+     */
+    ResponseEntity<Object> userPasswordReset(PasswordResetRequest passwordResetRequest, HttpServletRequest request);
 }

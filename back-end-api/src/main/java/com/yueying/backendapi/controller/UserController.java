@@ -1,9 +1,6 @@
 package com.yueying.backendapi.controller;
 
-import com.yueying.backendapi.model.domain.request.UpdateUserInfoRequest;
-import com.yueying.backendapi.model.domain.request.UserLoginRequest;
-import com.yueying.backendapi.model.domain.request.UserLogoutRequest;
-import com.yueying.backendapi.model.domain.request.UserRegisterRequest;
+import com.yueying.backendapi.model.domain.request.*;
 import com.yueying.backendapi.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,5 +32,10 @@ public class UserController {
     @PutMapping("/update")
     public ResponseEntity<Object> userInfoUpdate(@RequestBody UpdateUserInfoRequest updateUserInfoRequest, HttpServletRequest request) {
         return userService.userInfoUpdate(updateUserInfoRequest, request);
+    }
+
+    @PutMapping("/password-reset")
+    public ResponseEntity<Object> userPasswordReset(@RequestBody PasswordResetRequest passwordResetRequest, HttpServletRequest request) {
+        return userService.userPasswordReset(passwordResetRequest, request);
     }
 }
