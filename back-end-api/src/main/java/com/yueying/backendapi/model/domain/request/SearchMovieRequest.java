@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 /**
  * 搜索电影请求体
- * @author yuxinheng
+ * @author <a href="mengnalidou.icu">mengnali_dou</a>
  */
 @Data
 public class SearchMovieRequest implements Serializable {

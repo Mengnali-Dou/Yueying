@@ -6,6 +6,7 @@ import com.yueying.backendapi.mapper.MovieMapper;
 import com.yueying.backendapi.model.domain.Movie;
 import com.yueying.backendapi.model.domain.request.AddMovieRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieRequest;
+import com.yueying.backendapi.model.domain.request.UpdateMovieRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
 import com.yueying.backendapi.model.domain.response.MovieInfoDto;
 import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.yueying.backendapi.constant.MovieMessage.*;
 import static com.yueying.backendapi.constant.ResponseStatus.*;
 import static com.yueying.backendapi.constant.UniversalConstant.*;
 
@@ -94,6 +96,59 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
         return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> updateMovieInfo(UpdateMovieRequest updateMovieRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 是否存在
+        QueryWrapper<Movie> movieQueryWrapper = new QueryWrapper<>();
+        movieQueryWrapper.eq("movie_id", updateMovieRequest.getMovieId());
+        if (movieMapper.selectCount(movieQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, MOVIE_NONENTITY, errorResponseDto));
+        }
+
+        // 修改
+        Movie movie = new Movie();
+        movie.setMovieId(updateMovieRequest.getMovieId());
+        if (StringUtils.isNotBlank(updateMovieRequest.getMovieName())) {
+            movie.setMovieName(updateMovieRequest.getMovieName());
+        }
+
+        // TODO: 数据表需要tb_movie_type，完善数据表后修改插入对应id
+        if (StringUtils.isNotBlank(updateMovieRequest.getMovieType())) {
+            movie.setMovieTypeId(1);
+        }
+
+        if (StringUtils.isNotBlank(updateMovieRequest.getMovieCoverLarge())) {
+            movie.setMovieCoverLarge(updateMovieRequest.getMovieCoverLarge());
+        }
+        if (StringUtils.isNotBlank(updateMovieRequest.getMovieCoverSmall())) {
+            movie.setMovieCoverSmall(updateMovieRequest.getMovieCoverSmall());
+        }
+        if (StringUtils.isNotBlank(updateMovieRequest.getReleaseDate())) {
+            movie.setReleaseDate(PublicMethods.stringConvertToDateTime(updateMovieRequest.getReleaseDate()));
+        }
+        if (StringUtils.isNotBlank(updateMovieRequest.getMovieDuration())) {
+            movie.setMovieDuration(PublicMethods.stringConvertToTime(updateMovieRequest.getMovieDuration()));
+        }
+        if (StringUtils.isNotBlank(updateMovieRequest.getMainActor())) {
+            movie.setMainActor(updateMovieRequest.getMainActor());
+        }
+        if (StringUtils.isNotBlank(updateMovieRequest.getMovieProfile())) {
+            movie.setMovieProfile(updateMovieRequest.getMovieProfile());
+        }
+        movieMapper.updateById(movie);
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, UPDATE_SUCCESSFULLY, successResponseDto));
     }
 
     /**
