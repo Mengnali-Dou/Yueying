@@ -6,14 +6,14 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * 用户登录请求体
+ * 搜索用户请求体
  * @author <a href="mengnalidou.icu">mengnali_dou</a>
  */
 @Data
-public class UserLoginRequest implements Serializable {
+public class UserSearchRequest implements Serializable {
 
     @Serial
-    private static final long serialVersionUID = 5134958658491843150L;
+    private static final long serialVersionUID = 199596878240951886L;
 
     /**
      * 账号
@@ -21,7 +21,7 @@ public class UserLoginRequest implements Serializable {
     private String userAccount;
 
     /**
-     * 密码
+     * 用户名
      */
-    private String password;
+    private String userName;
 }
