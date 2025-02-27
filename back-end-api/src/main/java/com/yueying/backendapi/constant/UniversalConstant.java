@@ -70,4 +70,10 @@ public class UniversalConstant {
      * 删除成功
      */
     public static final String DELETE_SUCCESSFULLY = "删除成功";
+
+    /**
+     * http请求成功信息
+     * 添加成功
+     */
+    public static final String INSERT_SUCCESSFULLY = "添加成功";
 }

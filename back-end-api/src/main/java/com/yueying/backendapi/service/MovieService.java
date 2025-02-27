@@ -2,7 +2,9 @@ package com.yueying.backendapi.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yueying.backendapi.model.domain.Movie;
+import com.yueying.backendapi.model.domain.request.AddMovieRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
 /**
@@ -18,4 +20,12 @@ public interface MovieService extends IService<Movie> {
      * @return 影片信息列表
      */
     ResponseEntity<Object> searchMovieInfo(SearchMovieRequest searchMovieRequest);
+
+    /**
+     * 添加影片
+     * @param addMovieRequest 添加影片请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否添加成功
+     */
+    ResponseEntity<Object> addMovie(AddMovieRequest addMovieRequest, HttpServletRequest httpServletRequest);
 }

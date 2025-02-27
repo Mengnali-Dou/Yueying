@@ -1,8 +1,10 @@
 package com.yueying.backendapi.controller;
 
+import com.yueying.backendapi.model.domain.request.AddMovieRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieRequest;
 import com.yueying.backendapi.service.MovieService;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,5 +23,10 @@ public class MovieController {
         searchMovieRequest.setMovieType(movieType);
 
         return movieService.searchMovieInfo(searchMovieRequest);
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<Object> AddMovie(@RequestBody AddMovieRequest addMovieRequest, HttpServletRequest httpServletRequest) {
+        return movieService.addMovie(addMovieRequest, httpServletRequest);
     }
 }
