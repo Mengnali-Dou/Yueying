@@ -51,4 +51,12 @@ public interface UserService extends IService<User> {
      * @return 是否修改成功
      */
     ResponseEntity<Object> userPasswordReset(PasswordResetRequest passwordResetRequest, HttpServletRequest request);
+
+    /**
+     * 搜索用户
+     * @param userSearchRequest 搜索用户请求体
+     * @param request http请求信息
+     * @return 搜索到的用户列表
+     */
+    ResponseEntity<Object> userSearch(UserSearchRequest userSearchRequest, HttpServletRequest request);
 }

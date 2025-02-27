@@ -52,4 +52,10 @@ public class UniversalConstant {
      * 用户角色--管理员
      */
     public static final int ROLE_ADMIN = 1;
+
+    /**
+     * http请求成功信息
+     * 查询成功
+     */
+    public static final String SEARCH_SUCCESSFULLY = "查询成功";
 }

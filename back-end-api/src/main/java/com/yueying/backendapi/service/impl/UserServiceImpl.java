@@ -17,6 +17,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.yueying.backendapi.constant.ParameterLength.*;
 import static com.yueying.backendapi.constant.ResponseStatus.*;
 import static com.yueying.backendapi.constant.UniversalConstant.*;
@@ -245,6 +248,35 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
         return ResponseEntity.ok(ResponseData.responseData(OK, UPDATE_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> userSearch(UserSearchRequest userSearchRequest, HttpServletRequest request) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        if (UserPublicClass.isAdmin(request)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        if (StringUtils.isNotBlank(userSearchRequest.getUserAccount())) {
+            queryWrapper.like("user_account", userSearchRequest.getUserAccount());
+        }
+        if (StringUtils.isNotBlank(userSearchRequest.getUserName())) {
+            queryWrapper.like("user_name", userSearchRequest.getUserName());
+        }
+
+        return ResponseEntity.ok(ResponseData.responseData(OK, SEARCH_SUCCESSFULLY, convertToDtoList(userMapper.selectList(queryWrapper))));
+    }
+
+    /**
+     * 数据格式转换
+     * @param userList 数据库表字段列表
+     * @return 用户信息dto列表
+     */
+    private List<UserInfoDto> convertToDtoList(List<User> userList) {
+        return userList.stream().map(UserServiceImpl::convertToDto).collect(Collectors.toList());
     }
 
     /**

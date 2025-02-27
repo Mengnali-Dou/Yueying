@@ -38,4 +38,12 @@ public class UserController {
     public ResponseEntity<Object> userPasswordReset(@RequestBody PasswordResetRequest passwordResetRequest, HttpServletRequest request) {
         return userService.userPasswordReset(passwordResetRequest, request);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<Object> userSearch(@RequestParam String userAccount, @RequestParam String userName, HttpServletRequest request) {
+        UserSearchRequest userSearchRequest = new UserSearchRequest();
+        userSearchRequest.setUserAccount(userAccount);
+        userSearchRequest.setUserName(userName);
+        return userService.userSearch(userSearchRequest, request);
+    }
 }
