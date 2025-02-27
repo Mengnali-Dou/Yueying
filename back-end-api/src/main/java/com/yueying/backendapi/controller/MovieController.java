@@ -1,6 +1,7 @@
 package com.yueying.backendapi.controller;
 
 import com.yueying.backendapi.model.domain.request.AddMovieRequest;
+import com.yueying.backendapi.model.domain.request.DeleteMovieRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieRequest;
 import com.yueying.backendapi.model.domain.request.UpdateMovieRequest;
 import com.yueying.backendapi.service.MovieService;
@@ -34,5 +35,12 @@ public class MovieController {
     @PutMapping("/update")
     public ResponseEntity<Object> UpdateMovieInfo(@RequestBody UpdateMovieRequest updateMovieRequest, HttpServletRequest httpServletRequest) {
         return movieService.updateMovieInfo(updateMovieRequest, httpServletRequest);
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<Object> DeleteMovie(@RequestParam Long movieId, HttpServletRequest httpServletRequest) {
+        DeleteMovieRequest deleteMovieRequest = new DeleteMovieRequest();
+        deleteMovieRequest.setMovieId(movieId);
+        return movieService.deleteMovie(deleteMovieRequest, httpServletRequest);
     }
 }

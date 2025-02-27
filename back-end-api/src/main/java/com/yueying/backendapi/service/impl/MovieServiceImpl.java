@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yueying.backendapi.mapper.MovieMapper;
 import com.yueying.backendapi.model.domain.Movie;
 import com.yueying.backendapi.model.domain.request.AddMovieRequest;
+import com.yueying.backendapi.model.domain.request.DeleteMovieRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieRequest;
 import com.yueying.backendapi.model.domain.request.UpdateMovieRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
@@ -149,6 +150,33 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
         return ResponseEntity.ok(ResponseData.responseData(OK, UPDATE_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> deleteMovie(DeleteMovieRequest deleteMovieRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 是否存在
+        QueryWrapper<Movie> movieQueryWrapper = new QueryWrapper<>();
+        movieQueryWrapper.eq("movie_id", deleteMovieRequest.getMovieId());
+        if (movieMapper.selectCount(movieQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, MOVIE_NONENTITY, errorResponseDto));
+        }
+
+        // 删除
+        boolean deleted = this.removeById(deleteMovieRequest.getMovieId());
+        if (!deleted) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, DELETE_FAILED, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, DELETE_SUCCESSFULLY, successResponseDto));
     }
 
     /**
