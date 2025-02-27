@@ -270,6 +270,38 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return ResponseEntity.ok(ResponseData.responseData(OK, SEARCH_SUCCESSFULLY, convertToDtoList(userMapper.selectList(queryWrapper))));
     }
 
+    @Override
+    public ResponseEntity<Object> deleteUser(DeleteUserRequest deleteUserRequest, HttpServletRequest request) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // id为空
+        if (deleteUserRequest.getUserId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, USER_ID_CANNOT_BE_EMPTY, errorResponseDto));
+        }
+
+        // 是否为管理员
+        if (UserPublicClass.isAdmin(request)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 用户不存在
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", deleteUserRequest.getUserId());
+        if (userMapper.selectCount(queryWrapper) == 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, USER_DOES_NOT_EXISTS, errorResponseDto));
+        }
+
+        // 删除
+        boolean deleted = this.removeById(deleteUserRequest.getUserId());
+        if (!deleted) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, DELETE_FAILED, errorResponseDto));
+        }
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+
+        return ResponseEntity.ok(ResponseData.responseData(OK, DELETE_SUCCESSFULLY, successResponseDto));
+    }
+
     /**
      * 数据格式转换
      * @param userList 数据库表字段列表

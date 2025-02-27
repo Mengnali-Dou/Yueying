@@ -58,4 +58,16 @@ public class UniversalConstant {
      * 查询成功
      */
     public static final String SEARCH_SUCCESSFULLY = "查询成功";
+
+    /**
+     * http请求失败信息
+     * 删除失败
+     */
+    public static final String DELETE_FAILED = "删除失败";
+
+    /**
+     * http请求成功信息
+     * 删除成功
+     */
+    public static final String DELETE_SUCCESSFULLY = "删除成功";
 }

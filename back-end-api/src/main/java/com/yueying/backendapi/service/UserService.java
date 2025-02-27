@@ -59,4 +59,12 @@ public interface UserService extends IService<User> {
      * @return 搜索到的用户列表
      */
     ResponseEntity<Object> userSearch(UserSearchRequest userSearchRequest, HttpServletRequest request);
+
+    /**
+     * 删除用户
+     * @param deleteUserRequest 删除用户请求体
+     * @param request http请求信息
+     * @return 是否删除成功
+     */
+    ResponseEntity<Object> deleteUser(DeleteUserRequest deleteUserRequest, HttpServletRequest request);
 }

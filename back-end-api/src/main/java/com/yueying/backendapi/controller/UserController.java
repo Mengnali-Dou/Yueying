@@ -46,4 +46,11 @@ public class UserController {
         userSearchRequest.setUserName(userName);
         return userService.userSearch(userSearchRequest, request);
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<Object> deleteUser(@RequestParam Long userId, HttpServletRequest request) {
+        DeleteUserRequest deleteUserRequest = new DeleteUserRequest();
+        deleteUserRequest.setUserId(userId);
+        return userService.deleteUser(deleteUserRequest, request);
+    }
 }
