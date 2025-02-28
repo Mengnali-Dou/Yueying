@@ -40,4 +40,6 @@ public class CinemaController {
         deleteCinemaRequest.setCinemaId(cinemaId);
         return cinemaService.deleteCinema(deleteCinemaRequest, httpServletRequest);
     }
+
+    // TODO: 搜索影院上映影片需要影片场次mapper，在影片场次完成后完成该功能
 }
