@@ -4,11 +4,16 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yueying.backendapi.mapper.CinemaMapper;
 import com.yueying.backendapi.model.domain.Cinema;
+import com.yueying.backendapi.model.domain.request.AddCinemaRequest;
 import com.yueying.backendapi.model.domain.request.SearchCinemaRequest;
 import com.yueying.backendapi.model.domain.response.CinemaInfoDto;
+import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
+import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
 import com.yueying.backendapi.service.CinemaService;
 import com.yueying.backendapi.utils.ResponseData;
+import com.yueying.backendapi.utils.UserPublicClass;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -40,6 +45,47 @@ public class CinemaServiceImpl extends ServiceImpl<CinemaMapper, Cinema>
         }
 
         return ResponseEntity.ok(ResponseData.responseData(OK, SEARCH_SUCCESSFULLY, convertToDtoList(cinemaMapper.selectList(cinemaQueryWrapper))));
+    }
+
+    @Override
+    public ResponseEntity<Object> addCinema(AddCinemaRequest addCinemaRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 参数是否为空
+        if (!StringUtils.isNoneBlank(addCinemaRequest.getCinemaName(), addCinemaRequest.getCinemaAddress())) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 添加
+        Cinema cinema = new Cinema();
+        cinema.setCinemaName(addCinemaRequest.getCinemaName());
+        cinema.setCinemaAddress(addCinemaRequest.getCinemaAddress());
+        if (StringUtils.isNotBlank(addCinemaRequest.getCinemaProfile())) {
+            cinema.setCinemaProfile(addCinemaRequest.getCinemaProfile());
+        }
+        if (StringUtils.isNotBlank(addCinemaRequest.getCinemaService())) {
+            cinema.setCinemaService(addCinemaRequest.getCinemaService());
+        }
+        if (StringUtils.isNotBlank(addCinemaRequest.getCinemaPhone())) {
+            cinema.setCinemaPhone(addCinemaRequest.getCinemaPhone());
+        }
+        if (StringUtils.isNotBlank(addCinemaRequest.getCinemaTraffic())) {
+            cinema.setCinemaTraffic(addCinemaRequest.getCinemaTraffic());
+        }
+
+        boolean addCinema = this.save(cinema);
+        if (!addCinema) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, FAILED_TO_INSERT, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
     }
 
     /**
