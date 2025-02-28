@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.yueying.backendapi.model.domain.Cinema;
 import com.yueying.backendapi.model.domain.request.AddCinemaRequest;
 import com.yueying.backendapi.model.domain.request.SearchCinemaRequest;
+import com.yueying.backendapi.model.domain.request.UpdateCinemaInfoRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
@@ -28,4 +29,12 @@ public interface CinemaService extends IService<Cinema> {
      * @return 是否添加成功
      */
     ResponseEntity<Object> addCinema(AddCinemaRequest addCinemaRequest, HttpServletRequest httpServletRequest);
+
+    /**
+     * 修改影院信息
+     * @param updateCinemaInfoRequest 修改影院信息请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否修改成功
+     */
+    ResponseEntity<Object> updateCinemaInfo(UpdateCinemaInfoRequest updateCinemaInfoRequest, HttpServletRequest httpServletRequest);
 }

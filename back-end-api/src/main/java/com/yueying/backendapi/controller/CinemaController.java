@@ -2,6 +2,7 @@ package com.yueying.backendapi.controller;
 
 import com.yueying.backendapi.model.domain.request.AddCinemaRequest;
 import com.yueying.backendapi.model.domain.request.SearchCinemaRequest;
+import com.yueying.backendapi.model.domain.request.UpdateCinemaInfoRequest;
 import com.yueying.backendapi.service.CinemaService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,5 +26,10 @@ public class CinemaController {
     @PostMapping("/add")
     public ResponseEntity<Object> addCinema(@RequestBody AddCinemaRequest addCinemaRequest, HttpServletRequest httpServletRequest) {
         return cinemaService.addCinema(addCinemaRequest, httpServletRequest);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<Object> updateCinemaInfo(@RequestBody UpdateCinemaInfoRequest updateCinemaInfoRequest, HttpServletRequest httpServletRequest) {
+        return cinemaService.updateCinemaInfo(updateCinemaInfoRequest, httpServletRequest);
     }
 }

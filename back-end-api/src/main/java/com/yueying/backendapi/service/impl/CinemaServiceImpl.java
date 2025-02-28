@@ -6,6 +6,7 @@ import com.yueying.backendapi.mapper.CinemaMapper;
 import com.yueying.backendapi.model.domain.Cinema;
 import com.yueying.backendapi.model.domain.request.AddCinemaRequest;
 import com.yueying.backendapi.model.domain.request.SearchCinemaRequest;
+import com.yueying.backendapi.model.domain.request.UpdateCinemaInfoRequest;
 import com.yueying.backendapi.model.domain.response.CinemaInfoDto;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
 import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.yueying.backendapi.constant.CinemaMessage.*;
 import static com.yueying.backendapi.constant.ResponseStatus.*;
 import static com.yueying.backendapi.constant.UniversalConstant.*;
 
@@ -86,6 +88,50 @@ public class CinemaServiceImpl extends ServiceImpl<CinemaMapper, Cinema>
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
         return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> updateCinemaInfo(UpdateCinemaInfoRequest updateCinemaInfoRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 是否存在
+        QueryWrapper<Cinema> cinemaQueryWrapper = new QueryWrapper<>();
+        cinemaQueryWrapper.eq("cinema_id", updateCinemaInfoRequest.getCinemaId());
+        if (cinemaMapper.selectCount(cinemaQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, CINEMA_NONENTITY, errorResponseDto));
+        }
+
+        // 修改
+        Cinema cinema = new Cinema();
+        cinema.setCinemaId(updateCinemaInfoRequest.getCinemaId());
+        if (StringUtils.isNotBlank(updateCinemaInfoRequest.getCinemaName())) {
+            cinema.setCinemaName(updateCinemaInfoRequest.getCinemaName());
+        }
+        if (StringUtils.isNotBlank(updateCinemaInfoRequest.getCinemaAddress())) {
+            cinema.setCinemaAddress(updateCinemaInfoRequest.getCinemaAddress());
+        }
+        if (StringUtils.isNotBlank(updateCinemaInfoRequest.getCinemaProfile())) {
+            cinema.setCinemaProfile(updateCinemaInfoRequest.getCinemaProfile());
+        }
+        if (StringUtils.isNotBlank(updateCinemaInfoRequest.getCinemaService())) {
+            cinema.setCinemaService(updateCinemaInfoRequest.getCinemaService());
+        }
+        if (StringUtils.isNotBlank(updateCinemaInfoRequest.getCinemaPhone())) {
+            cinema.setCinemaPhone(updateCinemaInfoRequest.getCinemaPhone());
+        }
+        if (StringUtils.isNotBlank(updateCinemaInfoRequest.getCinemaTraffic())) {
+            cinema.setCinemaTraffic(updateCinemaInfoRequest.getCinemaTraffic());
+        }
+        cinemaMapper.updateById(cinema);
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, UPDATE_SUCCESSFULLY, successResponseDto));
     }
 
     /**
