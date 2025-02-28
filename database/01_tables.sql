@@ -49,6 +49,18 @@ create table tb_movie_hall
 ) comment '影厅';
 
 
+create table tb_movie_hall_type
+(
+    type_id     bigint auto_increment comment 'id' primary key,
+    type_name   varchar(256)                       not null comment '类型名',
+    row_numbers int                                not null comment '座位排数',
+    col_numbers int                                not null comment '座位列数',
+    create_time datetime default CURRENT_TIMESTAMP null comment '创建时间',
+    update_time datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment '更新时间',
+    deleted     tinyint  default 0                 not null comment '是否删除 0 - 未删除 1 - 已删除'
+) comment '影厅类型';
+
+
 create table tb_movie_seat
 (
     movie_seat_id bigint auto_increment comment 'id' primary key,
