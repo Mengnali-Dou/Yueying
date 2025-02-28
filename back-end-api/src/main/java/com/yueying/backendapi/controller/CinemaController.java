@@ -1,6 +1,7 @@
 package com.yueying.backendapi.controller;
 
 import com.yueying.backendapi.model.domain.request.AddCinemaRequest;
+import com.yueying.backendapi.model.domain.request.DeleteCinemaRequest;
 import com.yueying.backendapi.model.domain.request.SearchCinemaRequest;
 import com.yueying.backendapi.model.domain.request.UpdateCinemaInfoRequest;
 import com.yueying.backendapi.service.CinemaService;
@@ -31,5 +32,12 @@ public class CinemaController {
     @PutMapping("/update")
     public ResponseEntity<Object> updateCinemaInfo(@RequestBody UpdateCinemaInfoRequest updateCinemaInfoRequest, HttpServletRequest httpServletRequest) {
         return cinemaService.updateCinemaInfo(updateCinemaInfoRequest, httpServletRequest);
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<Object> deleteCinema(@RequestParam Long cinemaId, HttpServletRequest httpServletRequest) {
+        DeleteCinemaRequest deleteCinemaRequest = new DeleteCinemaRequest();
+        deleteCinemaRequest.setCinemaId(cinemaId);
+        return cinemaService.deleteCinema(deleteCinemaRequest, httpServletRequest);
     }
 }

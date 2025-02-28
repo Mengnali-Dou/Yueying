@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yueying.backendapi.mapper.CinemaMapper;
 import com.yueying.backendapi.model.domain.Cinema;
 import com.yueying.backendapi.model.domain.request.AddCinemaRequest;
+import com.yueying.backendapi.model.domain.request.DeleteCinemaRequest;
 import com.yueying.backendapi.model.domain.request.SearchCinemaRequest;
 import com.yueying.backendapi.model.domain.request.UpdateCinemaInfoRequest;
 import com.yueying.backendapi.model.domain.response.CinemaInfoDto;
@@ -132,6 +133,33 @@ public class CinemaServiceImpl extends ServiceImpl<CinemaMapper, Cinema>
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
         return ResponseEntity.ok(ResponseData.responseData(OK, UPDATE_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> deleteCinema(DeleteCinemaRequest deleteCinemaRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 是否存在
+        QueryWrapper<Cinema> cinemaQueryWrapper = new QueryWrapper<>();
+        cinemaQueryWrapper.eq("cinema_id", deleteCinemaRequest.getCinemaId());
+        if (cinemaMapper.selectCount(cinemaQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, CINEMA_NONENTITY, errorResponseDto));
+        }
+
+        // 删除
+        boolean deleted = this.removeById(deleteCinemaRequest.getCinemaId());
+        if (!deleted) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, DELETE_FAILED, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, DELETE_SUCCESSFULLY, successResponseDto));
     }
 
     /**

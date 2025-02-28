@@ -3,6 +3,7 @@ package com.yueying.backendapi.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yueying.backendapi.model.domain.Cinema;
 import com.yueying.backendapi.model.domain.request.AddCinemaRequest;
+import com.yueying.backendapi.model.domain.request.DeleteCinemaRequest;
 import com.yueying.backendapi.model.domain.request.SearchCinemaRequest;
 import com.yueying.backendapi.model.domain.request.UpdateCinemaInfoRequest;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,4 +38,12 @@ public interface CinemaService extends IService<Cinema> {
      * @return 是否修改成功
      */
     ResponseEntity<Object> updateCinemaInfo(UpdateCinemaInfoRequest updateCinemaInfoRequest, HttpServletRequest httpServletRequest);
+
+    /**
+     * 删除影院
+     * @param deleteCinemaRequest 删除影院请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否删除成功
+     */
+    ResponseEntity<Object> deleteCinema(DeleteCinemaRequest deleteCinemaRequest, HttpServletRequest httpServletRequest);
 }
