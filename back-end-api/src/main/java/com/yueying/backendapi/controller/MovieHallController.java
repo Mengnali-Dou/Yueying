@@ -1,9 +1,7 @@
 package com.yueying.backendapi.controller;
 
-import com.yueying.backendapi.model.domain.request.AddMovieHallTypeRequest;
-import com.yueying.backendapi.model.domain.request.DeleteMovieHallTypeRequest;
-import com.yueying.backendapi.model.domain.request.SearchMovieHallTypeRequest;
-import com.yueying.backendapi.model.domain.request.UpdateMovieHallTypeRequest;
+import com.yueying.backendapi.model.domain.request.*;
+import com.yueying.backendapi.service.MovieHallService;
 import com.yueying.backendapi.service.MovieHallTypeService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +14,16 @@ public class MovieHallController {
 
     @Resource
     private MovieHallTypeService movieHallTypeService;
+
+    @Resource
+    private MovieHallService movieHallService;
+
+    @GetMapping("/search")
+    public ResponseEntity<Object> searchMovieHall(@RequestParam Long cinemaId) {
+        SearchMovieHallRequest searchMovieHallRequest = new SearchMovieHallRequest();
+        searchMovieHallRequest.setCinemaId(cinemaId);
+        return movieHallService.searchMovieHall(searchMovieHallRequest);
+    }
 
     @GetMapping("/search-type")
     public ResponseEntity<Object> searchMovieHallType(@RequestParam Long movieHallId) {
