@@ -1,6 +1,7 @@
 package com.yueying.backendapi.controller;
 
 import com.yueying.backendapi.model.domain.request.AddMovieHallTypeRequest;
+import com.yueying.backendapi.model.domain.request.DeleteMovieHallTypeRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieHallTypeRequest;
 import com.yueying.backendapi.model.domain.request.UpdateMovieHallTypeRequest;
 import com.yueying.backendapi.service.MovieHallTypeService;
@@ -31,5 +32,12 @@ public class MovieHallController {
     @PutMapping("/update-type")
     public ResponseEntity<Object> updateMovieHallType(@RequestBody UpdateMovieHallTypeRequest updateMovieHallTypeRequest, HttpServletRequest httpServletRequest) {
         return movieHallTypeService.updateMovieHallType(updateMovieHallTypeRequest, httpServletRequest);
+    }
+
+    @DeleteMapping("/delete-type")
+    public ResponseEntity<Object> deleteMovieHallType(@RequestParam Long movieHallTypeId, HttpServletRequest httpServletRequest) {
+        DeleteMovieHallTypeRequest deleteMovieHallTypeRequest = new DeleteMovieHallTypeRequest();
+        deleteMovieHallTypeRequest.setMovieHallTypeId(movieHallTypeId);
+        return movieHallTypeService.deleteMovieHallType(deleteMovieHallTypeRequest, httpServletRequest);
     }
 }
