@@ -4,6 +4,7 @@ import com.yueying.backendapi.model.domain.MovieHallType;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yueying.backendapi.model.domain.request.AddMovieHallTypeRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieHallTypeRequest;
+import com.yueying.backendapi.model.domain.request.UpdateMovieHallTypeRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
@@ -28,4 +29,12 @@ public interface MovieHallTypeService extends IService<MovieHallType> {
      * @return 是否添加成功
      */
     ResponseEntity<Object> addMovieHallType(AddMovieHallTypeRequest addMovieHallTypeRequest, HttpServletRequest httpServletRequest);
+
+    /**
+     * 修改影厅类型
+     * @param updateMovieHallTypeRequest 修改影厅类型请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否修改成功
+     */
+    ResponseEntity<Object> updateMovieHallType(UpdateMovieHallTypeRequest updateMovieHallTypeRequest, HttpServletRequest httpServletRequest);
 }

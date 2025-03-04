@@ -11,4 +11,10 @@ public class MovieHallMessage {
      * 影院类型已存在
      */
     public static final String MOVIE_HALL_TYPE_ALREADY_EXISTS = "影院类型已存在";
+
+    /**
+     * http请求错误信息
+     * 影院类型不存在
+     */
+    public static final String MOVIE_HALL_TYPE_DOES_NOT_EXISTS = "影院类型不存在";
 }

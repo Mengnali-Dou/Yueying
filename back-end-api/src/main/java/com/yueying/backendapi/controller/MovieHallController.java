@@ -2,6 +2,7 @@ package com.yueying.backendapi.controller;
 
 import com.yueying.backendapi.model.domain.request.AddMovieHallTypeRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieHallTypeRequest;
+import com.yueying.backendapi.model.domain.request.UpdateMovieHallTypeRequest;
 import com.yueying.backendapi.service.MovieHallTypeService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,5 +26,10 @@ public class MovieHallController {
     @PostMapping("/add-type")
     public ResponseEntity<Object> addMovieHallType(@RequestBody AddMovieHallTypeRequest addMovieHallTypeRequest, HttpServletRequest httpServletRequest) {
         return movieHallTypeService.addMovieHallType(addMovieHallTypeRequest, httpServletRequest);
+    }
+
+    @PutMapping("/update-type")
+    public ResponseEntity<Object> updateMovieHallType(@RequestBody UpdateMovieHallTypeRequest updateMovieHallTypeRequest, HttpServletRequest httpServletRequest) {
+        return movieHallTypeService.updateMovieHallType(updateMovieHallTypeRequest, httpServletRequest);
     }
 }
