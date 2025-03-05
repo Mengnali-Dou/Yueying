@@ -8,8 +8,10 @@ import com.yueying.backendapi.model.domain.Cinema;
 import com.yueying.backendapi.model.domain.CinemaAdmin;
 import com.yueying.backendapi.model.domain.User;
 import com.yueying.backendapi.model.domain.request.SearchCinemaAdminRequest;
+import com.yueying.backendapi.model.domain.request.UpdateCinemaAdminRequest;
 import com.yueying.backendapi.model.domain.response.CinemaAdminDto;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
+import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
 import com.yueying.backendapi.service.CinemaAdminService;
 import com.yueying.backendapi.mapper.CinemaAdminMapper;
 import com.yueying.backendapi.utils.ResponseData;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.yueying.backendapi.constant.AdminMessage.*;
 import static com.yueying.backendapi.constant.ResponseStatus.*;
 import static com.yueying.backendapi.constant.UniversalConstant.*;
 import static com.yueying.backendapi.constant.UserConstant.*;
@@ -90,6 +93,47 @@ public class CinemaAdminServiceImpl extends ServiceImpl<CinemaAdminMapper, Cinem
         }
 
         return ResponseEntity.ok(ResponseData.responseData(OK, SEARCH_SUCCESSFULLY, convertToDtoList(cinemaAdminMapper.selectList(cinemaAdminQueryWrapper))));
+    }
+
+    @Override
+    public ResponseEntity<Object> updateCinemaAdmin(UpdateCinemaAdminRequest updateCinemaAdminRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 必要参数是否为空
+        if (updateCinemaAdminRequest.getCinemaAdminId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 影院管理员是否存在
+        QueryWrapper<CinemaAdmin> cinemaAdminQueryWrapper = new QueryWrapper<>();
+        cinemaAdminQueryWrapper.eq("cinema_admin_id", updateCinemaAdminRequest.getCinemaAdminId());
+        if (cinemaAdminMapper.selectCount(cinemaAdminQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, CINEMA_ADMIN_NONENTITY, errorResponseDto));
+        }
+
+        // 修改
+        CinemaAdmin cinemaAdmin = new CinemaAdmin();
+        cinemaAdmin.setCinemaAdminId(updateCinemaAdminRequest.getCinemaAdminId());
+        if (updateCinemaAdminRequest.getCinemaId() > 0) {
+            cinemaAdmin.setCinemaId(updateCinemaAdminRequest.getCinemaId());
+        }
+        if (updateCinemaAdminRequest.getUserId() > 0) {
+            cinemaAdmin.setUserId(updateCinemaAdminRequest.getUserId());
+        }
+
+        boolean updateCinemaAdmin = this.updateById(cinemaAdmin);
+        if (!updateCinemaAdmin) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, FAILED_TO_UPDATE, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
     }
 
     /**

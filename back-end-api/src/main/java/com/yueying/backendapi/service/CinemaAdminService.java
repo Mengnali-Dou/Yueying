@@ -3,6 +3,7 @@ package com.yueying.backendapi.service;
 import com.yueying.backendapi.model.domain.CinemaAdmin;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yueying.backendapi.model.domain.request.SearchCinemaAdminRequest;
+import com.yueying.backendapi.model.domain.request.UpdateCinemaAdminRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
@@ -20,4 +21,12 @@ public interface CinemaAdminService extends IService<CinemaAdmin> {
      * @return 影院管理员列表
      */
     ResponseEntity<Object> searchCinemaAdmin(SearchCinemaAdminRequest searchCinemaAdminRequest, HttpServletRequest httpServletRequest);
+
+    /**
+     * 修改用户管理员
+     * @param updateCinemaAdminRequest 修改用户管理员请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否修改成功
+     */
+    ResponseEntity<Object> updateCinemaAdmin(UpdateCinemaAdminRequest updateCinemaAdminRequest, HttpServletRequest httpServletRequest);
 }

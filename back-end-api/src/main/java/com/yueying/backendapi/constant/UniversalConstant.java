@@ -50,9 +50,9 @@ public class UniversalConstant {
 
     /**
      * http请求错误信息
-     * 插入数据失败
+     * 修改数据失败
      */
-    public static final String FAILED_TO_UPDATE = "The server failed to update data.";
+    public static final String FAILED_TO_UPDATE = "修改失败";
 
     /**
      * 用户角色--管理员
