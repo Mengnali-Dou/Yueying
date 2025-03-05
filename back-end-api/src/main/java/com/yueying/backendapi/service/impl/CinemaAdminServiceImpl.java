@@ -7,6 +7,7 @@ import com.yueying.backendapi.mapper.UserMapper;
 import com.yueying.backendapi.model.domain.Cinema;
 import com.yueying.backendapi.model.domain.CinemaAdmin;
 import com.yueying.backendapi.model.domain.User;
+import com.yueying.backendapi.model.domain.request.AddCinemaAdminRequest;
 import com.yueying.backendapi.model.domain.request.SearchCinemaAdminRequest;
 import com.yueying.backendapi.model.domain.request.UpdateCinemaAdminRequest;
 import com.yueying.backendapi.model.domain.response.CinemaAdminDto;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.yueying.backendapi.constant.AdminMessage.*;
+import static com.yueying.backendapi.constant.CinemaMessage.*;
 import static com.yueying.backendapi.constant.ResponseStatus.*;
 import static com.yueying.backendapi.constant.UniversalConstant.*;
 import static com.yueying.backendapi.constant.UserConstant.*;
@@ -87,12 +89,65 @@ public class CinemaAdminServiceImpl extends ServiceImpl<CinemaAdminMapper, Cinem
             cinemaQueryWrapper.eq("cinema_id", searchCinemaAdminRequest.getCinemaId());
             long cinemaNum = cinemaMapper.selectCount(cinemaQueryWrapper);
             if (cinemaNum <= 0) {
-                return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, USER_DOES_NOT_EXISTS, errorResponseDto));
+                return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, CINEMA_NONENTITY, errorResponseDto));
             }
             cinemaAdminQueryWrapper.eq("cinema_id", searchCinemaAdminRequest.getCinemaId());
         }
 
         return ResponseEntity.ok(ResponseData.responseData(OK, SEARCH_SUCCESSFULLY, convertToDtoList(cinemaAdminMapper.selectList(cinemaAdminQueryWrapper))));
+    }
+
+    @Override
+    public ResponseEntity<Object> addCinemaAdmin(AddCinemaAdminRequest addCinemaAdminRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 必要参数是否为空
+        if (addCinemaAdminRequest.getCinemaId() + addCinemaAdminRequest.getUserId() < 2) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 影院是否存在
+        QueryWrapper<Cinema> cinemaQueryWrapper = new QueryWrapper<>();
+        cinemaQueryWrapper.eq("cinema_id", addCinemaAdminRequest.getCinemaId());
+        long cinemaNum = cinemaMapper.selectCount(cinemaQueryWrapper);
+        if (cinemaNum <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, CINEMA_NONENTITY, errorResponseDto));
+        }
+
+        // 用户是否存在
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq("user_id", addCinemaAdminRequest.getUserId());
+        long userNum = userMapper.selectCount(userQueryWrapper);
+        if (userNum <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, USER_DOES_NOT_EXISTS, errorResponseDto));
+        }
+
+        // 影院管理员是否存在
+        QueryWrapper<CinemaAdmin> cinemaAdminQueryWrapper = new QueryWrapper<>();
+        cinemaAdminQueryWrapper.eq("cinema_id", addCinemaAdminRequest.getCinemaId());
+        cinemaAdminQueryWrapper.eq("user_id", addCinemaAdminRequest.getUserId());
+        long cinemaAdminNum = cinemaAdminMapper.selectCount(cinemaAdminQueryWrapper);
+        if (cinemaAdminNum > 0) {
+            return ResponseEntity.status(CONFLICT).body(ResponseData.responseData(CONFLICT, CINEMA_ADMIN_ALREADY_EXISTS, errorResponseDto));
+        }
+
+        // 添加
+        CinemaAdmin cinemaAdmin = new CinemaAdmin();
+        cinemaAdmin.setCinemaId(addCinemaAdminRequest.getCinemaId());
+        cinemaAdmin.setUserId(addCinemaAdminRequest.getUserId());
+        boolean addCinemaAdmin = this.save(cinemaAdmin);
+        if (!addCinemaAdmin) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, FAILED_TO_INSERT, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
     }
 
     @Override

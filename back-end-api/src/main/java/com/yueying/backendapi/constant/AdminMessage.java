@@ -11,4 +11,10 @@ public class AdminMessage {
      * 影院管理员不存在
      */
     public static final String CINEMA_ADMIN_NONENTITY = "影院管理员不存在";
+
+    /**
+     * http请求信息
+     * 影院管理员已存在
+     */
+    public static final String CINEMA_ADMIN_ALREADY_EXISTS = "影院管理员已存在";
 }

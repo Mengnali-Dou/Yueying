@@ -1,5 +1,6 @@
 package com.yueying.backendapi.controller;
 
+import com.yueying.backendapi.model.domain.request.AddCinemaAdminRequest;
 import com.yueying.backendapi.model.domain.request.SearchCinemaAdminRequest;
 import com.yueying.backendapi.model.domain.request.UpdateCinemaAdminRequest;
 import com.yueying.backendapi.service.CinemaAdminService;
@@ -21,6 +22,11 @@ public class AdminController {
         searchCinemaAdminRequest.setCinemaId(cinemaId);
         searchCinemaAdminRequest.setUserId(userId);
         return cinemaAdminService.searchCinemaAdmin(searchCinemaAdminRequest, httpServletRequest);
+    }
+
+    @PostMapping("/cinema-add")
+    public ResponseEntity<Object> addCinemaAdmin(@RequestBody AddCinemaAdminRequest addCinemaAdminRequest, HttpServletRequest httpServletRequest) {
+        return cinemaAdminService.addCinemaAdmin(addCinemaAdminRequest, httpServletRequest);
     }
 
     @PutMapping("/cinema-update")
