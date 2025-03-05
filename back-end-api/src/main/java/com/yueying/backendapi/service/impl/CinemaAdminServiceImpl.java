@@ -8,6 +8,7 @@ import com.yueying.backendapi.model.domain.Cinema;
 import com.yueying.backendapi.model.domain.CinemaAdmin;
 import com.yueying.backendapi.model.domain.User;
 import com.yueying.backendapi.model.domain.request.AddCinemaAdminRequest;
+import com.yueying.backendapi.model.domain.request.DeleteCinemaAdminRequest;
 import com.yueying.backendapi.model.domain.request.SearchCinemaAdminRequest;
 import com.yueying.backendapi.model.domain.request.UpdateCinemaAdminRequest;
 import com.yueying.backendapi.model.domain.response.CinemaAdminDto;
@@ -189,6 +190,38 @@ public class CinemaAdminServiceImpl extends ServiceImpl<CinemaAdminMapper, Cinem
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
         return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> deleteCinemaAdmin(DeleteCinemaAdminRequest deleteCinemaAdminRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 必要参数是否为空
+        if (deleteCinemaAdminRequest.getCinemaAdminId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 是否存在
+        QueryWrapper<CinemaAdmin> cinemaAdminQueryWrapper = new QueryWrapper<>();
+        cinemaAdminQueryWrapper.eq("cinema_admin_id", deleteCinemaAdminRequest.getCinemaAdminId());
+        if (cinemaAdminMapper.selectCount(cinemaAdminQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, CINEMA_ADMIN_NONENTITY, errorResponseDto));
+        }
+
+        // 删除
+        boolean deleteCinemaAdmin = this.removeById(deleteCinemaAdminRequest.getCinemaAdminId());
+        if (!deleteCinemaAdmin) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, DELETE_FAILED, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, DELETE_SUCCESSFULLY, successResponseDto));
     }
 
     /**
