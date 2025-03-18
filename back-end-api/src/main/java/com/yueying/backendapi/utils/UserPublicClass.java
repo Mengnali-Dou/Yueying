@@ -11,7 +11,7 @@ import static com.yueying.backendapi.constant.UserConstant.*;
 
 /**
  * 用户管理工具类
- * @author liujiaqi
+ * @author <a href="mengnalidou.icu">mengnali_dou</a>
  */
 public class UserPublicClass {
 
