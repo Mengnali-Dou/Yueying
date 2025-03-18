@@ -11,6 +11,7 @@ import com.yueying.backendapi.model.domain.MovieHall;
 import com.yueying.backendapi.model.domain.MovieHallType;
 import com.yueying.backendapi.model.domain.request.AddMovieHallRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieHallRequest;
+import com.yueying.backendapi.model.domain.request.UpdateMovieHallRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
 import com.yueying.backendapi.model.domain.response.MovieHallInfoDto;
 import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
@@ -92,9 +93,12 @@ public class MovieHallServiceImpl extends ServiceImpl<MovieHallMapper, MovieHall
         }
 
         // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest) || UserPublicClass.isCinemaAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
         QueryWrapper<CinemaAdmin> cinemaAdminQueryWrapper = new QueryWrapper<>();
         cinemaAdminQueryWrapper.eq("cinema_admin_id", UserPublicClass.getUserId(httpServletRequest));
-        if (UserPublicClass.isAdmin(httpServletRequest) || UserPublicClass.isCinemaAdmin(httpServletRequest) || cinemaAdminMapper.selectCount(cinemaAdminQueryWrapper) <= 0) {
+        if (cinemaAdminMapper.selectCount(cinemaAdminQueryWrapper) <= 0) {
             return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
         }
 
@@ -102,8 +106,8 @@ public class MovieHallServiceImpl extends ServiceImpl<MovieHallMapper, MovieHall
         QueryWrapper<MovieHall> movieHallQueryWrapper = new QueryWrapper<>();
         movieHallQueryWrapper.eq("cinema_id", addMovieHallRequest.getCinemaId());
         movieHallQueryWrapper.like("movie_hall_name", addMovieHallRequest.getMovieHallName());
-        if (movieHallMapper.selectCount(movieHallQueryWrapper) <= 0) {
-            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, MOVIE_HALL_DOES_NOT_EXISTS, errorResponseDto));
+        if (movieHallMapper.selectCount(movieHallQueryWrapper) > 0) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, MOVIE_HALL_ALREADY_EXISTS, errorResponseDto));
         }
 
         // 影厅类型是否存在
@@ -129,6 +133,72 @@ public class MovieHallServiceImpl extends ServiceImpl<MovieHallMapper, MovieHall
         boolean addMovieHall = this.save(movieHall);
         if (!addMovieHall) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, FAILED_TO_INSERT, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> updateMovieHall(UpdateMovieHallRequest updateMovieHallRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+        MovieHall movieHall = new MovieHall();
+
+        // 必要参数是否为空
+        if (updateMovieHallRequest.getMovieHallId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest) || UserPublicClass.isCinemaAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+        QueryWrapper<CinemaAdmin> cinemaAdminQueryWrapper = new QueryWrapper<>();
+        cinemaAdminQueryWrapper.eq("cinema_admin_id", UserPublicClass.getUserId(httpServletRequest));
+        if (cinemaAdminMapper.selectCount(cinemaAdminQueryWrapper) <= 0) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 影厅是否存在
+        QueryWrapper<MovieHall> movieHallQueryWrapper = new QueryWrapper<>();
+        movieHallQueryWrapper.eq("movie_hall_id", updateMovieHallRequest.getMovieHallId());
+        if (movieHallMapper.selectCount(movieHallQueryWrapper) <= 0) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, MOVIE_HALL_DOES_NOT_EXISTS, errorResponseDto));
+        }
+
+
+        // 影厅类型是否存在
+        if (updateMovieHallRequest.getMovieHallTypeId() > 0) {
+            QueryWrapper<MovieHallType> movieHallTypeQueryWrapper = new QueryWrapper<>();
+            movieHallTypeQueryWrapper.eq("type_id", updateMovieHallRequest.getMovieHallTypeId());
+            if (movieHallTypeMapper.selectCount(movieHallTypeQueryWrapper) <= 0) {
+                return ResponseEntity.status(CONFLICT).body(ResponseData.responseData(CONFLICT, MOVIE_HALL_TYPE_DOES_NOT_EXISTS, errorResponseDto));
+            }
+            movieHall.setMovieHallTypeId(updateMovieHallRequest.getMovieHallTypeId());
+        }
+
+        // 影厅名是否重复
+        if (StringUtils.isNotBlank(updateMovieHallRequest.getMovieHallName())) {
+            movieHallQueryWrapper.like("movie_hall_name", updateMovieHallRequest.getMovieHallName());
+            if (movieHallMapper.selectCount(movieHallQueryWrapper) > 0) {
+                return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, MOVIE_HALL_ALREADY_EXISTS, errorResponseDto));
+            }
+            movieHall.setMovieHallName(updateMovieHallRequest.getMovieHallName());
+        }
+
+        // 修改
+        movieHall.setMovieHallId(updateMovieHallRequest.getMovieHallId());
+        if (StringUtils.isNotBlank(updateMovieHallRequest.getMovieHallPhoto())) {
+            movieHall.setMovieHallPhoto(updateMovieHallRequest.getMovieHallPhoto());
+        }
+        if (StringUtils.isNotBlank(updateMovieHallRequest.getMovieHallProfile())) {
+            movieHall.setMovieHallProfile(updateMovieHallRequest.getMovieHallProfile());
+        }
+
+        boolean updateMovieHall = this.updateById(movieHall);
+        if (!updateMovieHall) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, FAILED_TO_UPDATE, errorResponseDto));
         }
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();

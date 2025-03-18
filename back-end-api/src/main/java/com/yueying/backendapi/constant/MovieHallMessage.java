@@ -8,9 +8,15 @@ public class MovieHallMessage {
 
     /**
      * http请求错误信息
-     * 影院不存在
+     * 影厅不存在
      */
-    public static final String MOVIE_HALL_DOES_NOT_EXISTS = "影院不存在";
+    public static final String MOVIE_HALL_DOES_NOT_EXISTS = "影厅不存在";
+
+    /**
+     * http请求错误信息
+     * 影厅已存在
+     */
+    public static final String MOVIE_HALL_ALREADY_EXISTS = "影厅已存在";
 
     /**
      * http请求错误信息

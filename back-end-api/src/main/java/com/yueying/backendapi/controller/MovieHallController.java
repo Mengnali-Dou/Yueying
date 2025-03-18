@@ -30,6 +30,11 @@ public class MovieHallController {
         return movieHallService.addMovieHall(addMovieHallRequest, httpServletRequest);
     }
 
+    @PutMapping("/update")
+    public ResponseEntity<Object> updateMovieHall(@RequestBody UpdateMovieHallRequest updateMovieHallRequest, HttpServletRequest httpServletRequest) {
+        return movieHallService.updateMovieHall(updateMovieHallRequest, httpServletRequest);
+    }
+
     @GetMapping("/search-type")
     public ResponseEntity<Object> searchMovieHallType(@RequestParam Long movieHallId) {
         SearchMovieHallTypeRequest searchMovieHallTypeRequest = new SearchMovieHallTypeRequest();
