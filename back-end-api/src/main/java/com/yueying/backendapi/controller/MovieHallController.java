@@ -1,6 +1,7 @@
 package com.yueying.backendapi.controller;
 
 import com.yueying.backendapi.model.domain.request.*;
+import com.yueying.backendapi.service.MovieHallSeatService;
 import com.yueying.backendapi.service.MovieHallService;
 import com.yueying.backendapi.service.MovieHallTypeService;
 import jakarta.annotation.Resource;
@@ -17,6 +18,9 @@ public class MovieHallController {
 
     @Resource
     private MovieHallService movieHallService;
+
+    @Resource
+    private MovieHallSeatService movieHallSeatService;
 
     @GetMapping("/search")
     public ResponseEntity<Object> searchMovieHall(@RequestParam Long cinemaId) {
@@ -64,5 +68,12 @@ public class MovieHallController {
         DeleteMovieHallTypeRequest deleteMovieHallTypeRequest = new DeleteMovieHallTypeRequest();
         deleteMovieHallTypeRequest.setMovieHallTypeId(movieHallTypeId);
         return movieHallTypeService.deleteMovieHallType(deleteMovieHallTypeRequest, httpServletRequest);
+    }
+
+    @GetMapping("/search-seat")
+    public ResponseEntity<Object> searchMovieHallSeat(@RequestParam Long movieHallId, HttpServletRequest httpServletRequest) {
+        SearchMovieHallSeatRequest searchMovieHallSeatRequest = new SearchMovieHallSeatRequest();
+        searchMovieHallSeatRequest.setMovieHallId(movieHallId);
+        return movieHallSeatService.searchMovieHallSeat(searchMovieHallSeatRequest, httpServletRequest);
     }
 }
