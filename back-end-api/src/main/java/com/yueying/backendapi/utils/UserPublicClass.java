@@ -45,6 +45,17 @@ public class UserPublicClass {
     }
 
     /**
+     * 获取登录用户id
+     * @param request http请求信息
+     * @return 登录用户id
+     */
+    public static Long getUserId(HttpServletRequest request) {
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        User user = (User) userObj;
+        return user.getUserId();
+    }
+
+    /**
      * 判断用户是否为管理员
      * @param request http请求信息
      * @return 是否为管理员
@@ -53,6 +64,17 @@ public class UserPublicClass {
         Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
         User user = (User) userObj;
         return user == null || user.getUserRole() != ROLE_ADMIN;
+    }
+
+    /**
+     * 判断用户是否为影院管理员
+     * @param request http请求信息
+     * @return 是否为影院管理员
+     */
+    public static boolean isCinemaAdmin(HttpServletRequest request) {
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        User user = (User) userObj;
+        return user == null || user.getUserRole() != ROLE_CINEMA_ADMIN;
     }
 
     /**

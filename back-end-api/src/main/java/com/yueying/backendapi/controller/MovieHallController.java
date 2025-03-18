@@ -25,6 +25,11 @@ public class MovieHallController {
         return movieHallService.searchMovieHall(searchMovieHallRequest);
     }
 
+    @PostMapping("/add")
+    public ResponseEntity<Object> addMovieHall(@RequestBody AddMovieHallRequest addMovieHallRequest, HttpServletRequest httpServletRequest) {
+        return movieHallService.addMovieHall(addMovieHallRequest, httpServletRequest);
+    }
+
     @GetMapping("/search-type")
     public ResponseEntity<Object> searchMovieHallType(@RequestParam Long movieHallId) {
         SearchMovieHallTypeRequest searchMovieHallTypeRequest = new SearchMovieHallTypeRequest();

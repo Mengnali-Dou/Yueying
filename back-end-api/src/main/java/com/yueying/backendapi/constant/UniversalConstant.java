@@ -60,6 +60,11 @@ public class UniversalConstant {
     public static final int ROLE_ADMIN = 1;
 
     /**
+     * 用户角色--影院管理员
+     */
+    public static final int ROLE_CINEMA_ADMIN = 2;
+
+    /**
      * http请求成功信息
      * 查询成功
      */
