@@ -35,6 +35,13 @@ public class MovieHallController {
         return movieHallService.updateMovieHall(updateMovieHallRequest, httpServletRequest);
     }
 
+    @DeleteMapping("/delete")
+    public ResponseEntity<Object> deleteMovieHall(@RequestParam Long movieHallId, HttpServletRequest httpServletRequest) {
+        DeleteMovieHallRequest deleteMovieHallRequest = new DeleteMovieHallRequest();
+        deleteMovieHallRequest.setMovieHallId(movieHallId);
+        return movieHallService.deleteMovieHall(deleteMovieHallRequest, httpServletRequest);
+    }
+
     @GetMapping("/search-type")
     public ResponseEntity<Object> searchMovieHallType(@RequestParam Long movieHallId) {
         SearchMovieHallTypeRequest searchMovieHallTypeRequest = new SearchMovieHallTypeRequest();

@@ -10,6 +10,7 @@ import com.yueying.backendapi.model.domain.CinemaAdmin;
 import com.yueying.backendapi.model.domain.MovieHall;
 import com.yueying.backendapi.model.domain.MovieHallType;
 import com.yueying.backendapi.model.domain.request.AddMovieHallRequest;
+import com.yueying.backendapi.model.domain.request.DeleteMovieHallRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieHallRequest;
 import com.yueying.backendapi.model.domain.request.UpdateMovieHallRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
@@ -203,6 +204,43 @@ public class MovieHallServiceImpl extends ServiceImpl<MovieHallMapper, MovieHall
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
         return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> deleteMovieHall(DeleteMovieHallRequest deleteMovieHallRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 必要参数是否为空
+        if (deleteMovieHallRequest.getMovieHallId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest) || UserPublicClass.isCinemaAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+        QueryWrapper<CinemaAdmin> cinemaAdminQueryWrapper = new QueryWrapper<>();
+        cinemaAdminQueryWrapper.eq("cinema_admin_id", UserPublicClass.getUserId(httpServletRequest));
+        if (cinemaAdminMapper.selectCount(cinemaAdminQueryWrapper) <= 0) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 影厅是否存在
+        QueryWrapper<MovieHall> movieHallQueryWrapper = new QueryWrapper<>();
+        movieHallQueryWrapper.eq("movie_hall_id", deleteMovieHallRequest.getMovieHallId());
+        if (movieHallMapper.selectCount(movieHallQueryWrapper) <= 0) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, MOVIE_HALL_DOES_NOT_EXISTS, errorResponseDto));
+        }
+
+        // 删除
+        boolean deleted = this.removeById(deleteMovieHallRequest.getMovieHallId());
+        if (!deleted) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, DELETE_FAILED, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, DELETE_SUCCESSFULLY, successResponseDto));
     }
 
     /**

@@ -3,6 +3,7 @@ package com.yueying.backendapi.service;
 import com.yueying.backendapi.model.domain.MovieHall;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yueying.backendapi.model.domain.request.AddMovieHallRequest;
+import com.yueying.backendapi.model.domain.request.DeleteMovieHallRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieHallRequest;
 import com.yueying.backendapi.model.domain.request.UpdateMovieHallRequest;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,4 +38,12 @@ public interface MovieHallService extends IService<MovieHall> {
      * @return 是否修改成功
      */
     ResponseEntity<Object> updateMovieHall(UpdateMovieHallRequest updateMovieHallRequest, HttpServletRequest httpServletRequest);
+
+    /**
+     * 删除影厅
+     * @param deleteMovieHallRequest 删除影厅请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否删除成功
+     */
+    ResponseEntity<Object> deleteMovieHall(DeleteMovieHallRequest deleteMovieHallRequest, HttpServletRequest httpServletRequest);
 }
