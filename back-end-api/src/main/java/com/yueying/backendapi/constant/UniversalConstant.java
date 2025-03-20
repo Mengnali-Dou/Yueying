@@ -49,9 +49,20 @@ public class UniversalConstant {
     public static final String UPDATE_SUCCESSFULLY = "修改成功";
 
     /**
+     * http请求错误信息
+     * 修改数据失败
+     */
+    public static final String FAILED_TO_UPDATE = "修改失败";
+
+    /**
      * 用户角色--管理员
      */
     public static final int ROLE_ADMIN = 1;
+
+    /**
+     * 用户角色--影院管理员
+     */
+    public static final int ROLE_CINEMA_ADMIN = 2;
 
     /**
      * http请求成功信息

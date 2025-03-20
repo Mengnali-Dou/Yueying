@@ -45,7 +45,8 @@ create table tb_movie_hall
     create_time        datetime      default CURRENT_TIMESTAMP                                                                                null comment '创建时间',
     update_time        datetime      default CURRENT_TIMESTAMP                                                                                null on update CURRENT_TIMESTAMP comment '更新时间',
     deleted            tinyint       default 0                                                                                                not null comment '是否删除 0 - 未删除 1 - 已删除',
-    constraint fk_movie_hall_cinema foreign key (cinema_id) references tb_cinema (cinema_id)
+    constraint fk_movie_hall_cinema foreign key (cinema_id) references tb_cinema (cinema_id),
+    constraint fk_movie_hall_movie_hall_type foreign key (movie_hall_type_id) references tb_movie_hall_type (type_id)
 ) comment '影厅';
 
 
@@ -53,8 +54,6 @@ create table tb_movie_hall_type
 (
     type_id     bigint auto_increment comment 'id' primary key,
     type_name   varchar(256)                       not null comment '类型名',
-    row_numbers int                                not null comment '座位排数',
-    col_numbers int                                not null comment '座位列数',
     create_time datetime default CURRENT_TIMESTAMP null comment '创建时间',
     update_time datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment '更新时间',
     deleted     tinyint  default 0                 not null comment '是否删除 0 - 未删除 1 - 已删除'
@@ -220,3 +219,29 @@ create table tb_movie_order
     constraint fk_movie_order_user foreign key (user_id) references tb_user (user_id),
     constraint fk_movie_order_session foreign key (session_id) references tb_movie_session (session_id)
 ) comment '订单';
+
+
+create table tb_cinema_admin
+(
+    cinema_admin_id bigint auto_increment comment 'id' primary key,
+    cinema_id      bigint                             not null comment '影院id',
+    user_id        bigint                             not null comment '用户id',
+    create_time    datetime default CURRENT_TIMESTAMP null comment '创建时间',
+    update_time    datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment '更新时间',
+    deleted        tinyint  default 0                 not null comment '是否删除 0 - 未删除 1 - 已删除',
+    constraint fk_movie_admin_cinema foreign key (cinema_id) references tb_cinema (cinema_id),
+    constraint fk_movie_admin_user foreign key (user_id) references tb_user (user_id)
+) comment '影院管理员';
+
+
+create table tb_event_admin
+(
+    event_admin_id bigint auto_increment comment 'id' primary key,
+    event_id       bigint                             not null comment '活动id',
+    user_id        bigint                             not null comment '用户id',
+    create_time    datetime default CURRENT_TIMESTAMP null comment '创建时间',
+    update_time    datetime default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment '更新时间',
+    deleted        tinyint  default 0                 not null comment '是否删除 0 - 未删除 1 - 已删除',
+    constraint fk_event_admin_event foreign key (event_id) references tb_event (event_id),
+    constraint fk_event_admin_user foreign key (user_id) references tb_user (user_id)
+) comment '活动管理员';
