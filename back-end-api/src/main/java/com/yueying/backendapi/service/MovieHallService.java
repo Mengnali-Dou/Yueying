@@ -27,7 +27,7 @@ public interface MovieHallService extends IService<MovieHall> {
      * 添加影厅
      * @param addMovieHallRequest 添加影厅请求体
      * @param httpServletRequest http请求信息
-     * @return 是否添加成功
+     * @return 添加影厅id
      */
     ResponseEntity<Object> addMovieHall(AddMovieHallRequest addMovieHallRequest, HttpServletRequest httpServletRequest);
 

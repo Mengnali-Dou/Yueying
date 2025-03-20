@@ -5,15 +5,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yueying.backendapi.mapper.CinemaAdminMapper;
 import com.yueying.backendapi.mapper.CinemaMapper;
 import com.yueying.backendapi.mapper.MovieHallTypeMapper;
-import com.yueying.backendapi.model.domain.Cinema;
-import com.yueying.backendapi.model.domain.CinemaAdmin;
-import com.yueying.backendapi.model.domain.MovieHall;
-import com.yueying.backendapi.model.domain.MovieHallType;
-import com.yueying.backendapi.model.domain.request.AddMovieHallRequest;
-import com.yueying.backendapi.model.domain.request.DeleteMovieHallRequest;
-import com.yueying.backendapi.model.domain.request.SearchMovieHallRequest;
-import com.yueying.backendapi.model.domain.request.UpdateMovieHallRequest;
+import com.yueying.backendapi.model.domain.*;
+import com.yueying.backendapi.model.domain.request.*;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
+import com.yueying.backendapi.model.domain.response.MovieHallIdDto;
 import com.yueying.backendapi.model.domain.response.MovieHallInfoDto;
 import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
 import com.yueying.backendapi.service.MovieHallService;
@@ -136,8 +131,15 @@ public class MovieHallServiceImpl extends ServiceImpl<MovieHallMapper, MovieHall
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, FAILED_TO_INSERT, errorResponseDto));
         }
 
-        SuccessResponseDto successResponseDto = new SuccessResponseDto();
-        return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
+        // 查询新添加影厅id
+        QueryWrapper<MovieHall> searchMovieHallIdQueryWrapper = new QueryWrapper<>();
+        searchMovieHallIdQueryWrapper.eq("cinema_id", addMovieHallRequest.getCinemaId());
+        searchMovieHallIdQueryWrapper.eq("movie_hall_name", addMovieHallRequest.getMovieHallName());
+        Long movieHallId = movieHallMapper.selectOne(searchMovieHallIdQueryWrapper).getMovieHallId();
+
+        MovieHallIdDto movieHallIdDto = new MovieHallIdDto();
+        movieHallIdDto.setMovieHallId(movieHallId);
+        return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, movieHallIdDto));
     }
 
     @Override

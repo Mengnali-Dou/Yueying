@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/movie-hall")
 public class MovieHallController {
@@ -75,5 +77,10 @@ public class MovieHallController {
         SearchMovieHallSeatRequest searchMovieHallSeatRequest = new SearchMovieHallSeatRequest();
         searchMovieHallSeatRequest.setMovieHallId(movieHallId);
         return movieHallSeatService.searchMovieHallSeat(searchMovieHallSeatRequest, httpServletRequest);
+    }
+
+    @PostMapping("/add-seat")
+    public ResponseEntity<Object> addMovieHallSeat(@RequestBody List<AddMovieHallSeatRequest> addMovieHallSeatRequestList, HttpServletRequest httpServletRequest) {
+        return movieHallSeatService.addMovieHallSeat(addMovieHallSeatRequestList, httpServletRequest);
     }
 }
