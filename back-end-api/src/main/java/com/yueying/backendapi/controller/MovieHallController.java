@@ -83,4 +83,9 @@ public class MovieHallController {
     public ResponseEntity<Object> addMovieHallSeat(@RequestBody List<AddMovieHallSeatRequest> addMovieHallSeatRequestList, HttpServletRequest httpServletRequest) {
         return movieHallSeatService.addMovieHallSeat(addMovieHallSeatRequestList, httpServletRequest);
     }
+
+    @PutMapping("/update-seat")
+    public ResponseEntity<Object> updateMovieHallSeat(@RequestBody List<UpdateMovieHallSeatRequest> updateMovieHallSeatRequestList, HttpServletRequest httpServletRequest) {
+        return movieHallSeatService.updateMovieHallSeat(updateMovieHallSeatRequestList, httpServletRequest);
+    }
 }

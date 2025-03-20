@@ -9,6 +9,7 @@ import com.yueying.backendapi.model.domain.MovieHall;
 import com.yueying.backendapi.model.domain.MovieHallSeat;
 import com.yueying.backendapi.model.domain.request.AddMovieHallSeatRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieHallSeatRequest;
+import com.yueying.backendapi.model.domain.request.UpdateMovieHallSeatRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
 import com.yueying.backendapi.model.domain.response.MovieHallSeatDto;
 import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
@@ -100,6 +101,27 @@ public class MovieHallSeatServiceImpl extends ServiceImpl<MovieHallSeatMapper, M
         return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
     }
 
+    @Override
+    public ResponseEntity<Object> updateMovieHallSeat(List<UpdateMovieHallSeatRequest> updateMovieHallSeatRequestList, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest) || UserPublicClass.isCinemaAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 修改
+        boolean updateMovieHallSeatInfo = this.updateBatchById(convertUpdateMovieHallSeatRequestListToMovieHallSeatList(updateMovieHallSeatRequestList));
+
+        if (!updateMovieHallSeatInfo) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, FAILED_TO_UPDATE, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
+    }
+
     /**
      * 数据格式转换
      * @param movieHallSeats 影厅座位信息数据库表字段列表
@@ -144,6 +166,27 @@ public class MovieHallSeatServiceImpl extends ServiceImpl<MovieHallSeatMapper, M
         movieHallSeat.setRowNumbers(addMovieHallSeatRequest.getRowNumbers());
         movieHallSeat.setColNumbers(addMovieHallSeatRequest.getColNumbers());
         movieHallSeat.setSeatType(addMovieHallSeatRequest.getSeatType());
+        return movieHallSeat;
+    }
+
+    /**
+     * 数据格式转换
+     * @param updateMovieHallSeatRequestList 修改影厅座位信息请求体列表
+     * @return 影厅座位数据库表字段列表
+     */
+    private List<MovieHallSeat> convertUpdateMovieHallSeatRequestListToMovieHallSeatList(List<UpdateMovieHallSeatRequest> updateMovieHallSeatRequestList) {
+        return updateMovieHallSeatRequestList.stream().map(MovieHallSeatServiceImpl::convertUpdateMovieHallSeatRequestToMovieHallSeat).collect(Collectors.toList());
+    }
+
+    /**
+     * 数据格式转换
+     * @param updateMovieHallSeatRequest 修改影厅座位信息请求体
+     * @return 影厅座位数据库表字段列表
+     */
+    private static MovieHallSeat convertUpdateMovieHallSeatRequestToMovieHallSeat(UpdateMovieHallSeatRequest updateMovieHallSeatRequest) {
+        MovieHallSeat movieHallSeat = new MovieHallSeat();
+        movieHallSeat.setMovieSeatId(updateMovieHallSeatRequest.getMovieHallSeatId());
+        movieHallSeat.setSeatType(updateMovieHallSeatRequest.getSeatType());
         return movieHallSeat;
     }
 }

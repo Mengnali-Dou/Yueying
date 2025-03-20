@@ -4,6 +4,7 @@ import com.yueying.backendapi.model.domain.MovieHallSeat;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yueying.backendapi.model.domain.request.AddMovieHallSeatRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieHallSeatRequest;
+import com.yueying.backendapi.model.domain.request.UpdateMovieHallSeatRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
@@ -31,4 +32,12 @@ public interface MovieHallSeatService extends IService<MovieHallSeat> {
      * @return 是否添加成功
      */
     ResponseEntity<Object> addMovieHallSeat(List<AddMovieHallSeatRequest> addMovieHallSeatRequestList, HttpServletRequest httpServletRequest);
+
+    /**
+     * 修改影厅座位信息
+     * @param updateMovieHallSeatRequestList 修改影厅座位信息请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否修改成功
+     */
+    ResponseEntity<Object> updateMovieHallSeat(List<UpdateMovieHallSeatRequest> updateMovieHallSeatRequestList, HttpServletRequest httpServletRequest);
 }

@@ -6,29 +6,19 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * 添加影厅座位请求体
+ * 修改影厅座位请求体
  * @author <a href="mengnalidou.icu">mengnali_dou</a>
  */
 @Data
-public class AddMovieHallSeatRequest implements Serializable {
+public class UpdateMovieHallSeatRequest implements Serializable {
 
     @Serial
     private static final long serialVersionUID = -8832916557325877028L;
 
     /**
-     * 影厅id
+     * 座位id
      */
-    private Long movieHallId;
-
-    /**
-     * 座位--行
-     */
-    private Integer rowNumbers;
-
-    /**
-     * 座位--列
-     */
-    private Integer colNumbers;
+    private Long movieHallSeatId;
 
     /**
      * 座位类型
