@@ -1,10 +1,8 @@
 package com.yueying.backendapi.controller;
 
-import com.yueying.backendapi.model.domain.request.AddMovieRequest;
-import com.yueying.backendapi.model.domain.request.DeleteMovieRequest;
-import com.yueying.backendapi.model.domain.request.SearchMovieRequest;
-import com.yueying.backendapi.model.domain.request.UpdateMovieRequest;
+import com.yueying.backendapi.model.domain.request.*;
 import com.yueying.backendapi.service.MovieService;
+import com.yueying.backendapi.service.MovieSessionService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +14,9 @@ public class MovieController {
 
     @Resource
     private MovieService movieService;
+
+    @Resource
+    private MovieSessionService movieSessionService;
 
     @GetMapping("/search")
     public ResponseEntity<Object> SearchMovieInfo(@RequestParam String movieName, @RequestParam String movieType) {
@@ -42,5 +43,15 @@ public class MovieController {
         DeleteMovieRequest deleteMovieRequest = new DeleteMovieRequest();
         deleteMovieRequest.setMovieId(movieId);
         return movieService.deleteMovie(deleteMovieRequest, httpServletRequest);
+    }
+
+    @GetMapping("/search-session")
+    private ResponseEntity<Object> searchMovieSession(@RequestParam Long sessionId, @RequestParam Long movieId, @RequestParam Long cinemaId, @RequestParam String movieRunDate) {
+        SearchMovieSessionRequest searchMovieSessionRequest = new SearchMovieSessionRequest();
+        searchMovieSessionRequest.setSessionId(sessionId);
+        searchMovieSessionRequest.setMovieId(movieId);
+        searchMovieSessionRequest.setCinemaId(cinemaId);
+        searchMovieSessionRequest.setMovieRunDate(movieRunDate);
+        return movieSessionService.searchMovieSession(searchMovieSessionRequest);
     }
 }
