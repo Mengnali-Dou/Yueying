@@ -69,6 +69,13 @@ public class MovieController {
         return movieSessionService.updateMovieSession(updateMovieSessionRequest, httpServletRequest);
     }
 
+    @DeleteMapping("/delete-session")
+    private ResponseEntity<Object> deleteMovieSession(@RequestParam Long movieSessionId, HttpServletRequest httpServletRequest) {
+        DeleteMovieSessionRequest deleteMovieSessionRequest = new DeleteMovieSessionRequest();
+        deleteMovieSessionRequest.setMovieSessionId(movieSessionId);
+        return movieSessionService.deleteMovieSession(deleteMovieSessionRequest, httpServletRequest);
+    }
+
     @GetMapping("/search-session-seat")
     private ResponseEntity<Object> searchMovieSessionSeat(@RequestParam Long movieSessionId) {
         SearchMovieSessionSeatRequest searchMovieSessionSeatRequest = new SearchMovieSessionSeatRequest();

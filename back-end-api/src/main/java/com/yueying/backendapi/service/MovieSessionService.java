@@ -3,6 +3,7 @@ package com.yueying.backendapi.service;
 import com.yueying.backendapi.model.domain.MovieSession;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yueying.backendapi.model.domain.request.AddMovieSessionRequest;
+import com.yueying.backendapi.model.domain.request.DeleteMovieSessionRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieSessionRequest;
 import com.yueying.backendapi.model.domain.request.UpdateMovieSessionRequest;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,4 +38,12 @@ public interface MovieSessionService extends IService<MovieSession> {
      * @return 是否修改成功
      */
     ResponseEntity<Object> updateMovieSession(UpdateMovieSessionRequest updateMovieSessionRequest, HttpServletRequest httpServletRequest);
+
+    /**
+     * 删除影片场次
+     * @param deleteMovieSessionRequest 删除影片场次请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否删除成功
+     */
+    ResponseEntity<Object> deleteMovieSession(DeleteMovieSessionRequest deleteMovieSessionRequest, HttpServletRequest httpServletRequest);
 }

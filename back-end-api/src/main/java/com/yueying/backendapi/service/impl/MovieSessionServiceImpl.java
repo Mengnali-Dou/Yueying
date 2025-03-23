@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yueying.backendapi.mapper.*;
 import com.yueying.backendapi.model.domain.*;
 import com.yueying.backendapi.model.domain.request.AddMovieSessionRequest;
+import com.yueying.backendapi.model.domain.request.DeleteMovieSessionRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieSessionRequest;
 import com.yueying.backendapi.model.domain.request.UpdateMovieSessionRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
@@ -44,6 +45,9 @@ public class MovieSessionServiceImpl extends ServiceImpl<MovieSessionMapper, Mov
 
     @Resource
     private MovieSessionMapper movieSessionMapper;
+
+    @Resource
+    private MovieSessionSeatMapper movieSessionSeatMapper;
 
     @Resource
     private CinemaMapper cinemaMapper;
@@ -223,6 +227,58 @@ public class MovieSessionServiceImpl extends ServiceImpl<MovieSessionMapper, Mov
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
         return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> deleteMovieSession(DeleteMovieSessionRequest deleteMovieSessionRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 必要参数是否为空
+        if (deleteMovieSessionRequest.getMovieSessionId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 场次是否存在
+        QueryWrapper<MovieSession> movieSessionQueryWrapper = new QueryWrapper<>();
+        movieSessionQueryWrapper.eq("session_id", deleteMovieSessionRequest.getMovieSessionId());
+        if (movieSessionMapper.selectCount(movieSessionQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, MOVIE_SESSION_NONENTITY, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest) || UserPublicClass.isCinemaAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+        Long cinemaId = movieSessionMapper.selectById(deleteMovieSessionRequest.getMovieSessionId()).getCinemaId();
+        QueryWrapper<CinemaAdmin> cinemaAdminQueryWrapper = new QueryWrapper<>();
+        cinemaAdminQueryWrapper.eq("cinema_admin_id", UserPublicClass.getUserId(httpServletRequest));
+        cinemaAdminQueryWrapper.eq("cinema_id", cinemaId);
+        if (cinemaAdminMapper.selectCount(cinemaAdminQueryWrapper) <= 0) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 是否有已售座位
+        QueryWrapper<MovieSessionSeat> movieSessionSeatQueryWrapper = new QueryWrapper<>();
+        movieSessionSeatQueryWrapper.eq("session_id", deleteMovieSessionRequest.getMovieSessionId());
+        movieSessionSeatQueryWrapper.eq("sold", 1);
+        if (movieSessionSeatMapper.selectCount(movieSessionSeatQueryWrapper) > 0) {
+            return ResponseEntity.status(CONFLICT).body(ResponseData.responseData(CONFLICT, HAS_TICKETS_HAVE_NOT_BEEN_REFUNDED, errorResponseDto));
+        }
+
+        // 删除场次
+        boolean deleteMovieSession = this.removeById(deleteMovieSessionRequest.getMovieSessionId());
+        if (!deleteMovieSession) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, DELETE_FAILED, errorResponseDto));
+        }
+
+        // 删除座位
+        QueryWrapper<MovieSessionSeat> deleteMovieSessionSeatQueryWrapper = new QueryWrapper<>();
+        deleteMovieSessionSeatQueryWrapper.eq("session_id", deleteMovieSessionRequest.getMovieSessionId());
+        movieSessionSeatMapper.delete(deleteMovieSessionSeatQueryWrapper);
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, DELETE_SUCCESSFULLY, successResponseDto));
     }
 
     /**
