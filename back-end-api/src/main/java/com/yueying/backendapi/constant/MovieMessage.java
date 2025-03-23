@@ -23,4 +23,9 @@ public class MovieMessage {
      * 该场次有票未退
      */
     public static final String HAS_TICKETS_HAVE_NOT_BEEN_REFUNDED = "该场次有票未退";
+
+    /**
+     * 座位类型-普通座位
+     */
+    public static final Integer SEAT_TYPE_NORMAL = 0;
 }

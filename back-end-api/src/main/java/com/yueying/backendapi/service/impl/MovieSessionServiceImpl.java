@@ -159,6 +159,7 @@ public class MovieSessionServiceImpl extends ServiceImpl<MovieSessionMapper, Mov
 
         QueryWrapper<MovieHallSeat> movieHallSeatQueryWrapper = new QueryWrapper<>();
         movieHallSeatQueryWrapper.eq("movie_hall_id", addMovieSessionRequest.getHallId());
+        movieHallSeatQueryWrapper.eq("seat_type", SEAT_TYPE_NORMAL);
         movieSession.setTicketsLeft(movieHallSeatMapper.selectCount(movieHallSeatQueryWrapper));
 
         boolean addMovieSession = this.save(movieSession);
