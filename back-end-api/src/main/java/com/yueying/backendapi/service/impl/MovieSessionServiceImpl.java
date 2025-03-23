@@ -2,21 +2,20 @@ package com.yueying.backendapi.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.yueying.backendapi.mapper.CinemaMapper;
-import com.yueying.backendapi.mapper.MovieHallMapper;
-import com.yueying.backendapi.mapper.MovieMapper;
-import com.yueying.backendapi.model.domain.Cinema;
-import com.yueying.backendapi.model.domain.Movie;
-import com.yueying.backendapi.model.domain.MovieSession;
+import com.yueying.backendapi.mapper.*;
+import com.yueying.backendapi.model.domain.*;
+import com.yueying.backendapi.model.domain.request.AddMovieSessionRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieSessionRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
 import com.yueying.backendapi.model.domain.response.MovieSessionInfoDto;
+import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
 import com.yueying.backendapi.service.MovieSessionService;
-import com.yueying.backendapi.mapper.MovieSessionMapper;
 import com.yueying.backendapi.utils.PublicMethods;
 import com.yueying.backendapi.utils.ResponseData;
+import com.yueying.backendapi.utils.UserPublicClass;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -25,6 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.yueying.backendapi.constant.CinemaMessage.*;
+import static com.yueying.backendapi.constant.MovieHallMessage.*;
 import static com.yueying.backendapi.constant.MovieMessage.*;
 import static com.yueying.backendapi.constant.ResponseStatus.*;
 import static com.yueying.backendapi.constant.UniversalConstant.*;
@@ -39,6 +39,9 @@ public class MovieSessionServiceImpl extends ServiceImpl<MovieSessionMapper, Mov
     implements MovieSessionService{
 
     @Resource
+    private MovieSessionSeatServiceImpl movieSessionSeatService;
+
+    @Resource
     private MovieSessionMapper movieSessionMapper;
 
     @Resource
@@ -49,6 +52,12 @@ public class MovieSessionServiceImpl extends ServiceImpl<MovieSessionMapper, Mov
 
     @Resource
     private MovieHallMapper movieHallMapper;
+
+    @Resource
+    private CinemaAdminMapper cinemaAdminMapper;
+
+    @Resource
+    private MovieHallSeatMapper movieHallSeatMapper;
 
     private static CinemaMapper staticCinemaMapper;
     private static MovieMapper staticMovieMapper;
@@ -99,6 +108,78 @@ public class MovieSessionServiceImpl extends ServiceImpl<MovieSessionMapper, Mov
         return ResponseEntity.ok(ResponseData.responseData(OK, SEARCH_SUCCESSFULLY, convertToDtoList(movieSessionMapper.selectList(movieSessionQueryWrapper))));
     }
 
+    @Override
+    public ResponseEntity<Object> addMovieSession(AddMovieSessionRequest addMovieSessionRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 必要参数是否为空
+        if (StringUtils.isBlank(addMovieSessionRequest.getMovieRuntime()) || addMovieSessionRequest.getMovieId() <= 0 || addMovieSessionRequest.getHallId() <= 0 || addMovieSessionRequest.getPrice() < 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 影厅是否存在
+        QueryWrapper<MovieHall> movieHallQueryWrapper = new QueryWrapper<>();
+        movieHallQueryWrapper.eq("movie_hall_id", addMovieSessionRequest.getHallId());
+        if (movieHallMapper.selectCount(movieHallQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, MOVIE_HALL_DOES_NOT_EXISTS, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest) || UserPublicClass.isCinemaAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+        Long cinemaId = movieHallMapper.selectById(addMovieSessionRequest.getHallId()).getCinemaId();
+        QueryWrapper<CinemaAdmin> cinemaAdminQueryWrapper = new QueryWrapper<>();
+        cinemaAdminQueryWrapper.eq("cinema_admin_id", UserPublicClass.getUserId(httpServletRequest));
+        cinemaAdminQueryWrapper.eq("cinema_id", cinemaId);
+        if (cinemaAdminMapper.selectCount(cinemaAdminQueryWrapper) <= 0) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 影片是否存在
+        QueryWrapper<Movie> movieQueryWrapper = new QueryWrapper<>();
+        movieQueryWrapper.eq("movie_id", addMovieSessionRequest.getMovieId());
+        if (movieMapper.selectCount(movieQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, MOVIE_NONENTITY, errorResponseDto));
+        }
+
+        // 添加场次
+        MovieSession movieSession = new MovieSession();
+        movieSession.setMovieId(addMovieSessionRequest.getMovieId());
+        movieSession.setCinemaId(cinemaId);
+        movieSession.setHallId(addMovieSessionRequest.getHallId());
+        movieSession.setMovieRuntime(PublicMethods.stringConvertToDateTime(addMovieSessionRequest.getMovieRuntime()));
+        movieSession.setPrice(addMovieSessionRequest.getPrice());
+
+        QueryWrapper<MovieHallSeat> movieHallSeatQueryWrapper = new QueryWrapper<>();
+        movieHallSeatQueryWrapper.eq("movie_hall_id", addMovieSessionRequest.getHallId());
+        movieSession.setTicketsLeft(movieHallSeatMapper.selectCount(movieHallSeatQueryWrapper));
+
+        boolean addMovieSession = this.save(movieSession);
+        if (!addMovieSession) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, FAILED_TO_INSERT, errorResponseDto));
+        }
+
+        // 获取新添加场次id
+        QueryWrapper<MovieSession> movieSessionQueryWrapper = new QueryWrapper<>();
+        movieSessionQueryWrapper.eq("movie_id", addMovieSessionRequest.getMovieId());
+        movieSessionQueryWrapper.eq("cinema_id", cinemaId);
+        movieSessionQueryWrapper.eq("hall_id", addMovieSessionRequest.getHallId());
+        movieSessionQueryWrapper.eq("movie_runtime", PublicMethods.stringConvertToDateTime(addMovieSessionRequest.getMovieRuntime()));
+        Long sessionId = movieSessionMapper.selectOne(movieSessionQueryWrapper).getSessionId();
+
+        // 添加场次座位
+        List<MovieHallSeat> movieHallSeatList = movieHallSeatMapper.selectList(movieHallSeatQueryWrapper);
+        boolean addMovieSessionSeat = movieSessionSeatService.saveBatch(convertMovieHallSeatListToMovieSessionSeatList(movieHallSeatList, sessionId));
+        if (!addMovieSessionSeat) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, FAILED_TO_INSERT, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
+    }
+
     /**
      * 数据格式转换
      * @param movieSessionList 影片场次数据库表字段列表
@@ -126,6 +207,31 @@ public class MovieSessionServiceImpl extends ServiceImpl<MovieSessionMapper, Mov
         movieSessionInfoDto.setPrice(movieSession.getPrice());
         movieSessionInfoDto.setTicketsLeft(movieSession.getTicketsLeft());
         return movieSessionInfoDto;
+    }
+
+    /**
+     * 数据格式转换
+     * @param movieHallSeatList 影厅座位数据库表字段列表
+     * @param sessionId 场次id
+     * @return 影片场次座位数据库表字段列表
+     */
+    private List<MovieSessionSeat> convertMovieHallSeatListToMovieSessionSeatList(List<MovieHallSeat> movieHallSeatList, Long sessionId) {
+        List<MovieSessionSeat> movieSessionSeatList = movieHallSeatList.stream().map(MovieSessionServiceImpl::convertMovieHallSeatToMovieSessionSeat).collect(Collectors.toList());
+        movieSessionSeatList.forEach(data -> data.setSessionId(sessionId));
+        return movieSessionSeatList;
+    }
+
+    /**
+     * 数据格式转换
+     * @param movieHallSeat 影厅座位数据库表字段
+     * @return 影片场次座位数据库表字段
+     */
+    private static MovieSessionSeat convertMovieHallSeatToMovieSessionSeat(MovieHallSeat movieHallSeat) {
+        MovieSessionSeat movieSessionSeat = new MovieSessionSeat();
+        movieSessionSeat.setRowNumbers(movieHallSeat.getRowNumbers());
+        movieSessionSeat.setColNumbers(movieHallSeat.getColNumbers());
+        movieSessionSeat.setSold(0);
+        return movieSessionSeat;
     }
 }
 

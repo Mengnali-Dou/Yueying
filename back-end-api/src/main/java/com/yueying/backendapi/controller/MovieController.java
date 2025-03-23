@@ -2,6 +2,7 @@ package com.yueying.backendapi.controller;
 
 import com.yueying.backendapi.model.domain.request.*;
 import com.yueying.backendapi.service.MovieService;
+import com.yueying.backendapi.service.MovieSessionSeatService;
 import com.yueying.backendapi.service.MovieSessionService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +18,9 @@ public class MovieController {
 
     @Resource
     private MovieSessionService movieSessionService;
+
+    @Resource
+    private MovieSessionSeatService movieSessionSeatService;
 
     @GetMapping("/search")
     public ResponseEntity<Object> SearchMovieInfo(@RequestParam String movieName, @RequestParam String movieType) {
@@ -53,5 +57,17 @@ public class MovieController {
         searchMovieSessionRequest.setCinemaId(cinemaId);
         searchMovieSessionRequest.setMovieRunDate(movieRunDate);
         return movieSessionService.searchMovieSession(searchMovieSessionRequest);
+    }
+
+    @PostMapping("/add-session")
+    private ResponseEntity<Object> addMovieSession(@RequestBody AddMovieSessionRequest addMovieSessionRequest, HttpServletRequest httpServletRequest) {
+        return movieSessionService.addMovieSession(addMovieSessionRequest, httpServletRequest);
+    }
+
+    @GetMapping("/search-session-seat")
+    private ResponseEntity<Object> searchMovieSessionSeat(@RequestParam Long movieSessionId) {
+        SearchMovieSessionSeatRequest searchMovieSessionSeatRequest = new SearchMovieSessionSeatRequest();
+        searchMovieSessionSeatRequest.setMovieSessionId(movieSessionId);
+        return movieSessionSeatService.searchMovieSessionSeat(searchMovieSessionSeatRequest);
     }
 }
