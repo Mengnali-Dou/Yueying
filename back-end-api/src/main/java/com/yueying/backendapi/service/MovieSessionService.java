@@ -4,6 +4,7 @@ import com.yueying.backendapi.model.domain.MovieSession;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yueying.backendapi.model.domain.request.AddMovieSessionRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieSessionRequest;
+import com.yueying.backendapi.model.domain.request.UpdateMovieSessionRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
@@ -28,4 +29,12 @@ public interface MovieSessionService extends IService<MovieSession> {
      * @return 是否添加成功
      */
     ResponseEntity<Object> addMovieSession(AddMovieSessionRequest addMovieSessionRequest, HttpServletRequest httpServletRequest);
+
+    /**
+     * 修改影片场次信息
+     * @param updateMovieSessionRequest 修改影片场次请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否修改成功
+     */
+    ResponseEntity<Object> updateMovieSession(UpdateMovieSessionRequest updateMovieSessionRequest, HttpServletRequest httpServletRequest);
 }

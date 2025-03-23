@@ -6,6 +6,7 @@ import com.yueying.backendapi.mapper.*;
 import com.yueying.backendapi.model.domain.*;
 import com.yueying.backendapi.model.domain.request.AddMovieSessionRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieSessionRequest;
+import com.yueying.backendapi.model.domain.request.UpdateMovieSessionRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
 import com.yueying.backendapi.model.domain.response.MovieSessionInfoDto;
 import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
@@ -174,6 +175,50 @@ public class MovieSessionServiceImpl extends ServiceImpl<MovieSessionMapper, Mov
         boolean addMovieSessionSeat = movieSessionSeatService.saveBatch(convertMovieHallSeatListToMovieSessionSeatList(movieHallSeatList, sessionId));
         if (!addMovieSessionSeat) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, FAILED_TO_INSERT, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> updateMovieSession(UpdateMovieSessionRequest updateMovieSessionRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 必要参数是否为空
+        if (updateMovieSessionRequest.getSessionId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 场次是否存在
+        QueryWrapper<MovieSession> movieSessionQueryWrapper = new QueryWrapper<>();
+        movieSessionQueryWrapper.eq("session_id", updateMovieSessionRequest.getSessionId());
+        if (movieSessionMapper.selectCount(movieSessionQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, MOVIE_SESSION_NONENTITY, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest) || UserPublicClass.isCinemaAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+        Long cinemaId = movieSessionMapper.selectById(updateMovieSessionRequest.getSessionId()).getCinemaId();
+        QueryWrapper<CinemaAdmin> cinemaAdminQueryWrapper = new QueryWrapper<>();
+        cinemaAdminQueryWrapper.eq("cinema_admin_id", UserPublicClass.getUserId(httpServletRequest));
+        cinemaAdminQueryWrapper.eq("cinema_id", cinemaId);
+        if (cinemaAdminMapper.selectCount(cinemaAdminQueryWrapper) <= 0) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 修改
+        MovieSession movieSession = new MovieSession();
+        movieSession.setSessionId(updateMovieSessionRequest.getSessionId());
+        movieSession.setMovieRuntime(PublicMethods.stringConvertToDateTime(updateMovieSessionRequest.getMovieRuntime()));
+        movieSession.setPrice(updateMovieSessionRequest.getPrice());
+
+        boolean updated = this.updateById(movieSession);
+        if (!updated) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, FAILED_TO_UPDATE, errorResponseDto));
         }
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
