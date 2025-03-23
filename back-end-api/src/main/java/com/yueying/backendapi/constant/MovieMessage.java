@@ -11,4 +11,10 @@ public class MovieMessage {
      * 影片不存在
      */
     public static final String MOVIE_NONENTITY = "影片不存在";
+
+    /**
+     * http请求错误信息
+     * 影片场次不存在
+     */
+    public static final String MOVIE_SESSION_NONENTITY = "影片场次不存在";
 }
