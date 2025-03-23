@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yueying.backendapi.mapper.MovieSessionSeatMapper">
+
+    <resultMap id="BaseResultMap" type="com.yueying.backendapi.model.domain.MovieSessionSeat">
+            <id property="movieSessionSeatId" column="movie_session_seat_id" jdbcType="BIGINT"/>
+            <result property="sessionId" column="session_id" jdbcType="BIGINT"/>
+            <result property="rowNumbers" column="row_numbers" jdbcType="INTEGER"/>
+            <result property="colNumbers" column="col_numbers" jdbcType="INTEGER"/>
+            <result property="sold" column="sold" jdbcType="TINYINT"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="deleted" column="deleted" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        movie_session_seat_id,session_id,row_numbers,
+        col_numbers,sold,create_time,
+        update_time,deleted
+    </sql>
+</mapper>
