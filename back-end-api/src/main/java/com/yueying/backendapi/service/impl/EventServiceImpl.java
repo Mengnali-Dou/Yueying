@@ -2,11 +2,14 @@ package com.yueying.backendapi.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yueying.backendapi.mapper.EventAdminMapper;
 import com.yueying.backendapi.mapper.EventPlaceMapper;
 import com.yueying.backendapi.model.domain.Event;
+import com.yueying.backendapi.model.domain.EventAdmin;
 import com.yueying.backendapi.model.domain.EventPlace;
 import com.yueying.backendapi.model.domain.request.AddEventRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventRequest;
+import com.yueying.backendapi.model.domain.request.UpdateEventRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
 import com.yueying.backendapi.model.domain.response.EventInfoDto;
 import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
@@ -44,6 +47,9 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event>
 
     @Resource
     private EventPlaceMapper eventPlaceMapper;
+
+    @Resource
+    private EventAdminMapper eventAdminMapper;
 
     private static EventPlaceMapper staticEventPlaceMapper;
 
@@ -114,6 +120,74 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event>
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
         return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> updateEvent(UpdateEventRequest updateEventRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 必要参数是否为空
+        if (updateEventRequest.getEventId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest) || UserPublicClass.isEventAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+        QueryWrapper<EventAdmin> eventAdminQueryWrapper = new QueryWrapper<>();
+        eventAdminQueryWrapper.eq("event_id", updateEventRequest.getEventId());
+        eventAdminQueryWrapper.eq("user_id", UserPublicClass.getUserId(httpServletRequest));
+        if (eventAdminMapper.selectCount(eventAdminQueryWrapper) <= 0) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 是否存在
+        QueryWrapper<Event> eventQueryWrapper = new QueryWrapper<>();
+        eventQueryWrapper.eq("event_id", updateEventRequest.getEventId());
+        if (eventMapper.selectCount(eventQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, EVENT_NONENTITY, errorResponseDto));
+        }
+
+        Event event = new Event();
+        event.setEventId(updateEventRequest.getEventId());
+        if (StringUtils.isNotBlank(updateEventRequest.getEventName())) {
+            event.setEventName(updateEventRequest.getEventName());
+        }
+        if (updateEventRequest.getEventPlaceId() > 0) {
+            QueryWrapper<EventPlace> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("place_id", updateEventRequest.getEventPlaceId());
+            if (eventPlaceMapper.selectCount(queryWrapper) <= 0) {
+                return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, EVENT_PLACE_NONENTITY, errorResponseDto));
+            }
+            event.setEventPlaceId(updateEventRequest.getEventPlaceId());
+        }
+        if (StringUtils.isNotBlank(updateEventRequest.getEventType())) {
+            event.setEventType(updateEventRequest.getEventType());
+        }
+        if (StringUtils.isNotBlank(updateEventRequest.getMainActor())) {
+            event.setMainActor(updateEventRequest.getMainActor());
+        }
+        if (StringUtils.isNotBlank(updateEventRequest.getEventCoverSmall())) {
+            event.setEventCoverSmall(updateEventRequest.getEventCoverSmall());
+        }
+        if (StringUtils.isNotBlank(updateEventRequest.getEventCoverLarge())) {
+            event.setEventCoverLarge(updateEventRequest.getEventCoverLarge());
+        }
+        if (StringUtils.isNotBlank(updateEventRequest.getBeginDateTime())) {
+            event.setBeginTime(PublicMethods.stringConvertToDateTime(updateEventRequest.getBeginDateTime()));
+        }
+        if (StringUtils.isNotBlank(updateEventRequest.getEndDateTime())) {
+            event.setFinishTime(PublicMethods.stringConvertToDateTime(updateEventRequest.getEndDateTime()));
+        }
+        if (StringUtils.isNotBlank(updateEventRequest.getEventProfile())) {
+            event.setEventProfile(updateEventRequest.getEventProfile());
+        }
+        eventMapper.updateById(event);
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, UPDATE_SUCCESSFULLY, successResponseDto));
     }
 
     /**

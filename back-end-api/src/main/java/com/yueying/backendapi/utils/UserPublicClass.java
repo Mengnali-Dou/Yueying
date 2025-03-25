@@ -78,6 +78,17 @@ public class UserPublicClass {
     }
 
     /**
+     * 判断用户是否为活动管理员
+     * @param request http请求信息
+     * @return 是否为活动管理员
+     */
+    public static boolean isEventAdmin(HttpServletRequest request) {
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        User user = (User) userObj;
+        return user == null || user.getUserRole() != ROLE_EVENT_ADMIN;
+    }
+
+    /**
      * 判断是否为当前登陆用户
      * @param userId 用户ID
      * @param request http请求信息

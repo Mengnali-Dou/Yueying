@@ -2,6 +2,7 @@ package com.yueying.backendapi.controller;
 
 import com.yueying.backendapi.model.domain.request.AddEventRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventRequest;
+import com.yueying.backendapi.model.domain.request.UpdateEventRequest;
 import com.yueying.backendapi.service.EventService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,5 +28,10 @@ public class EventController {
     @PostMapping("/add")
     public ResponseEntity<Object> addEvent(@RequestBody AddEventRequest addEventRequest, HttpServletRequest httpServletRequest) {
         return eventService.addEvent(addEventRequest, httpServletRequest);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<Object> updateEvent(@RequestBody UpdateEventRequest updateEventRequest, HttpServletRequest httpServletRequest) {
+        return eventService.updateEvent(updateEventRequest, httpServletRequest);
     }
 }
