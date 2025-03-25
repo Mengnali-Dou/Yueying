@@ -51,4 +51,9 @@ public class AdminController {
         return eventAdminService.searchEventAdmin(searchEventAdminRequest, httpServletRequest);
 
     }
+
+    @PostMapping("/event-add")
+    public ResponseEntity<Object> addEventAdmin(@RequestBody AddEventAdminRequest addEventAdminRequest, HttpServletRequest httpServletRequest) {
+        return eventAdminService.addEventAdmin(addEventAdminRequest, httpServletRequest);
+    }
 }

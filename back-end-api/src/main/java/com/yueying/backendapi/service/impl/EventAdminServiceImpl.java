@@ -7,9 +7,11 @@ import com.yueying.backendapi.mapper.UserMapper;
 import com.yueying.backendapi.model.domain.Event;
 import com.yueying.backendapi.model.domain.EventAdmin;
 import com.yueying.backendapi.model.domain.User;
+import com.yueying.backendapi.model.domain.request.AddEventAdminRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventAdminRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
 import com.yueying.backendapi.model.domain.response.EventAdminDto;
+import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
 import com.yueying.backendapi.service.EventAdminService;
 import com.yueying.backendapi.mapper.EventAdminMapper;
 import com.yueying.backendapi.utils.ResponseData;
@@ -26,7 +28,7 @@ import java.util.stream.Collectors;
 import static com.yueying.backendapi.constant.EventConstant.*;
 import static com.yueying.backendapi.constant.ResponseStatus.*;
 import static com.yueying.backendapi.constant.UniversalConstant.*;
-import static com.yueying.backendapi.constant.UserConstant.USER_DOES_NOT_EXISTS;
+import static com.yueying.backendapi.constant.UserConstant.*;
 
 /**
 * @author <a href="mengnalidou.icu">mengnali_dou</a>
@@ -88,6 +90,49 @@ public class EventAdminServiceImpl extends ServiceImpl<EventAdminMapper, EventAd
         }
 
         return ResponseEntity.ok(ResponseData.responseData(OK, SEARCH_SUCCESSFULLY, convertToDtoList(eventAdminMapper.selectList(eventAdminQueryWrapper))));
+    }
+
+    @Override
+    public ResponseEntity<Object> addEventAdmin(AddEventAdminRequest addEventAdminRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 必要参数是否为空
+        if (addEventAdminRequest.getEventId() <= 0 || addEventAdminRequest.getUserId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 活动是否存在
+        QueryWrapper<Event> eventQueryWrapper = new QueryWrapper<>();
+        eventQueryWrapper.eq("event_id", addEventAdminRequest.getEventId());
+        if (eventMapper.selectCount(eventQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, EVENT_NONENTITY, errorResponseDto));
+        }
+
+        // 用户是否存在
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq("user_id", addEventAdminRequest.getUserId());
+        if (userMapper.selectCount(userQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, USER_DOES_NOT_EXISTS, errorResponseDto));
+        }
+
+        // 添加
+        EventAdmin eventAdmin = new EventAdmin();
+        eventAdmin.setEventId(addEventAdminRequest.getEventId());
+        eventAdmin.setUserId(addEventAdminRequest.getUserId());
+
+        boolean addEventAdmin = this.save(eventAdmin);
+        if (!addEventAdmin) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, FAILED_TO_INSERT, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
     }
 
     /**

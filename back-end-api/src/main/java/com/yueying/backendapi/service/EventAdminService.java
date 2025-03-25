@@ -2,6 +2,7 @@ package com.yueying.backendapi.service;
 
 import com.yueying.backendapi.model.domain.EventAdmin;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yueying.backendapi.model.domain.request.AddEventAdminRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventAdminRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
@@ -20,4 +21,12 @@ public interface EventAdminService extends IService<EventAdmin> {
      * @return 活动管理员列表
      */
     ResponseEntity<Object> searchEventAdmin(SearchEventAdminRequest searchEventAdminRequest, HttpServletRequest httpServletRequest);
+
+    /**
+     * 添加活动管理员
+     * @param addEventAdminRequest 添加活动管理员请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否添加成功
+     */
+    ResponseEntity<Object> addEventAdmin(AddEventAdminRequest addEventAdminRequest, HttpServletRequest httpServletRequest);
 }
