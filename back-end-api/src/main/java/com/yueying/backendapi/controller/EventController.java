@@ -50,4 +50,9 @@ public class EventController {
         searchEventPriceRequest.setEventId(eventId);
         return eventPriceService.searchEventPrice(searchEventPriceRequest);
     }
+
+    @PostMapping("/add-price")
+    public ResponseEntity<Object> addEventPrice(@RequestBody AddEventPriceRequest addEventPriceRequest, HttpServletRequest httpServletRequest) {
+        return eventPriceService.addEventPrice(addEventPriceRequest, httpServletRequest);
+    }
 }

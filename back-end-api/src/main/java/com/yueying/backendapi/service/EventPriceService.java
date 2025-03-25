@@ -2,7 +2,9 @@ package com.yueying.backendapi.service;
 
 import com.yueying.backendapi.model.domain.EventPrice;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yueying.backendapi.model.domain.request.AddEventPriceRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventPriceRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
 /**
@@ -18,4 +20,12 @@ public interface EventPriceService extends IService<EventPrice> {
      * @return 活动票价列表
      */
     ResponseEntity<Object> searchEventPrice(SearchEventPriceRequest searchEventPriceRequest);
+
+    /**
+     * 添加活动票价
+     * @param addEventPriceRequest 添加活动票价请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否添加成功
+     */
+    ResponseEntity<Object> addEventPrice(AddEventPriceRequest addEventPriceRequest, HttpServletRequest httpServletRequest);
 }
