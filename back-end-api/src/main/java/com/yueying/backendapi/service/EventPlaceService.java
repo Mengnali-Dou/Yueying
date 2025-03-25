@@ -2,7 +2,9 @@ package com.yueying.backendapi.service;
 
 import com.yueying.backendapi.model.domain.EventPlace;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yueying.backendapi.model.domain.request.AddEventPlaceRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventPlaceRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
 /**
@@ -18,4 +20,12 @@ public interface EventPlaceService extends IService<EventPlace> {
      * @return 活动场地列表
      */
     ResponseEntity<Object> searchEventPlace(SearchEventPlaceRequest searchEventPlaceRequest);
+
+    /**
+     * 添加活动场地
+     * @param addEventPlaceRequest 添加活动场地请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否添加成功
+     */
+    ResponseEntity<Object> addEventPlace(AddEventPlaceRequest addEventPlaceRequest, HttpServletRequest httpServletRequest);
 }
