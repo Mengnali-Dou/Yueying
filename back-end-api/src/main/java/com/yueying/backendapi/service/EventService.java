@@ -3,6 +3,7 @@ package com.yueying.backendapi.service;
 import com.yueying.backendapi.model.domain.Event;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yueying.backendapi.model.domain.request.AddEventRequest;
+import com.yueying.backendapi.model.domain.request.DeleteEventRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventRequest;
 import com.yueying.backendapi.model.domain.request.UpdateEventRequest;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,4 +38,12 @@ public interface EventService extends IService<Event> {
      * @return 是否修改成功
      */
     ResponseEntity<Object> updateEvent(UpdateEventRequest updateEventRequest, HttpServletRequest httpServletRequest);
+
+    /**
+     * 删除活动
+     * @param deleteEventRequest 删除活动请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否删除成功
+     */
+    ResponseEntity<Object> deleteEvent(DeleteEventRequest deleteEventRequest, HttpServletRequest httpServletRequest);
 }

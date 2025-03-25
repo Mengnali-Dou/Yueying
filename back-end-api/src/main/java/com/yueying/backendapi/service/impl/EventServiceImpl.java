@@ -8,6 +8,7 @@ import com.yueying.backendapi.model.domain.Event;
 import com.yueying.backendapi.model.domain.EventAdmin;
 import com.yueying.backendapi.model.domain.EventPlace;
 import com.yueying.backendapi.model.domain.request.AddEventRequest;
+import com.yueying.backendapi.model.domain.request.DeleteEventRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventRequest;
 import com.yueying.backendapi.model.domain.request.UpdateEventRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
@@ -188,6 +189,38 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event>
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
         return ResponseEntity.ok(ResponseData.responseData(OK, UPDATE_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> deleteEvent(DeleteEventRequest deleteEventRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 必要参数是否为空
+        if (deleteEventRequest.getEventId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest) || UserPublicClass.isEventAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 活动是否存在
+        QueryWrapper<Event> eventQueryWrapper = new QueryWrapper<>();
+        eventQueryWrapper.eq("event_id", deleteEventRequest.getEventId());
+        if (eventMapper.selectCount(eventQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, EVENT_NONENTITY, errorResponseDto));
+        }
+
+        // 删除
+        boolean deleted = this.removeById(deleteEventRequest.getEventId());
+        if (!deleted) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, DELETE_FAILED, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, DELETE_SUCCESSFULLY, successResponseDto));
     }
 
     /**

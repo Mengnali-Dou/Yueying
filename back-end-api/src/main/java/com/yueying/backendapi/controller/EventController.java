@@ -1,6 +1,7 @@
 package com.yueying.backendapi.controller;
 
 import com.yueying.backendapi.model.domain.request.AddEventRequest;
+import com.yueying.backendapi.model.domain.request.DeleteEventRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventRequest;
 import com.yueying.backendapi.model.domain.request.UpdateEventRequest;
 import com.yueying.backendapi.service.EventService;
@@ -33,5 +34,12 @@ public class EventController {
     @PutMapping("/update")
     public ResponseEntity<Object> updateEvent(@RequestBody UpdateEventRequest updateEventRequest, HttpServletRequest httpServletRequest) {
         return eventService.updateEvent(updateEventRequest, httpServletRequest);
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<Object> deleteEvent(@RequestParam Long eventId, HttpServletRequest httpServletRequest) {
+        DeleteEventRequest deleteEventRequest = new DeleteEventRequest();
+        deleteEventRequest.setEventId(eventId);
+        return eventService.deleteEvent(deleteEventRequest, httpServletRequest);
     }
 }
