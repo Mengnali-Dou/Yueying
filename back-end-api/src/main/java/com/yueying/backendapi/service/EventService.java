@@ -1,0 +1,21 @@
+package com.yueying.backendapi.service;
+
+import com.yueying.backendapi.model.domain.Event;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.yueying.backendapi.model.domain.request.SearchEventRequest;
+import org.springframework.http.ResponseEntity;
+
+/**
+* @author <a href="mengnalidou.icu">mengnali_dou</a>
+* @description 针对表【tb_event(活动)】的数据库操作Service
+* @createDate 2025-03-25 10:48:32
+*/
+public interface EventService extends IService<Event> {
+
+    /**
+     * 搜索活动
+     * @param searchEventRequest 搜索活动请求体
+     * @return 活动信息列表
+     */
+    ResponseEntity<Object> searchEvent(SearchEventRequest searchEventRequest);
+}

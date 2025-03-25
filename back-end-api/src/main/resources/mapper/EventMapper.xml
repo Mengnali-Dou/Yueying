@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yueying.backendapi.mapper.EventMapper">
+
+    <resultMap id="BaseResultMap" type="com.yueying.backendapi.model.domain.Event">
+            <id property="eventId" column="event_id" jdbcType="BIGINT"/>
+            <result property="eventName" column="event_name" jdbcType="VARCHAR"/>
+            <result property="eventPlaceId" column="event_place_id" jdbcType="BIGINT"/>
+            <result property="eventType" column="event_type" jdbcType="VARCHAR"/>
+            <result property="mainActor" column="main_actor" jdbcType="VARCHAR"/>
+            <result property="eventCoverSmall" column="event_cover_small" jdbcType="VARCHAR"/>
+            <result property="eventCoverLarge" column="event_cover_large" jdbcType="VARCHAR"/>
+            <result property="beginTime" column="begin_time" jdbcType="TIMESTAMP"/>
+            <result property="finishTime" column="finish_time" jdbcType="TIMESTAMP"/>
+            <result property="finished" column="finished" jdbcType="TINYINT"/>
+            <result property="eventProfile" column="event_profile" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="deleted" column="deleted" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        event_id,event_name,event_place_id,
+        event_type,main_actor,event_cover_small,
+        event_cover_large,begin_time,finish_time,
+        finished,event_profile,create_time,
+        update_time,deleted
+    </sql>
+</mapper>
