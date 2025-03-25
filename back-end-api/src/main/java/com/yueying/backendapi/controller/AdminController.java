@@ -56,4 +56,9 @@ public class AdminController {
     public ResponseEntity<Object> addEventAdmin(@RequestBody AddEventAdminRequest addEventAdminRequest, HttpServletRequest httpServletRequest) {
         return eventAdminService.addEventAdmin(addEventAdminRequest, httpServletRequest);
     }
+
+    @PutMapping("/event-update")
+    public ResponseEntity<Object> updateEventAdmin(@RequestBody UpdateEventAdminRequest updateEventAdminRequest, HttpServletRequest httpServletRequest) {
+        return eventAdminService.updateEventAdmin(updateEventAdminRequest, httpServletRequest);
+    }
 }

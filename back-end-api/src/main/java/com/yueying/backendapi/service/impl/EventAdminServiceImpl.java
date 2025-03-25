@@ -9,6 +9,7 @@ import com.yueying.backendapi.model.domain.EventAdmin;
 import com.yueying.backendapi.model.domain.User;
 import com.yueying.backendapi.model.domain.request.AddEventAdminRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventAdminRequest;
+import com.yueying.backendapi.model.domain.request.UpdateEventAdminRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
 import com.yueying.backendapi.model.domain.response.EventAdminDto;
 import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.yueying.backendapi.constant.AdminMessage.*;
 import static com.yueying.backendapi.constant.EventConstant.*;
 import static com.yueying.backendapi.constant.ResponseStatus.*;
 import static com.yueying.backendapi.constant.UniversalConstant.*;
@@ -129,6 +131,61 @@ public class EventAdminServiceImpl extends ServiceImpl<EventAdminMapper, EventAd
         boolean addEventAdmin = this.save(eventAdmin);
         if (!addEventAdmin) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, FAILED_TO_INSERT, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> updateEventAdmin(UpdateEventAdminRequest updateEventAdminRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 必要参数是否为空
+        if (updateEventAdminRequest.getEventAdminId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 活动管理员是否存在
+        QueryWrapper<EventAdmin> eventAdminQueryWrapper = new QueryWrapper<>();
+        eventAdminQueryWrapper.eq("event_admin_id", updateEventAdminRequest.getEventAdminId());
+        if (eventAdminMapper.selectCount(eventAdminQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, EVENT_ADMIN_NONENTITY, errorResponseDto));
+        }
+
+        // 活动是否存在
+        QueryWrapper<Event> eventQueryWrapper = new QueryWrapper<>();
+        eventQueryWrapper.eq("event_id", updateEventAdminRequest.getEventId());
+        if (eventMapper.selectCount(eventQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, EVENT_NONENTITY, errorResponseDto));
+        }
+
+        // 用户是否存在
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq("user_id", updateEventAdminRequest.getUserId());
+        if (userMapper.selectCount(userQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, USER_DOES_NOT_EXISTS, errorResponseDto));
+        }
+
+        // 修改
+        EventAdmin eventAdmin = new EventAdmin();
+        eventAdmin.setEventAdminId(updateEventAdminRequest.getEventAdminId());
+        if (updateEventAdminRequest.getUserId() > 0) {
+            eventAdmin.setUserId(updateEventAdminRequest.getUserId());
+        }
+        if (updateEventAdminRequest.getEventId() > 0) {
+            eventAdmin.setEventId(updateEventAdminRequest.getEventId());
+        }
+
+        boolean updateEventAdmin = this.updateById(eventAdmin);
+        if (!updateEventAdmin) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, FAILED_TO_UPDATE, errorResponseDto));
         }
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();

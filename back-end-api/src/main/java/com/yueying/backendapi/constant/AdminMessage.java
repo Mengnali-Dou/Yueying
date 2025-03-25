@@ -17,4 +17,10 @@ public class AdminMessage {
      * 影院管理员已存在
      */
     public static final String CINEMA_ADMIN_ALREADY_EXISTS = "影院管理员已存在";
+
+    /**
+     * http请求错误消息
+     * 活动管理员不存在
+     */
+    public static final String EVENT_ADMIN_NONENTITY = "活动管理员不存在";
 }
