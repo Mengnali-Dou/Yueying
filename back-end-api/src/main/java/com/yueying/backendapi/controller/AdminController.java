@@ -61,4 +61,11 @@ public class AdminController {
     public ResponseEntity<Object> updateEventAdmin(@RequestBody UpdateEventAdminRequest updateEventAdminRequest, HttpServletRequest httpServletRequest) {
         return eventAdminService.updateEventAdmin(updateEventAdminRequest, httpServletRequest);
     }
+
+    @DeleteMapping("/event-delete")
+    public ResponseEntity<Object> deleteEventAdmin(@RequestParam Long eventAdminId, HttpServletRequest httpServletRequest) {
+        DeleteEventAdminRequest deleteEventAdminRequest = new DeleteEventAdminRequest();
+        deleteEventAdminRequest.setEventAdminId(eventAdminId);
+        return eventAdminService.deleteEventAdmin(deleteEventAdminRequest, httpServletRequest);
+    }
 }

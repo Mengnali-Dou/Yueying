@@ -8,6 +8,7 @@ import com.yueying.backendapi.model.domain.Event;
 import com.yueying.backendapi.model.domain.EventAdmin;
 import com.yueying.backendapi.model.domain.User;
 import com.yueying.backendapi.model.domain.request.AddEventAdminRequest;
+import com.yueying.backendapi.model.domain.request.DeleteEventAdminRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventAdminRequest;
 import com.yueying.backendapi.model.domain.request.UpdateEventAdminRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
@@ -190,6 +191,38 @@ public class EventAdminServiceImpl extends ServiceImpl<EventAdminMapper, EventAd
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
         return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> deleteEventAdmin(DeleteEventAdminRequest deleteEventAdminRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 必要参数是否为空
+        if (deleteEventAdminRequest.getEventAdminId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 活动管理员是否存在
+        QueryWrapper<EventAdmin> eventAdminQueryWrapper = new QueryWrapper<>();
+        eventAdminQueryWrapper.eq("event_admin_id", deleteEventAdminRequest.getEventAdminId());
+        if (eventAdminMapper.selectCount(eventAdminQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, EVENT_ADMIN_NONENTITY, errorResponseDto));
+        }
+
+        // 删除
+        boolean deleteEventAdmin = this.removeById(deleteEventAdminRequest.getEventAdminId());
+        if (!deleteEventAdmin) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, DELETE_FAILED, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, DELETE_SUCCESSFULLY, successResponseDto));
     }
 
     /**

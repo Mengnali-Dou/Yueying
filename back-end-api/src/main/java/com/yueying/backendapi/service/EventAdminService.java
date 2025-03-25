@@ -3,6 +3,7 @@ package com.yueying.backendapi.service;
 import com.yueying.backendapi.model.domain.EventAdmin;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yueying.backendapi.model.domain.request.AddEventAdminRequest;
+import com.yueying.backendapi.model.domain.request.DeleteEventAdminRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventAdminRequest;
 import com.yueying.backendapi.model.domain.request.UpdateEventAdminRequest;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,4 +39,12 @@ public interface EventAdminService extends IService<EventAdmin> {
      * @return 是否修改成功
      */
     ResponseEntity<Object> updateEventAdmin(UpdateEventAdminRequest updateEventAdminRequest, HttpServletRequest httpServletRequest);
+
+    /**
+     * 删除活动管理员
+     * @param deleteEventAdminRequest 删除活动管理员请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否删除成功
+     */
+    ResponseEntity<Object> deleteEventAdmin(DeleteEventAdminRequest deleteEventAdminRequest, HttpServletRequest httpServletRequest);
 }
