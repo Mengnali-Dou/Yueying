@@ -101,7 +101,7 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event>
             return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, EVENT_PLACE_NONENTITY, errorResponseDto));
         }
 
-        // 添加活动场地
+        // 添加活动
         Event event = new Event();
         event.setEventName(addEventRequest.getEventName());
         event.setEventPlaceId(addEventRequest.getEventPlaceId());
