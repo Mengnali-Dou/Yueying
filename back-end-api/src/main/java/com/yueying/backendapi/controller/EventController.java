@@ -1,9 +1,7 @@
 package com.yueying.backendapi.controller;
 
-import com.yueying.backendapi.model.domain.request.AddEventRequest;
-import com.yueying.backendapi.model.domain.request.DeleteEventRequest;
-import com.yueying.backendapi.model.domain.request.SearchEventRequest;
-import com.yueying.backendapi.model.domain.request.UpdateEventRequest;
+import com.yueying.backendapi.model.domain.request.*;
+import com.yueying.backendapi.service.EventPriceService;
 import com.yueying.backendapi.service.EventService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +14,9 @@ public class EventController {
 
     @Resource
     private EventService eventService;
+
+    @Resource
+    private EventPriceService eventPriceService;
 
     @GetMapping("/search")
     public ResponseEntity<Object> searchEvent(@RequestParam String eventName, @RequestParam Long eventPlaceId, @RequestParam String eventType) {
@@ -41,5 +42,12 @@ public class EventController {
         DeleteEventRequest deleteEventRequest = new DeleteEventRequest();
         deleteEventRequest.setEventId(eventId);
         return eventService.deleteEvent(deleteEventRequest, httpServletRequest);
+    }
+
+    @GetMapping("/search-price")
+    public ResponseEntity<Object> searchEventPrice(@RequestParam Long eventId) {
+        SearchEventPriceRequest searchEventPriceRequest = new SearchEventPriceRequest();
+        searchEventPriceRequest.setEventId(eventId);
+        return eventPriceService.searchEventPrice(searchEventPriceRequest);
     }
 }

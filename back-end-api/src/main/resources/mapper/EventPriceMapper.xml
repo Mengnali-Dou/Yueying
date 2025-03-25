@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yueying.backendapi.mapper.EventPriceMapper">
+
+    <resultMap id="BaseResultMap" type="com.yueying.backendapi.model.domain.EventPrice">
+            <id property="priceId" column="price_id" jdbcType="BIGINT"/>
+            <result property="eventId" column="event_id" jdbcType="BIGINT"/>
+            <result property="seatType" column="seat_type" jdbcType="VARCHAR"/>
+            <result property="seatRows" column="seat_rows" jdbcType="INTEGER"/>
+            <result property="seatCols" column="seat_cols" jdbcType="INTEGER"/>
+            <result property="price" column="price" jdbcType="DECIMAL"/>
+            <result property="ticketsLeft" column="tickets_left" jdbcType="BIGINT"/>
+            <result property="totalNum" column="total_num" jdbcType="BIGINT"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="deleted" column="deleted" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        price_id,event_id,seat_type,
+        seat_rows,seat_cols,price,
+        tickets_left,total_num,create_time,
+        update_time,deleted
+    </sql>
+</mapper>
