@@ -2,7 +2,9 @@ package com.yueying.backendapi.service;
 
 import com.yueying.backendapi.model.domain.Event;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yueying.backendapi.model.domain.request.AddEventRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
 /**
@@ -18,4 +20,12 @@ public interface EventService extends IService<Event> {
      * @return 活动信息列表
      */
     ResponseEntity<Object> searchEvent(SearchEventRequest searchEventRequest);
+
+    /**
+     * 添加活动
+     * @param addEventRequest 添加活动请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否添加成功
+     */
+    ResponseEntity<Object> addEvent(AddEventRequest addEventRequest, HttpServletRequest httpServletRequest);
 }

@@ -1,13 +1,12 @@
 package com.yueying.backendapi.controller;
 
+import com.yueying.backendapi.model.domain.request.AddEventRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventRequest;
 import com.yueying.backendapi.service.EventService;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/event")
@@ -23,5 +22,10 @@ public class EventController {
         searchEventRequest.setEventPlaceId(eventPlaceId);
         searchEventRequest.setEventType(eventType);
         return eventService.searchEvent(searchEventRequest);
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<Object> addEvent(@RequestBody AddEventRequest addEventRequest, HttpServletRequest httpServletRequest) {
+        return eventService.addEvent(addEventRequest, httpServletRequest);
     }
 }

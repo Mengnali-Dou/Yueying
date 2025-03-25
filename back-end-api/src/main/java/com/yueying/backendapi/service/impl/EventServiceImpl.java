@@ -4,14 +4,20 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yueying.backendapi.mapper.EventPlaceMapper;
 import com.yueying.backendapi.model.domain.Event;
+import com.yueying.backendapi.model.domain.EventPlace;
+import com.yueying.backendapi.model.domain.request.AddEventRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventRequest;
+import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
 import com.yueying.backendapi.model.domain.response.EventInfoDto;
+import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
 import com.yueying.backendapi.service.EventService;
 import com.yueying.backendapi.mapper.EventMapper;
 import com.yueying.backendapi.utils.PublicMethods;
 import com.yueying.backendapi.utils.ResponseData;
+import com.yueying.backendapi.utils.UserPublicClass;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,6 +25,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.yueying.backendapi.constant.EventConstant.*;
+import static com.yueying.backendapi.constant.EventPlaceMessage.*;
 import static com.yueying.backendapi.constant.ResponseStatus.*;
 import static com.yueying.backendapi.constant.UniversalConstant.*;
 
@@ -62,6 +70,50 @@ public class EventServiceImpl extends ServiceImpl<EventMapper, Event>
         }
 
         return ResponseEntity.ok(ResponseData.responseData(OK, SEARCH_SUCCESSFULLY, convertToDtoList(eventMapper.selectList(eventQueryWrapper))));
+    }
+
+    @Override
+    public ResponseEntity<Object> addEvent(AddEventRequest addEventRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 必要参数是否为空
+        if (!StringUtils.isNoneBlank(addEventRequest.getEventName(), addEventRequest.getEventType(), addEventRequest.getBeginTime(), addEventRequest.getEndTime()) || addEventRequest.getEventPlaceId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 活动场地是否存在
+        QueryWrapper<EventPlace> eventPlaceQueryWrapper = new QueryWrapper<>();
+        eventPlaceQueryWrapper.eq("place_id", addEventRequest.getEventPlaceId());
+        if (eventPlaceMapper.selectCount(eventPlaceQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, EVENT_PLACE_NONENTITY, errorResponseDto));
+        }
+
+        // 添加活动场地
+        Event event = new Event();
+        event.setEventName(addEventRequest.getEventName());
+        event.setEventPlaceId(addEventRequest.getEventPlaceId());
+        event.setEventType(addEventRequest.getEventType());
+        event.setMainActor(addEventRequest.getMainActor());
+        event.setEventCoverSmall(addEventRequest.getEventCoverSmall());
+        event.setEventCoverLarge(addEventRequest.getEventCoverLarge());
+        event.setBeginTime(PublicMethods.stringConvertToDateTime(addEventRequest.getBeginTime()));
+        event.setFinishTime(PublicMethods.stringConvertToDateTime(addEventRequest.getEndTime()));
+        event.setFinished(EVENT_STATUS_UNFINISHED);
+        event.setEventProfile(addEventRequest.getEventProfile());
+
+        boolean addEvent = this.save(event);
+        if (!addEvent) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, FAILED_TO_INSERT, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
     }
 
     /**
