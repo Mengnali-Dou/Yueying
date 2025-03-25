@@ -3,6 +3,7 @@ package com.yueying.backendapi.service;
 import com.yueying.backendapi.model.domain.EventPlace;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yueying.backendapi.model.domain.request.AddEventPlaceRequest;
+import com.yueying.backendapi.model.domain.request.DeleteEventPlaceRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventPlaceRequest;
 import com.yueying.backendapi.model.domain.request.UpdateEventPlaceInfoRequest;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,4 +38,12 @@ public interface EventPlaceService extends IService<EventPlace> {
      * @return 是否修改成功
      */
     ResponseEntity<Object> updateEventPlace(UpdateEventPlaceInfoRequest updateEventPlaceInfoRequest, HttpServletRequest httpServletRequest);
+
+    /**
+     * 删除活动场地
+     * @param deleteEventPlaceRequest 删除活动场地请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否删除成功
+     */
+    ResponseEntity<Object> deleteEventPlace(DeleteEventPlaceRequest deleteEventPlaceRequest, HttpServletRequest httpServletRequest);
 }

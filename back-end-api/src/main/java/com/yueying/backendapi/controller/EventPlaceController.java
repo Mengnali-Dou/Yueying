@@ -1,6 +1,7 @@
 package com.yueying.backendapi.controller;
 
 import com.yueying.backendapi.model.domain.request.AddEventPlaceRequest;
+import com.yueying.backendapi.model.domain.request.DeleteEventPlaceRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventPlaceRequest;
 import com.yueying.backendapi.model.domain.request.UpdateEventPlaceInfoRequest;
 import com.yueying.backendapi.service.EventPlaceService;
@@ -32,5 +33,12 @@ public class EventPlaceController {
     @PutMapping("/update")
     public ResponseEntity<Object> updateEventPlace(@RequestBody UpdateEventPlaceInfoRequest updateEventPlaceInfoRequest, HttpServletRequest httpServletRequest) {
         return eventPlaceService.updateEventPlace(updateEventPlaceInfoRequest, httpServletRequest);
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<Object> deleteEventPlace(@RequestParam Long eventPlaceId, HttpServletRequest httpServletRequest) {
+        DeleteEventPlaceRequest deleteEventPlaceRequest = new DeleteEventPlaceRequest();
+        deleteEventPlaceRequest.setPlaceId(eventPlaceId);
+        return eventPlaceService.deleteEventPlace(deleteEventPlaceRequest, httpServletRequest);
     }
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yueying.backendapi.model.domain.EventPlace;
 import com.yueying.backendapi.model.domain.request.AddEventPlaceRequest;
+import com.yueying.backendapi.model.domain.request.DeleteEventPlaceRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventPlaceRequest;
 import com.yueying.backendapi.model.domain.request.UpdateEventPlaceInfoRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
@@ -131,6 +132,38 @@ public class EventPlaceServiceImpl extends ServiceImpl<EventPlaceMapper, EventPl
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
         return ResponseEntity.ok(ResponseData.responseData(OK, UPDATE_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> deleteEventPlace(DeleteEventPlaceRequest deleteEventPlaceRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 必要参数是否为空
+        if (deleteEventPlaceRequest.getPlaceId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 是否存在
+        QueryWrapper<EventPlace> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("place_id", deleteEventPlaceRequest.getPlaceId());
+        if (eventPlaceMapper.selectCount(queryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, EVENT_PLACE_NONENTITY, errorResponseDto));
+        }
+
+        // 删除
+        boolean deleted = this.removeById(deleteEventPlaceRequest.getPlaceId());
+        if (!deleted) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, DELETE_FAILED, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, DELETE_SUCCESSFULLY, successResponseDto));
     }
 
     /**
