@@ -55,4 +55,9 @@ public class EventController {
     public ResponseEntity<Object> addEventPrice(@RequestBody AddEventPriceRequest addEventPriceRequest, HttpServletRequest httpServletRequest) {
         return eventPriceService.addEventPrice(addEventPriceRequest, httpServletRequest);
     }
+
+    @PutMapping("/update-price")
+    public ResponseEntity<Object> updateEventPrice(@RequestBody UpdateEventPriceRequest updateEventPriceRequest, HttpServletRequest httpServletRequest) {
+        return eventPriceService.updateEventPrice(updateEventPriceRequest, httpServletRequest);
+    }
 }

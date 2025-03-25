@@ -4,6 +4,7 @@ import com.yueying.backendapi.model.domain.EventPrice;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yueying.backendapi.model.domain.request.AddEventPriceRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventPriceRequest;
+import com.yueying.backendapi.model.domain.request.UpdateEventPriceRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
@@ -28,4 +29,12 @@ public interface EventPriceService extends IService<EventPrice> {
      * @return 是否添加成功
      */
     ResponseEntity<Object> addEventPrice(AddEventPriceRequest addEventPriceRequest, HttpServletRequest httpServletRequest);
+
+    /**
+     * 修改活动票价信息
+     * @param updateEventPriceRequest 修改活动票价信息请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否修改成功
+     */
+    ResponseEntity<Object> updateEventPrice(UpdateEventPriceRequest updateEventPriceRequest, HttpServletRequest httpServletRequest);
 }

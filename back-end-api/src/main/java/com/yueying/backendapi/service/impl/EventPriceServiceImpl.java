@@ -9,6 +9,7 @@ import com.yueying.backendapi.model.domain.EventAdmin;
 import com.yueying.backendapi.model.domain.EventPrice;
 import com.yueying.backendapi.model.domain.request.AddEventPriceRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventPriceRequest;
+import com.yueying.backendapi.model.domain.request.UpdateEventPriceRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
 import com.yueying.backendapi.model.domain.response.EventPriceInfoDto;
 import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
@@ -120,6 +121,71 @@ public class EventPriceServiceImpl extends ServiceImpl<EventPriceMapper, EventPr
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
         return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> updateEventPrice(UpdateEventPriceRequest updateEventPriceRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+        
+        // 必要参数是否为空
+        if (updateEventPriceRequest.getPriceId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+        QueryWrapper<EventAdmin> eventAdminQueryWrapper = new QueryWrapper<>();
+        eventAdminQueryWrapper.eq("event_id", updateEventPriceRequest.getEventId());
+        eventAdminQueryWrapper.eq("user_id", UserPublicClass.getUserId(httpServletRequest));
+        if (eventAdminMapper.selectCount(eventAdminQueryWrapper) <= 0) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 是否存在
+        QueryWrapper<EventPrice> eventPriceQueryWrapper = new QueryWrapper<>();
+        eventPriceQueryWrapper.eq("price_id", updateEventPriceRequest.getPriceId());
+        if (eventPriceMapper.selectCount(eventPriceQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, EVENT_PRICE_NONENTITY, errorResponseDto));
+        }
+
+        // 修改
+        EventPrice eventPrice = new EventPrice();
+        eventPrice.setPriceId(updateEventPriceRequest.getPriceId());
+        if (updateEventPriceRequest.getEventId() > 0) {
+            // 活动是否存在
+            QueryWrapper<Event> eventQueryWrapper = new QueryWrapper<>();
+            eventQueryWrapper.eq("event_id", updateEventPriceRequest.getEventId());
+            if (eventMapper.selectCount(eventQueryWrapper) <= 0) {
+                return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, EVENT_NONENTITY, errorResponseDto));
+            }
+            eventPrice.setEventId(updateEventPriceRequest.getEventId());
+        }
+        if (StringUtils.isNotBlank(updateEventPriceRequest.getSeatType())) {
+            eventPrice.setSeatType(updateEventPriceRequest.getSeatType());
+        }
+        if (updateEventPriceRequest.getSeatRows() > 0) {
+            eventPrice.setSeatRows(updateEventPriceRequest.getSeatRows());
+        }
+        if (updateEventPriceRequest.getSeatCols() > 0) {
+            eventPrice.setSeatCols(updateEventPriceRequest.getSeatCols());
+        }
+        if (updateEventPriceRequest.getPrice() > 0) {
+            eventPrice.setPrice(updateEventPriceRequest.getPrice());
+        }
+        eventPrice.setTotalNum((long) updateEventPriceRequest.getSeatRows() * updateEventPriceRequest.getSeatCols());
+        EventPrice oldEventPrice = eventPriceMapper.selectById(updateEventPriceRequest.getPriceId());
+        eventPrice.setTicketsLeft(((long) eventPrice.getTotalNum()) - oldEventPrice.getTotalNum() + oldEventPrice.getTicketsLeft());
+
+        boolean updateEventPrice = this.updateById(eventPrice);
+        if (!updateEventPrice) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, FAILED_TO_UPDATE, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, UPDATE_SUCCESSFULLY, successResponseDto));
     }
 
     /**

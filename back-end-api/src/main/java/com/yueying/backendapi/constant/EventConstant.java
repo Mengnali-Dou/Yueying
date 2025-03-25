@@ -18,4 +18,10 @@ public class EventConstant {
      * 活动票价已存在
      */
     public static final String EVENT_PRICE_HAS_ADDED = "活动票价已存在";
+
+    /**
+     * http请求错误消息
+     * 活动票价不存在
+     */
+    public static final String EVENT_PRICE_NONENTITY = "活动票价不存在";
 }
