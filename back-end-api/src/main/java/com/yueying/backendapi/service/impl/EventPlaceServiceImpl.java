@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yueying.backendapi.model.domain.EventPlace;
 import com.yueying.backendapi.model.domain.request.AddEventPlaceRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventPlaceRequest;
+import com.yueying.backendapi.model.domain.request.UpdateEventPlaceInfoRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
 import com.yueying.backendapi.model.domain.response.EventPlaceInfoDto;
 import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
@@ -87,6 +88,49 @@ public class EventPlaceServiceImpl extends ServiceImpl<EventPlaceMapper, EventPl
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
         return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> updateEventPlace(UpdateEventPlaceInfoRequest updateEventPlaceInfoRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 必要参数是否为空
+        if (updateEventPlaceInfoRequest.getPlaceId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 是否存在
+        QueryWrapper<EventPlace> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("place_id", updateEventPlaceInfoRequest.getPlaceId());
+        if (eventPlaceMapper.selectCount(queryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, EVENT_PLACE_NONENTITY, errorResponseDto));
+        }
+
+        // 修改
+        EventPlace eventPlace = new EventPlace();
+        eventPlace.setPlaceId(updateEventPlaceInfoRequest.getPlaceId());
+        if (StringUtils.isNotBlank(updateEventPlaceInfoRequest.getPlaceName())) {
+            eventPlace.setPlaceName(updateEventPlaceInfoRequest.getPlaceName());
+        }
+        if (StringUtils.isNotBlank(updateEventPlaceInfoRequest.getPlaceAddress())) {
+            eventPlace.setPlaceAddress(updateEventPlaceInfoRequest.getPlaceAddress());
+        }
+        if (StringUtils.isNotBlank(updateEventPlaceInfoRequest.getPlaceType())) {
+            eventPlace.setPlaceType(updateEventPlaceInfoRequest.getPlaceType());
+        }
+        if (updateEventPlaceInfoRequest.getMaxSeats() > 0) {
+            eventPlace.setMaxSeats(updateEventPlaceInfoRequest.getMaxSeats());
+        }
+        eventPlaceMapper.updateById(eventPlace);
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, UPDATE_SUCCESSFULLY, successResponseDto));
     }
 
     /**

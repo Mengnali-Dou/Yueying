@@ -4,6 +4,7 @@ import com.yueying.backendapi.model.domain.EventPlace;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yueying.backendapi.model.domain.request.AddEventPlaceRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventPlaceRequest;
+import com.yueying.backendapi.model.domain.request.UpdateEventPlaceInfoRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
@@ -28,4 +29,12 @@ public interface EventPlaceService extends IService<EventPlace> {
      * @return 是否添加成功
      */
     ResponseEntity<Object> addEventPlace(AddEventPlaceRequest addEventPlaceRequest, HttpServletRequest httpServletRequest);
+
+    /**
+     * 修改活动场地信息
+     * @param updateEventPlaceInfoRequest 修改活动场地信息请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否修改成功
+     */
+    ResponseEntity<Object> updateEventPlace(UpdateEventPlaceInfoRequest updateEventPlaceInfoRequest, HttpServletRequest httpServletRequest);
 }
