@@ -8,10 +8,7 @@ import com.yueying.backendapi.model.domain.MovieOrder;
 import com.yueying.backendapi.model.domain.MovieSession;
 import com.yueying.backendapi.model.domain.MovieSessionSeat;
 import com.yueying.backendapi.model.domain.User;
-import com.yueying.backendapi.model.domain.request.BookMovieRequest;
-import com.yueying.backendapi.model.domain.request.MovieRefundManageRequest;
-import com.yueying.backendapi.model.domain.request.MovieRefundRequest;
-import com.yueying.backendapi.model.domain.request.SearchMovieOrderRequest;
+import com.yueying.backendapi.model.domain.request.*;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
 import com.yueying.backendapi.model.domain.response.MovieOrderInfoDto;
 import com.yueying.backendapi.model.domain.response.MovieSessionInfoDto;
@@ -28,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.yueying.backendapi.constant.MovieMessage.*;
@@ -283,6 +281,43 @@ public class MovieOrderServiceImpl extends ServiceImpl<MovieOrderMapper, MovieOr
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
         return ResponseEntity.ok(ResponseData.responseData(OK, MANAGE_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> deleteMovieOrder(DeleteMovieOrderRequest deleteMovieOrderRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 必要参数是否为空
+        if (deleteMovieOrderRequest.getMovieOrderId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 订单是否存在
+        QueryWrapper<MovieOrder> movieOrderQueryWrapper = new QueryWrapper<>();
+        movieOrderQueryWrapper.eq("order_id", deleteMovieOrderRequest.getMovieOrderId());
+        if (movieOrderMapper.selectCount(movieOrderQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, ORDER_NOT_FOUND, errorResponseDto));
+        }
+
+        // 是否已退票
+        if (Objects.equals(movieOrderMapper.selectById(deleteMovieOrderRequest.getMovieOrderId()).getOrderStatus(), ORDER_STATUS_REFUND_SUCCESSFUL)) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, ORDER_UN_REFUND, errorResponseDto));
+        }
+
+        // 删除
+        boolean deleted = this.removeById(deleteMovieOrderRequest.getMovieOrderId());
+        if (!deleted) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, DELETE_FAILED, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, DELETE_SUCCESSFULLY, successResponseDto));
     }
 
     /**

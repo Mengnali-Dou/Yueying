@@ -2,10 +2,7 @@ package com.yueying.backendapi.service;
 
 import com.yueying.backendapi.model.domain.MovieOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.yueying.backendapi.model.domain.request.BookMovieRequest;
-import com.yueying.backendapi.model.domain.request.MovieRefundManageRequest;
-import com.yueying.backendapi.model.domain.request.MovieRefundRequest;
-import com.yueying.backendapi.model.domain.request.SearchMovieOrderRequest;
+import com.yueying.backendapi.model.domain.request.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
@@ -47,4 +44,12 @@ public interface MovieOrderService extends IService<MovieOrder> {
      * @return 是否处理成功
      */
     ResponseEntity<Object> movieRefundManage(MovieRefundManageRequest movieRefundManageRequest, HttpServletRequest httpServletRequest);
+
+    /**
+     * 删除订单
+     * @param deleteMovieOrderRequest 删除订单请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否删除成功
+     */
+    ResponseEntity<Object> deleteMovieOrder(DeleteMovieOrderRequest deleteMovieOrderRequest, HttpServletRequest httpServletRequest);
 }

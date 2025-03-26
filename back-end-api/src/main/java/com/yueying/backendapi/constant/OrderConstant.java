@@ -67,6 +67,12 @@ public class OrderConstant {
     public static final String MANAGE_SUCCESSFULLY = "处理成功";
 
     /**
+     * http请求错误信息
+     * 订单未退票
+     */
+    public static final String ORDER_UN_REFUND = "订单未退票";
+
+    /**
      * 订单状态--退票申请
      */
     public static final Integer ORDER_STATUS_REFUND_REQUEST = 7;
