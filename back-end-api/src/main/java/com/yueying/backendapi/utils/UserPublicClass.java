@@ -45,6 +45,15 @@ public class UserPublicClass {
     }
 
     /**
+     * 判断用户是否已经登陆
+     * @param request http请求信息
+     * @return 是否已经登陆
+     */
+    public static boolean isLogin(HttpServletRequest request) {
+        return request.getSession().getAttribute(USER_LOGIN_STATE) != null;
+    }
+
+    /**
      * 获取登录用户id
      * @param request http请求信息
      * @return 登录用户id

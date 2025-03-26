@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yueying.backendapi.mapper.MovieOrderMapper">
+
+    <resultMap id="BaseResultMap" type="com.yueying.backendapi.model.domain.MovieOrder">
+            <id property="orderId" column="order_id" jdbcType="BIGINT"/>
+            <result property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="sessionId" column="session_id" jdbcType="BIGINT"/>
+            <result property="seat" column="seat" jdbcType="VARCHAR"/>
+            <result property="beginTime" column="begin_time" jdbcType="TIMESTAMP"/>
+            <result property="contact" column="contact" jdbcType="VARCHAR"/>
+            <result property="spectator" column="spectator" jdbcType="VARCHAR"/>
+            <result property="orderPrice" column="order_price" jdbcType="DECIMAL"/>
+            <result property="orderStatus" column="order_status" jdbcType="TINYINT"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="deleted" column="deleted" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        order_id,user_id,session_id,
+        seat,begin_time,contact,
+        spectator,order_price,order_status,
+        create_time,update_time,deleted
+    </sql>
+</mapper>
