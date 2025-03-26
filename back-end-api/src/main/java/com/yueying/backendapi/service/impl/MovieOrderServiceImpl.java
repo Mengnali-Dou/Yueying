@@ -1,15 +1,19 @@
 package com.yueying.backendapi.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yueying.backendapi.mapper.*;
 import com.yueying.backendapi.model.domain.MovieOrder;
 import com.yueying.backendapi.model.domain.MovieSession;
+import com.yueying.backendapi.model.domain.MovieSessionSeat;
 import com.yueying.backendapi.model.domain.User;
+import com.yueying.backendapi.model.domain.request.BookMovieRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieOrderRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
 import com.yueying.backendapi.model.domain.response.MovieOrderInfoDto;
 import com.yueying.backendapi.model.domain.response.MovieSessionInfoDto;
+import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
 import com.yueying.backendapi.service.MovieOrderService;
 import com.yueying.backendapi.utils.PublicMethods;
 import com.yueying.backendapi.utils.ResponseData;
@@ -24,8 +28,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.yueying.backendapi.constant.MovieMessage.*;
+import static com.yueying.backendapi.constant.OrderConstant.*;
 import static com.yueying.backendapi.constant.ResponseStatus.*;
-import static com.yueying.backendapi.constant.UniversalConstant.SEARCH_SUCCESSFULLY;
+import static com.yueying.backendapi.constant.UniversalConstant.*;
 import static com.yueying.backendapi.constant.UserConstant.*;
 
 /**
@@ -48,6 +54,9 @@ public class MovieOrderServiceImpl extends ServiceImpl<MovieOrderMapper, MovieOr
 
     @Resource
     private MovieMapper movieMapper;
+
+    @Resource
+    private MovieSessionSeatMapper movieSessionSeatMapper;
 
     @Resource
     private MovieSessionMapper movieSessionMapper;
@@ -103,6 +112,89 @@ public class MovieOrderServiceImpl extends ServiceImpl<MovieOrderMapper, MovieOr
         }
 
         return ResponseEntity.ok(ResponseData.responseData(OK, SEARCH_SUCCESSFULLY, convertToDtoList(movieOrderMapper.selectList(movieOrderQueryWrapper))));
+    }
+
+    @Override
+    public ResponseEntity<Object> bookMovie(BookMovieRequest bookMovieRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 是否登陆
+        if (!UserPublicClass.isLogin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, USER_NOT_LOGGED_IN, errorResponseDto));
+        }
+
+        // 必要参数是否为空
+        if (!StringUtils.isNoneBlank(bookMovieRequest.getSeat(), bookMovieRequest.getContact(), bookMovieRequest.getSpectator()) || bookMovieRequest.getSessionId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 场次是否存在
+        QueryWrapper<MovieSession> movieSessionQueryWrapper = new QueryWrapper<>();
+        movieSessionQueryWrapper.eq("session_id", bookMovieRequest.getSessionId());
+        if (movieSessionMapper.selectCount(movieSessionQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, MOVIE_SESSION_NONENTITY, errorResponseDto));
+        }
+
+        // 是否有余票
+        if (movieSessionMapper.selectById(bookMovieRequest.getSessionId()).getTicketsLeft() <= 0) {
+            return ResponseEntity.status(CONFLICT).body(ResponseData.responseData(CONFLICT, INSUFFICIENT_BALANCE, errorResponseDto));
+        }
+
+        // 座位是否存在
+        String[] seatArea = bookMovieRequest.getSeat().split(",");
+        Integer row = Integer.parseInt(seatArea[0]);
+        Integer col = Integer.parseInt(seatArea[1]);
+        QueryWrapper<MovieSessionSeat> movieSessionSeatQueryWrapper = new QueryWrapper<>();
+        movieSessionSeatQueryWrapper.eq("session_id", bookMovieRequest.getSessionId());
+        movieSessionSeatQueryWrapper.eq("row_numbers", row);
+        movieSessionSeatQueryWrapper.eq("col_numbers", col);
+        if (movieSessionSeatMapper.selectCount(movieSessionSeatQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, SEAT_NOT_FOUND, errorResponseDto));
+        }
+
+        // 座位是否售出
+        if (movieSessionSeatMapper.selectOne(movieSessionSeatQueryWrapper).getSold() == 1) {
+            return ResponseEntity.status(CONFLICT).body(ResponseData.responseData(CONFLICT, SEAT_HAS_SOLD, errorResponseDto));
+        }
+
+        // 获取用户信息
+        Object userObj = httpServletRequest.getSession().getAttribute(USER_LOGIN_STATE);
+        User userInfo = (User) userObj;
+
+        // 获取场次信息
+        MovieSession movieSession = movieSessionMapper.selectById(bookMovieRequest.getSessionId());
+
+        // 下单
+        MovieOrder movieOrder = new MovieOrder();
+        movieOrder.setUserId(userInfo.getUserId());
+        movieOrder.setSessionId(bookMovieRequest.getSessionId());
+        movieOrder.setSeat(bookMovieRequest.getSeat());
+        movieOrder.setBeginTime(movieSession.getMovieRuntime());
+        movieOrder.setContact(bookMovieRequest.getContact());
+        movieOrder.setSpectator(bookMovieRequest.getSpectator());
+        movieOrder.setOrderPrice(movieSession.getPrice());
+        boolean bookMovie = this.save(movieOrder);
+        if (!bookMovie) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, BOOK_FAILED, errorResponseDto));
+        }
+
+        // 场次座位-1
+        UpdateWrapper<MovieSession> movieSessionUpdateWrapper = new UpdateWrapper<>();
+        movieSessionUpdateWrapper.eq("session_id", bookMovieRequest.getSessionId());
+        movieSessionUpdateWrapper.setSql("tickets_left = tickets_left - 1");
+        movieSessionMapper.update(movieSessionUpdateWrapper);
+
+        // 座位状态修改
+        UpdateWrapper<MovieSessionSeat> movieSessionSeatUpdateWrapper = new UpdateWrapper<>();
+        movieSessionSeatUpdateWrapper.eq("session_id", bookMovieRequest.getSessionId());
+        movieSessionSeatUpdateWrapper.eq("row_numbers", row);
+        movieSessionSeatUpdateWrapper.eq("col_numbers", col);
+        movieSessionSeatUpdateWrapper.setSql("sold = 1");
+        movieSessionSeatMapper.update(movieSessionSeatUpdateWrapper);
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, BOOK_SUCCESSFULLY, successResponseDto));
     }
 
     /**
