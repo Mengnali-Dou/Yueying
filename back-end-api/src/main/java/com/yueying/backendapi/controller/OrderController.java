@@ -58,4 +58,9 @@ public class OrderController {
         searchEventOrderRequest.setOrderStatus(orderStatus);
         return eventOrderService.searchEventOrder(searchEventOrderRequest, httpServletRequest);
     }
+
+    @PostMapping("/event-book")
+    public ResponseEntity<Object> bookEvent(@RequestBody BookEventRequest bookEventRequest, HttpServletRequest httpServletRequest) {
+        return eventOrderService.bookEvent(bookEventRequest, httpServletRequest);
+    }
 }

@@ -1,15 +1,20 @@
 package com.yueying.backendapi.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yueying.backendapi.mapper.EventMapper;
+import com.yueying.backendapi.mapper.EventPriceMapper;
 import com.yueying.backendapi.mapper.UserMapper;
 import com.yueying.backendapi.model.domain.Event;
 import com.yueying.backendapi.model.domain.EventOrder;
+import com.yueying.backendapi.model.domain.EventPrice;
 import com.yueying.backendapi.model.domain.User;
+import com.yueying.backendapi.model.domain.request.BookEventRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventOrderRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
 import com.yueying.backendapi.model.domain.response.EventOrderInfoDto;
+import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
 import com.yueying.backendapi.service.EventOrderService;
 import com.yueying.backendapi.mapper.EventOrderMapper;
 import com.yueying.backendapi.utils.PublicMethods;
@@ -26,6 +31,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.yueying.backendapi.constant.EventConstant.*;
+import static com.yueying.backendapi.constant.OrderConstant.*;
 import static com.yueying.backendapi.constant.ResponseStatus.*;
 import static com.yueying.backendapi.constant.UniversalConstant.*;
 import static com.yueying.backendapi.constant.UserConstant.*;
@@ -44,6 +50,9 @@ public class EventOrderServiceImpl extends ServiceImpl<EventOrderMapper, EventOr
 
     @Resource
     private EventMapper eventMapper;
+
+    @Resource
+    private EventPriceMapper eventPriceMapper;
 
     @Resource
     private UserMapper userMapper;
@@ -98,6 +107,76 @@ public class EventOrderServiceImpl extends ServiceImpl<EventOrderMapper, EventOr
         }
 
         return ResponseEntity.ok(ResponseData.responseData(OK, SEARCH_SUCCESSFULLY, convertToDtoList(eventOrderMapper.selectList(eventOrderQueryWrapper))));
+    }
+
+    @Override
+    public ResponseEntity<Object> bookEvent(BookEventRequest bookEventRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 是否登陆
+        if (!UserPublicClass.isLogin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, USER_NOT_LOGGED_IN, errorResponseDto));
+        }
+
+        // 必要参数是否为空
+        if (!StringUtils.isNoneBlank(bookEventRequest.getSeat(), bookEventRequest.getSpectator(), bookEventRequest.getContact()) || bookEventRequest.getEventId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 活动是否存在
+        QueryWrapper<Event> eventQueryWrapper = new QueryWrapper<>();
+        eventQueryWrapper.eq("event_id", bookEventRequest.getEventId());
+        if (eventMapper.selectCount(eventQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, EVENT_NONENTITY, errorResponseDto));
+        }
+
+        // 座位类型是否存在
+        QueryWrapper<EventPrice> eventPriceQueryWrapper = new QueryWrapper<>();
+        eventPriceQueryWrapper.eq("event_id", bookEventRequest.getEventId());
+        eventPriceQueryWrapper.eq("seat_type", bookEventRequest.getSeat());
+        if (eventPriceMapper.selectCount(eventPriceQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, EVENT_PRICE_NONENTITY, errorResponseDto));
+        }
+
+        // 获取价格信息
+        EventPrice eventPrice = eventPriceMapper.selectOne(eventPriceQueryWrapper);
+
+        // 是否有余票
+        if (eventPrice.getTicketsLeft() <= 0) {
+            return ResponseEntity.status(CONFLICT).body(ResponseData.responseData(CONFLICT, INSUFFICIENT_BALANCE, errorResponseDto));
+        }
+
+        // 获取用户信息
+        Object userObj = httpServletRequest.getSession().getAttribute(USER_LOGIN_STATE);
+        User userInfo = (User) userObj;
+
+        // 获取活动信息
+        Event event = eventMapper.selectById(bookEventRequest.getEventId());
+
+        // 下单
+        EventOrder eventOrder = new EventOrder();
+        eventOrder.setUserId(userInfo.getUserId());
+        eventOrder.setEventId(bookEventRequest.getEventId());
+        eventOrder.setSeat(bookEventRequest.getSeat());
+        eventOrder.setBeginTime(event.getBeginTime());
+        eventOrder.setContact(bookEventRequest.getContact());
+        eventOrder.setSpectator(bookEventRequest.getSpectator());
+        eventOrder.setOrderPrice(eventPrice.getPrice());
+        boolean bookEvent = this.save(eventOrder);
+        if (!bookEvent) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, BOOK_FAILED, errorResponseDto));
+        }
+
+        // 更新余票
+        UpdateWrapper<EventPrice> eventPriceUpdateWrapper = new UpdateWrapper<>();
+        eventPriceUpdateWrapper.eq("event_id", bookEventRequest.getEventId());
+        eventPriceUpdateWrapper.eq("seat_type", bookEventRequest.getSeat());
+        eventPriceUpdateWrapper.setSql("tickets_left = tickets_left - 1");
+        eventPriceMapper.update(eventPriceUpdateWrapper);
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, BOOK_SUCCESSFULLY, successResponseDto));
     }
 
     /**
