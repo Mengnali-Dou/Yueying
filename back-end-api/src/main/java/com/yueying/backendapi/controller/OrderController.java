@@ -63,4 +63,9 @@ public class OrderController {
     public ResponseEntity<Object> bookEvent(@RequestBody BookEventRequest bookEventRequest, HttpServletRequest httpServletRequest) {
         return eventOrderService.bookEvent(bookEventRequest, httpServletRequest);
     }
+
+    @PutMapping("/event-refund")
+    public ResponseEntity<Object> eventRefund(@RequestBody EventRefundRequest eventRefundRequest, HttpServletRequest httpServletRequest) {
+        return eventOrderService.eventRefund(eventRefundRequest, httpServletRequest);
+    }
 }

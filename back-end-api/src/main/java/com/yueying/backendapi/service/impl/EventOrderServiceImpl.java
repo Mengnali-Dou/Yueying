@@ -11,6 +11,7 @@ import com.yueying.backendapi.model.domain.EventOrder;
 import com.yueying.backendapi.model.domain.EventPrice;
 import com.yueying.backendapi.model.domain.User;
 import com.yueying.backendapi.model.domain.request.BookEventRequest;
+import com.yueying.backendapi.model.domain.request.EventRefundRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventOrderRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
 import com.yueying.backendapi.model.domain.response.EventOrderInfoDto;
@@ -177,6 +178,42 @@ public class EventOrderServiceImpl extends ServiceImpl<EventOrderMapper, EventOr
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
         return ResponseEntity.ok(ResponseData.responseData(OK, BOOK_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> eventRefund(EventRefundRequest eventRefundRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 是否登陆
+        if (!UserPublicClass.isLogin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, USER_NOT_LOGGED_IN, errorResponseDto));
+        }
+
+        // 订单是否存在
+        QueryWrapper<EventOrder> eventOrderQueryWrapper = new QueryWrapper<>();
+        eventOrderQueryWrapper.eq("order_id", eventRefundRequest.getEventOrderId());
+        if (eventOrderMapper.selectCount(eventOrderQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, ORDER_NOT_FOUND, errorResponseDto));
+        }
+
+        // 订单是不是当前用户的
+        EventOrder eventOrder = eventOrderMapper.selectById(eventRefundRequest.getEventOrderId());
+        if (UserPublicClass.isCurrentUser(eventOrder.getUserId(), httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 退票
+        EventOrder refundEventOrder = new EventOrder();
+        refundEventOrder.setOrderId(eventOrder.getOrderId());
+        refundEventOrder.setOrderStatus(ORDER_STATUS_REFUND_REQUEST);
+        boolean refund = this.updateById(refundEventOrder);
+        if (!refund) {
+            return ResponseEntity.status(CONFLICT).body(ResponseData.responseData(CONFLICT, REFUND_FAILED, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, REFUND_SUCCESSFULLY, successResponseDto));
     }
 
     /**

@@ -3,6 +3,7 @@ package com.yueying.backendapi.service;
 import com.yueying.backendapi.model.domain.EventOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yueying.backendapi.model.domain.request.BookEventRequest;
+import com.yueying.backendapi.model.domain.request.EventRefundRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventOrderRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
@@ -29,4 +30,12 @@ public interface EventOrderService extends IService<EventOrder> {
      * @return 是否预定成功
      */
     ResponseEntity<Object> bookEvent(BookEventRequest bookEventRequest, HttpServletRequest httpServletRequest);
+
+    /**
+     * 活动退票申请
+     * @param eventRefundRequest 活动退票申请请求体
+     * @param httpServletRequest http请求信息
+     * @return 退票申请是否成功
+     */
+    ResponseEntity<Object> eventRefund(EventRefundRequest eventRefundRequest, HttpServletRequest httpServletRequest);
 }
