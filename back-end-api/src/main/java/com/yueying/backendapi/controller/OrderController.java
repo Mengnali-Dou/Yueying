@@ -1,6 +1,7 @@
 package com.yueying.backendapi.controller;
 
 import com.yueying.backendapi.model.domain.request.BookMovieRequest;
+import com.yueying.backendapi.model.domain.request.MovieRefundRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieOrderRequest;
 import com.yueying.backendapi.service.MovieOrderService;
 import jakarta.annotation.Resource;
@@ -27,5 +28,10 @@ public class OrderController {
     @PostMapping("/movie-book")
     public ResponseEntity<Object> bookMovie(@RequestBody BookMovieRequest bookMovieRequest, HttpServletRequest httpServletRequest) {
         return movieOrderService.bookMovie(bookMovieRequest, httpServletRequest);
+    }
+
+    @PutMapping("/movie-refund")
+    public ResponseEntity<Object> movieRefund(@RequestBody MovieRefundRequest movieRefundRequest, HttpServletRequest httpServletRequest) {
+        return movieOrderService.movieRefund(movieRefundRequest, httpServletRequest);
     }
 }

@@ -35,4 +35,27 @@ public class OrderConstant {
      * 下单成功
      */
     public static final String BOOK_SUCCESSFULLY = "下单成功";
+
+    /**
+     * http请求失败信息
+     * 订单不存在
+     */
+    public static final String ORDER_NOT_FOUND = "订单不存在";
+
+    /**
+     * http请求失败信息
+     * 退票失败
+     */
+    public static final String REFUND_FAILED = "退票申请失败";
+
+    /**
+     * http请求失败信息
+     * 退票申请成功
+     */
+    public static final String REFUND_SUCCESSFULLY = "退票申请成功";
+
+    /**
+     * 订单状态--退票申请
+     */
+    public static final Integer ORDER_STATUS_REFUND_REQUEST = 7;
 }

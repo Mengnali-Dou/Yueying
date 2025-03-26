@@ -3,6 +3,7 @@ package com.yueying.backendapi.service;
 import com.yueying.backendapi.model.domain.MovieOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yueying.backendapi.model.domain.request.BookMovieRequest;
+import com.yueying.backendapi.model.domain.request.MovieRefundRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieOrderRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
@@ -29,4 +30,12 @@ public interface MovieOrderService extends IService<MovieOrder> {
      * @return 是否下单成功
      */
     ResponseEntity<Object> bookMovie(BookMovieRequest bookMovieRequest, HttpServletRequest httpServletRequest);
+
+    /**
+     * 影片退票申请
+     * @param movieRefundRequest 影片退票申请请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否申请成功
+     */
+    ResponseEntity<Object> movieRefund(MovieRefundRequest movieRefundRequest, HttpServletRequest httpServletRequest);
 }
