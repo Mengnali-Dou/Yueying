@@ -1,6 +1,7 @@
 package com.yueying.backendapi.controller;
 
 import com.yueying.backendapi.model.domain.request.*;
+import com.yueying.backendapi.service.EventOrderService;
 import com.yueying.backendapi.service.MovieOrderService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +14,9 @@ public class OrderController {
 
     @Resource
     private MovieOrderService movieOrderService;
+
+    @Resource
+    private EventOrderService eventOrderService;
 
     @GetMapping("/movie-search")
     public ResponseEntity<Object> searchMovieOrder(@RequestParam Long userId, @RequestParam String beginDate, @RequestParam Integer orderStatus, HttpServletRequest httpServletRequest) {
@@ -43,5 +47,15 @@ public class OrderController {
         DeleteMovieOrderRequest deleteMovieOrderRequest = new DeleteMovieOrderRequest();
         deleteMovieOrderRequest.setMovieOrderId(movieOrderId);
         return movieOrderService.deleteMovieOrder(deleteMovieOrderRequest, httpServletRequest);
+    }
+
+    @GetMapping("/event-search")
+    public ResponseEntity<Object> searchEventOrder(@RequestParam Long userId, @RequestParam Long eventId, @RequestParam String beginTime, @RequestParam Integer orderStatus, HttpServletRequest httpServletRequest) {
+        SearchEventOrderRequest searchEventOrderRequest = new SearchEventOrderRequest();
+        searchEventOrderRequest.setUserId(userId);
+        searchEventOrderRequest.setEventId(eventId);
+        searchEventOrderRequest.setBeginTime(beginTime);
+        searchEventOrderRequest.setOrderStatus(orderStatus);
+        return eventOrderService.searchEventOrder(searchEventOrderRequest, httpServletRequest);
     }
 }
