@@ -73,4 +73,11 @@ public class OrderController {
     public ResponseEntity<Object> eventRefundManage(@RequestBody EventRefundManageRequest eventRefundManageRequest, HttpServletRequest httpServletRequest) {
         return eventOrderService.eventRefundManage(eventRefundManageRequest, httpServletRequest);
     }
+
+    @DeleteMapping("/event-delete")
+    public ResponseEntity<Object> deleteEventOrder(@RequestParam Long eventOrderId, HttpServletRequest httpServletRequest) {
+        DeleteEventOrderRequest deleteEventOrderRequest = new DeleteEventOrderRequest();
+        deleteEventOrderRequest.setEventOrderId(eventOrderId);
+        return eventOrderService.deleteEventOrder(deleteEventOrderRequest, httpServletRequest);
+    }
 }

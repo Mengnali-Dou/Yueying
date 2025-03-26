@@ -10,10 +10,7 @@ import com.yueying.backendapi.model.domain.Event;
 import com.yueying.backendapi.model.domain.EventOrder;
 import com.yueying.backendapi.model.domain.EventPrice;
 import com.yueying.backendapi.model.domain.User;
-import com.yueying.backendapi.model.domain.request.BookEventRequest;
-import com.yueying.backendapi.model.domain.request.EventRefundManageRequest;
-import com.yueying.backendapi.model.domain.request.EventRefundRequest;
-import com.yueying.backendapi.model.domain.request.SearchEventOrderRequest;
+import com.yueying.backendapi.model.domain.request.*;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
 import com.yueying.backendapi.model.domain.response.EventOrderInfoDto;
 import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
@@ -30,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.yueying.backendapi.constant.EventConstant.*;
@@ -255,6 +253,39 @@ public class EventOrderServiceImpl extends ServiceImpl<EventOrderMapper, EventOr
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
         return ResponseEntity.ok(ResponseData.responseData(OK, MANAGE_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> deleteEventOrder(DeleteEventOrderRequest deleteEventOrderRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 订单是否存在
+        QueryWrapper<EventOrder> eventOrderQueryWrapper = new QueryWrapper<>();
+        eventOrderQueryWrapper.eq("order_id", deleteEventOrderRequest.getEventOrderId());
+        if (eventOrderMapper.selectCount(eventOrderQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, ORDER_NOT_FOUND, errorResponseDto));
+        }
+
+        // 是否已退票
+        EventOrder eventOrder = eventOrderMapper.selectById(deleteEventOrderRequest.getEventOrderId());
+        if (!Objects.equals(eventOrder.getOrderStatus(), ORDER_STATUS_REFUND_SUCCESSFUL)) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, ORDER_UN_REFUND, errorResponseDto));
+        }
+
+        // 删除
+        boolean deleted = this.removeById(deleteEventOrderRequest.getEventOrderId());
+        if (!deleted) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, DELETE_FAILED, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, DELETE_SUCCESSFULLY, successResponseDto));
     }
 
     /**
