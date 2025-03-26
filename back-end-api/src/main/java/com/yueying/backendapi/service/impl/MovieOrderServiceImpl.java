@@ -9,6 +9,7 @@ import com.yueying.backendapi.model.domain.MovieSession;
 import com.yueying.backendapi.model.domain.MovieSessionSeat;
 import com.yueying.backendapi.model.domain.User;
 import com.yueying.backendapi.model.domain.request.BookMovieRequest;
+import com.yueying.backendapi.model.domain.request.MovieRefundManageRequest;
 import com.yueying.backendapi.model.domain.request.MovieRefundRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieOrderRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
@@ -232,6 +233,56 @@ public class MovieOrderServiceImpl extends ServiceImpl<MovieOrderMapper, MovieOr
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
         return ResponseEntity.ok(ResponseData.responseData(OK, REFUND_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> movieRefundManage(MovieRefundManageRequest movieRefundManageRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto =  new ErrorResponseDto();
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 订单是否存在
+        QueryWrapper<MovieOrder> movieOrderQueryWrapper = new QueryWrapper<>();
+        movieOrderQueryWrapper.eq("order_id", movieRefundManageRequest.getMovieOrderId());
+        if (movieOrderMapper.selectCount(movieOrderQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, ORDER_NOT_FOUND, errorResponseDto));
+        }
+
+        // 处理
+        MovieOrder movieOrder = new MovieOrder();
+        movieOrder.setOrderId(movieRefundManageRequest.getMovieOrderId());
+        movieOrder.setOrderStatus(movieRefundManageRequest.getAgree() ? ORDER_STATUS_REFUND_SUCCESSFUL : ORDER_STATUS_REFUND_REQUEST_FAILED);
+        boolean manage = this.updateById(movieOrder);
+        if (!manage) {
+            return ResponseEntity.status(CONFLICT).body(ResponseData.responseData(CONFLICT, MANAGE_FAILED, errorResponseDto));
+        }
+
+        if (movieRefundManageRequest.getAgree()) {
+            // 场次座位+1
+            MovieOrder movieOrderInfo = movieOrderMapper.selectById(movieRefundManageRequest.getMovieOrderId());
+            UpdateWrapper<MovieSession> movieSessionUpdateWrapper = new UpdateWrapper<>();
+            movieSessionUpdateWrapper.eq("session_id", movieOrderInfo.getSessionId());
+            movieSessionUpdateWrapper.setSql("tickets_left = tickets_left + 1");
+            movieSessionMapper.update(movieSessionUpdateWrapper);
+
+            // 座位状态修改
+            String[] seatArea = movieOrderInfo.getSeat().split(",");
+            Integer row = Integer.parseInt(seatArea[0]);
+            Integer col = Integer.parseInt(seatArea[1]);
+            UpdateWrapper<MovieSessionSeat> movieSessionSeatUpdateWrapper = new UpdateWrapper<>();
+            movieSessionSeatUpdateWrapper.eq("session_id", movieOrderInfo.getSessionId());
+            movieSessionSeatUpdateWrapper.eq("row_numbers", row);
+            movieSessionSeatUpdateWrapper.eq("col_numbers", col);
+            movieSessionSeatUpdateWrapper.setSql("sold = 0");
+            movieSessionSeatMapper.update(movieSessionSeatUpdateWrapper);
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, MANAGE_SUCCESSFULLY, successResponseDto));
     }
 
     /**

@@ -55,7 +55,29 @@ public class OrderConstant {
     public static final String REFUND_SUCCESSFULLY = "退票申请成功";
 
     /**
+     * http请求失败信息
+     * 处理失败
+     */
+    public static final String MANAGE_FAILED = "处理失败";
+
+    /**
+     * http请求成功信息
+     * 处理成功
+     */
+    public static final String MANAGE_SUCCESSFULLY = "处理成功";
+
+    /**
      * 订单状态--退票申请
      */
     public static final Integer ORDER_STATUS_REFUND_REQUEST = 7;
+
+    /**
+     * 订单状态--退票成功
+     */
+    public static final Integer ORDER_STATUS_REFUND_SUCCESSFUL = 8;
+
+    /**
+     * 订单状态--退票申请失败
+     */
+    public static final Integer ORDER_STATUS_REFUND_REQUEST_FAILED = 9;
 }
