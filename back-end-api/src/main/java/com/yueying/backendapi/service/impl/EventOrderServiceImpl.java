@@ -11,6 +11,7 @@ import com.yueying.backendapi.model.domain.EventOrder;
 import com.yueying.backendapi.model.domain.EventPrice;
 import com.yueying.backendapi.model.domain.User;
 import com.yueying.backendapi.model.domain.request.BookEventRequest;
+import com.yueying.backendapi.model.domain.request.EventRefundManageRequest;
 import com.yueying.backendapi.model.domain.request.EventRefundRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventOrderRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
@@ -214,6 +215,46 @@ public class EventOrderServiceImpl extends ServiceImpl<EventOrderMapper, EventOr
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
         return ResponseEntity.ok(ResponseData.responseData(OK, REFUND_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> eventRefundManage(EventRefundManageRequest eventRefundManageRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 订单是否存在
+        QueryWrapper<EventOrder> eventOrderQueryWrapper = new QueryWrapper<>();
+        eventOrderQueryWrapper.eq("order_id", eventRefundManageRequest.getEventOrderId());
+        if (eventOrderMapper.selectCount(eventOrderQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, ORDER_NOT_FOUND, errorResponseDto));
+        }
+
+        // 处理
+        EventOrder eventOrder = new EventOrder();
+        eventOrder.setOrderId(eventRefundManageRequest.getEventOrderId());
+        eventOrder.setOrderStatus(eventRefundManageRequest.getAgree() ? ORDER_STATUS_REFUND_SUCCESSFUL : ORDER_STATUS_REFUND_REQUEST_FAILED);
+        boolean manage = this.updateById(eventOrder);
+        if (!manage) {
+            return ResponseEntity.status(CONFLICT).body(ResponseData.responseData(CONFLICT, MANAGE_FAILED, errorResponseDto));
+        }
+
+        if (eventRefundManageRequest.getAgree()) {
+            // 更新余票
+            EventOrder eventOrderInfo = eventOrderMapper.selectById(eventRefundManageRequest.getEventOrderId());
+            UpdateWrapper<EventPrice> eventPriceUpdateWrapper = new UpdateWrapper<>();
+            eventPriceUpdateWrapper.eq("event_id", eventOrderInfo.getEventId());
+            eventPriceUpdateWrapper.eq("seat_type", eventOrderInfo.getSeat());
+            eventPriceUpdateWrapper.setSql("tickets_left = tickets_left + 1");
+            eventPriceMapper.update(eventPriceUpdateWrapper);
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, MANAGE_SUCCESSFULLY, successResponseDto));
     }
 
     /**
