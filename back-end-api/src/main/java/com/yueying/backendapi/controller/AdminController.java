@@ -1,10 +1,8 @@
 package com.yueying.backendapi.controller;
 
-import com.yueying.backendapi.model.domain.request.AddCinemaAdminRequest;
-import com.yueying.backendapi.model.domain.request.DeleteCinemaAdminRequest;
-import com.yueying.backendapi.model.domain.request.SearchCinemaAdminRequest;
-import com.yueying.backendapi.model.domain.request.UpdateCinemaAdminRequest;
+import com.yueying.backendapi.model.domain.request.*;
 import com.yueying.backendapi.service.CinemaAdminService;
+import com.yueying.backendapi.service.EventAdminService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +14,9 @@ public class AdminController {
 
     @Resource
     private CinemaAdminService cinemaAdminService;
+
+    @Resource
+    private EventAdminService eventAdminService;
 
     @GetMapping("/cinema-search")
     public ResponseEntity<Object> searchCinemaAdmin(@RequestParam Long cinemaId, @RequestParam Long userId, HttpServletRequest httpServletRequest) {
@@ -40,5 +41,31 @@ public class AdminController {
         DeleteCinemaAdminRequest deleteCinemaAdminRequest = new DeleteCinemaAdminRequest();
         deleteCinemaAdminRequest.setCinemaAdminId(cinemaAdminId);
         return cinemaAdminService.deleteCinemaAdmin(deleteCinemaAdminRequest, httpServletRequest);
+    }
+
+    @GetMapping("/event-search")
+    public ResponseEntity<Object> searchEventAdmin(@RequestParam Long eventId, @RequestParam Long userId, HttpServletRequest httpServletRequest) {
+        SearchEventAdminRequest searchEventAdminRequest = new SearchEventAdminRequest();
+        searchEventAdminRequest.setEventId(eventId);
+        searchEventAdminRequest.setUserId(userId);
+        return eventAdminService.searchEventAdmin(searchEventAdminRequest, httpServletRequest);
+
+    }
+
+    @PostMapping("/event-add")
+    public ResponseEntity<Object> addEventAdmin(@RequestBody AddEventAdminRequest addEventAdminRequest, HttpServletRequest httpServletRequest) {
+        return eventAdminService.addEventAdmin(addEventAdminRequest, httpServletRequest);
+    }
+
+    @PutMapping("/event-update")
+    public ResponseEntity<Object> updateEventAdmin(@RequestBody UpdateEventAdminRequest updateEventAdminRequest, HttpServletRequest httpServletRequest) {
+        return eventAdminService.updateEventAdmin(updateEventAdminRequest, httpServletRequest);
+    }
+
+    @DeleteMapping("/event-delete")
+    public ResponseEntity<Object> deleteEventAdmin(@RequestParam Long eventAdminId, HttpServletRequest httpServletRequest) {
+        DeleteEventAdminRequest deleteEventAdminRequest = new DeleteEventAdminRequest();
+        deleteEventAdminRequest.setEventAdminId(eventAdminId);
+        return eventAdminService.deleteEventAdmin(deleteEventAdminRequest, httpServletRequest);
     }
 }
