@@ -3,6 +3,7 @@ package com.yueying.backendapi.service;
 import com.yueying.backendapi.model.domain.EventPrice;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yueying.backendapi.model.domain.request.AddEventPriceRequest;
+import com.yueying.backendapi.model.domain.request.DeleteEventPriceRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventPriceRequest;
 import com.yueying.backendapi.model.domain.request.UpdateEventPriceRequest;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,4 +38,12 @@ public interface EventPriceService extends IService<EventPrice> {
      * @return 是否修改成功
      */
     ResponseEntity<Object> updateEventPrice(UpdateEventPriceRequest updateEventPriceRequest, HttpServletRequest httpServletRequest);
+
+    /**
+     * 删除活动票价
+     * @param deleteEventPriceRequest 删除活动票价请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否删除成功
+     */
+    ResponseEntity<Object> deleteEventPrice(DeleteEventPriceRequest deleteEventPriceRequest, HttpServletRequest httpServletRequest);
 }

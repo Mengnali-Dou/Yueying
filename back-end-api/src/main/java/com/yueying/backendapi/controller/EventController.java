@@ -60,4 +60,11 @@ public class EventController {
     public ResponseEntity<Object> updateEventPrice(@RequestBody UpdateEventPriceRequest updateEventPriceRequest, HttpServletRequest httpServletRequest) {
         return eventPriceService.updateEventPrice(updateEventPriceRequest, httpServletRequest);
     }
+
+    @DeleteMapping("/delete-price")
+    public ResponseEntity<Object> deleteEventPrice(@RequestParam Long eventPriceId, HttpServletRequest httpServletRequest) {
+        DeleteEventPriceRequest deleteEventPriceRequest = new DeleteEventPriceRequest();
+        deleteEventPriceRequest.setEventPriceId(eventPriceId);
+        return eventPriceService.deleteEventPrice(deleteEventPriceRequest, httpServletRequest);
+    }
 }

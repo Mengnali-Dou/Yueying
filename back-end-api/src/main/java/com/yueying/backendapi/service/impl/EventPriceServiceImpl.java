@@ -8,6 +8,7 @@ import com.yueying.backendapi.model.domain.Event;
 import com.yueying.backendapi.model.domain.EventAdmin;
 import com.yueying.backendapi.model.domain.EventPrice;
 import com.yueying.backendapi.model.domain.request.AddEventPriceRequest;
+import com.yueying.backendapi.model.domain.request.DeleteEventPriceRequest;
 import com.yueying.backendapi.model.domain.request.SearchEventPriceRequest;
 import com.yueying.backendapi.model.domain.request.UpdateEventPriceRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
@@ -186,6 +187,50 @@ public class EventPriceServiceImpl extends ServiceImpl<EventPriceMapper, EventPr
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
         return ResponseEntity.ok(ResponseData.responseData(OK, UPDATE_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> deleteEventPrice(DeleteEventPriceRequest deleteEventPriceRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 必要参数是否为空
+        if (deleteEventPriceRequest.getEventPriceId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 活动票价是否存在
+        QueryWrapper<EventPrice> eventPriceQueryWrapper = new QueryWrapper<>();
+        eventPriceQueryWrapper.eq("price_id", deleteEventPriceRequest.getEventPriceId());
+        if (eventPriceMapper.selectCount(eventPriceQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, EVENT_PRICE_NONENTITY, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+        QueryWrapper<EventAdmin> eventAdminQueryWrapper = new QueryWrapper<>();
+        eventAdminQueryWrapper.eq("event_id", eventPriceMapper.selectById(deleteEventPriceRequest.getEventPriceId()).getEventId());
+        eventAdminQueryWrapper.eq("user_id", UserPublicClass.getUserId(httpServletRequest));
+        if (eventAdminMapper.selectCount(eventAdminQueryWrapper) <= 0) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 是否有票未退
+        EventPrice eventPrice = eventPriceMapper.selectById(deleteEventPriceRequest.getEventPriceId());
+        if (eventPrice.getTicketsLeft() < eventPrice.getTotalNum()) {
+            return ResponseEntity.status(CONFLICT).body(ResponseData.responseData(CONFLICT, HAS_TICKETS_HAVE_NOT_BEEN_REFUNDED, errorResponseDto));
+        }
+
+        // 删除
+        boolean deleteEventPrice = this.removeById(deleteEventPriceRequest.getEventPriceId());
+        if (!deleteEventPrice) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, DELETE_FAILED, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, DELETE_SUCCESSFULLY, successResponseDto));
     }
 
     /**
