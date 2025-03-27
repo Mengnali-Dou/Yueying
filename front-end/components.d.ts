@@ -8,6 +8,10 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AButton: typeof import('ant-design-vue/es')['Button']
+    ACard: typeof import('ant-design-vue/es')['Card']
+    AFlex: typeof import('ant-design-vue/es')['Flex']
+    ASpace: typeof import('ant-design-vue/es')['Space']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCard: typeof import('element-plus/es')['ElCard']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
