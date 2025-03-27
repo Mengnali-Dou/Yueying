@@ -1,0 +1,10 @@
+{
+	"tabWith": 2,
+	"useTabs": true,
+	"semi": true,
+	"singleQuote": false,
+	"bracketSpacing": true,
+	"bracketSameLing": false,
+	"arrowParens": "always",
+	"vueIndentScriptAndStyle": false
+}
