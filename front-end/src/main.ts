@@ -4,11 +4,14 @@ import App from "./App.vue";
 import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import { setupI18n } from "./plugins/i18n.ts";
+import axios from "axios";
 
 const pinia = createPinia();
 const app = createApp(App);
 
 pinia.use(piniaPluginPersistedstate);
+
+axios.defaults.baseURL = "/api";
 
 setupI18n(app);
 
