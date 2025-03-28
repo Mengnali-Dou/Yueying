@@ -1,0 +1,1 @@
+{"root":["./src/main.ts","./src/vite-env.d.ts","./src/@types/viewmodel/login.viewmodel.ts","./src/constant/http-request-message-constant.ts","./src/generate/api-client/request.api.ts","./src/locales/index.ts","./src/locales/lang/en_us.ts","./src/locales/lang/zh_cn.ts","./src/plugins/i18n.ts","./src/router/index.ts","./src/app.vue","./src/views/login.vue"],"version":"5.7.3"}

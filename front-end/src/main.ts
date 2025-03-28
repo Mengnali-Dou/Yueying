@@ -3,7 +3,7 @@ import router from "@/router";
 import App from "./App.vue";
 import { createApp } from "vue";
 import { createPinia } from "pinia";
-import { setupI18n } from "./plugins/i18n.ts";
+import { setupI18n } from "@/plugins/i18n";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
 import "@/style/login.scss";

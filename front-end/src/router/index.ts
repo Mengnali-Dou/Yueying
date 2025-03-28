@@ -1,8 +1,14 @@
 import { createRouter, createWebHistory } from "vue-router";
 
+const Home = import("@/views/Home.vue");
 const Login = import("@/views/Login.vue");
 
 const routers = [
+	{
+		path: "/",
+		name: "",
+		component: Home,
+	},
 	{
 		path: "/login",
 		name: "login",
@@ -19,11 +25,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, __from, next) => {
-	if (
-		to.name !== "login" &&
-		to.name !== "register" &&
-		!sessionStorage.getItem("userId")
-	) {
+	if (to.name !== "login" && to.name !== "register" && !sessionStorage.getItem("userId")) {
 		next({
 			name: "login",
 			query: {

@@ -2,6 +2,7 @@
 	"tabWith": 2,
 	"useTabs": true,
 	"semi": true,
+	"printWidth": 120,
 	"singleQuote": false,
 	"bracketSpacing": true,
 	"bracketSameLing": false,
