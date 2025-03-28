@@ -327,6 +327,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         userInfoDto.setEmail(user.getEmail());
         userInfoDto.setCreateTime(user.getCreateTime());
         userInfoDto.setUserRole(user.getUserRole() == null ? 0 : user.getUserRole());
+        userInfoDto.setUserStatus(user.getUserStatus());
         return userInfoDto;
     }
 }

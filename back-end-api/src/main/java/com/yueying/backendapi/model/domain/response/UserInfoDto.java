@@ -55,4 +55,9 @@ public class UserInfoDto {
      * 用户角色
      */
     private int userRole;
+
+    /**
+     * 用户账号状态 0 - 正常 1 - 密码重置 2 - 账号注销
+     */
+    private Integer userStatus;
 }
