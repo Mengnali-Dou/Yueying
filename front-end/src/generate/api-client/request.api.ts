@@ -13,11 +13,10 @@ requestApi.interceptors.request.use((config) => {
 
 requestApi.interceptors.response.use(
 	(response) => {
-		console.log("request.api.ts response:", response);
 		return response;
 	},
 	(error) => {
-		if (error.response.date.message === httpRequestMessageConstant.userNotLoggedIn) {
+		if (error.response.data.message === httpRequestMessageConstant.userNotLoggedIn) {
 			router.push("/login").then(() => {
 				return;
 			});

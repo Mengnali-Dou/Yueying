@@ -10,11 +10,10 @@ import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
 import LoginUserInfoViewModel from "@/@types/viewmodel/login.viewmodel.ts";
 
 // shared utils
-import { ApiResponse } from "@/generate/response/api-response.ts";
+import { ApiResponse, UserInfoResponse } from "@/generate/response/responses.ts";
 import { LoginRequest } from "@/generate/request/login-request.ts";
 import { loginApi } from "@/generate/api-client/user-management.api.ts";
 import { passwordCheck, userAccountCheck } from "@/shared/form-schema.ts";
-import { UserInfoResponse } from "@/generate/response/user-info-response.ts";
 import { responseStatusConstant } from "@/constant/response-status-constant.ts";
 import { saveUserInfo } from "@/shared/user-info.ts";
 import { userStatusConstant } from "@/constant/user-status-constant.ts";

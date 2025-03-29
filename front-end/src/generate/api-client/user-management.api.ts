@@ -1,4 +1,4 @@
-import { LoginRequest } from "@/generate/request/requests.ts";
+import { LoginRequest, LogoutRequest } from "@/generate/request/requests.ts";
 import requestApi from "@/generate/api-client/request.api.ts";
 
 /**
@@ -11,5 +11,18 @@ export const loginApi = (loginRequest: LoginRequest) => {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		data: loginRequest,
+	});
+};
+
+/**
+ * 退出登录API
+ * @param logoutRequest 退出登录请求体
+ */
+export const logoutApi = (logoutRequest: LogoutRequest) => {
+	return requestApi({
+		url: "/user/logout",
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		data: logoutRequest,
 	});
 };

@@ -3,11 +3,24 @@ import { createRouter, createWebHistory } from "vue-router";
 const Home = import("@/views/Home.vue");
 const Login = import("@/views/Login.vue");
 
+const SystemLayout = import("@/components/system-layout/SystemLayout.vue");
+
 const routers = [
 	{
 		path: "/",
 		name: "",
-		component: Home,
+		component: SystemLayout,
+		children: [
+			{
+				path: "",
+				name: "home",
+				component: Home,
+				meta: {
+					keepalive: true,
+					breadcrumbName: "首页",
+				},
+			},
+		],
 	},
 	{
 		path: "/login",

@@ -6,6 +6,7 @@ import { createPinia } from "pinia";
 import { setupI18n } from "@/plugins/i18n";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
+import "@/style/index.scss";
 import "@/style/login.scss";
 
 const pinia = createPinia();
