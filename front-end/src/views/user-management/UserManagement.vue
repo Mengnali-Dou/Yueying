@@ -30,6 +30,7 @@ import { userRoleConstant } from "@/constant/user-role.ts";
 import { accountStatus } from "@/constant/account-status.ts";
 import { responseStatusConstant } from "@/constant/response-status-constant.ts";
 import UpdateUserInfoDialog from "@/views/user-management/component/UpdateUserInfoDialog.vue";
+import DeleteUserDialog from "@/views/user-management/component/DeleteUserDialog.vue";
 
 // i18n
 const { t } = useI18n();
@@ -49,6 +50,8 @@ const state = reactive({
 	registerDialogVisible: false as boolean,
 	// 修改用户信息对话框显示状态
 	updateUserInfoDialogVisible: false as boolean,
+	// 删除用户对话框显示状态
+	deleteUserDialogVisible: false as boolean,
 });
 
 onMounted(async () => {
@@ -87,7 +90,7 @@ const resetPassword = () => {
 
 // 删除用户
 const deleteUser = () => {
-	console.log("deleteUser");
+	state.deleteUserDialogVisible = true;
 };
 
 // 选择行
@@ -240,6 +243,11 @@ const convertUserInfoResponseToUserInfoViewModel = (userInfoResponse: UserInfoRe
 	<RegisterDialog v-model:dialogVisible="state.registerDialogVisible" @updateUserInfo="searchUserInfoList" />
 	<UpdateUserInfoDialog
 		v-model:dialogVisible="state.updateUserInfoDialogVisible"
+		:modelValue="state.selectedUserInfo"
+		@updateUserInfo="searchUserInfoList"
+	/>
+	<DeleteUserDialog
+		v-model:dialogVisible="state.deleteUserDialogVisible"
 		:modelValue="state.selectedUserInfo"
 		@updateUserInfo="searchUserInfoList"
 	/>

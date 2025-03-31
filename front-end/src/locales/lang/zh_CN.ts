@@ -2,6 +2,7 @@ export default {
 	message: {
 		pleaseInputValue: "请输入{inputValue}",
 		pleaseSelectGender: "请选择性别",
+		confirmThatYouWantToDeleteTheUser: "确认要删除用户“{userName}”吗？",
 	},
 	app: {
 		// 页面

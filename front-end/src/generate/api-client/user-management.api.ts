@@ -70,3 +70,15 @@ export const updateUserInfoApi = (updateUserInfoRequest: UpdateUserInfoRequest) 
 		data: updateUserInfoRequest,
 	});
 };
+
+/**
+ * 删除用户
+ * @param userId 用户id
+ */
+export const deleteUserApi = (userId: number) => {
+	return requestApi({
+		url: `/user/delete?userId=${userId}`,
+		method: "DELETE",
+		headers: { "Content-Type": "application/json" },
+	});
+};
