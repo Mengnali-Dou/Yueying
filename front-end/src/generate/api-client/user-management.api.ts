@@ -1,5 +1,18 @@
-import { LoginRequest, LogoutRequest, SearchUserRequest } from "@/generate/request/requests.ts";
+import { LoginRequest, LogoutRequest, RegisterRequest, SearchUserRequest } from "@/generate/request/requests.ts";
 import requestApi from "@/generate/api-client/request.api.ts";
+
+/**
+ * 注册API
+ * @param registerRequest 注册请求体
+ */
+export const registerApi = (registerRequest: RegisterRequest) => {
+	return requestApi({
+		url: "/user/register",
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		data: registerRequest,
+	});
+};
 
 /**
  * 用户登录API
@@ -33,7 +46,7 @@ export const logoutApi = (logoutRequest: LogoutRequest) => {
  */
 export const searchUserInfoApi = (searchUserRequest: SearchUserRequest) => {
 	return requestApi({
-		url: `/user/search?userId=${searchUserRequest.userId}&userAccount=${searchUserRequest.userAccount}&userName=${searchUserRequest.userName}`,
+		url: `/user/search?userAccount=${searchUserRequest.userAccount}&userName=${searchUserRequest.userName}`,
 		method: "GET",
 		headers: { "Content-Type": "application/json" },
 	});

@@ -1,5 +1,7 @@
 export default {
-	message: {},
+	message: {
+		pleaseInputValue: "请输入{inputValue}",
+	},
 	app: {
 		// 页面
 		loginTitle: "登录",
@@ -13,6 +15,8 @@ export default {
 		modifyUserInfo: "修改用户信息",
 		resetPassword: "重置密码",
 		deleteUser: "删除用户",
+		cancel: "取消",
+		confirm: "确定",
 
 		// 表单
 		userId: "用户ID",

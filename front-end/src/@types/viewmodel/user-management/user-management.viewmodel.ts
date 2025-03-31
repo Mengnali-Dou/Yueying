@@ -43,3 +43,29 @@ export interface SearchUserViewModel {
 	// 用户名
 	userName?: string;
 }
+
+/**
+ * 注册用户信息
+ */
+export interface RegisterViewModel {
+	// 账号
+	userAccount: string;
+
+	// 用户名
+	userName: string;
+
+	// 密码
+	password: string;
+
+	// 性别 0 - 男 1 - 女
+	gender: number;
+
+	// 头像
+	avatar?: string;
+
+	// 电话
+	phone?: string;
+
+	// email
+	email?: string;
+}

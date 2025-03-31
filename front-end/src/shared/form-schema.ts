@@ -37,3 +37,33 @@ export const userAccountCheck = async (_rule: Rule, account: string) => {
 	}
 	await Promise.resolve();
 };
+
+/**
+ * 电话格式校验
+ * @param _rule
+ * @param phone
+ */
+export const phoneCheck = async (_rule: Rule, phone: string) => {
+	if (phone === "" || phone === undefined) {
+		return Promise.resolve();
+	}
+	const regx = /^(13[0-9]|14[5|7]|15[0-9]|18[0-9])\d{8}$/;
+	if (!regx.test(phone)) {
+		return Promise.reject("请输入正确电话");
+	}
+};
+
+/**
+ * email格式校验
+ * @param _rule
+ * @param email
+ */
+export const emailCheck = async (_rule: Rule, email: string) => {
+	if (email === "" || email === undefined) {
+		return Promise.resolve();
+	}
+	const regx = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+	if (!regx.test(email)) {
+		return Promise.reject("请输入正确Email");
+	}
+};

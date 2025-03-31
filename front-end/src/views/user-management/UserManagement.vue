@@ -5,23 +5,30 @@ export default {
 </script>
 
 <script setup lang="ts">
+// frameworks
 import { useI18n } from "vue-i18n";
+import { computed, h, onMounted, reactive } from "vue";
+
+// components
+import { SearchOutlined } from "@ant-design/icons-vue";
 import { message, TableColumnsType } from "ant-design-vue";
+import RegisterDialog from "@/views/user-management/component/RegisterDialog.vue";
+
+// api
+import { SearchUserRequest } from "@/generate/request/requests.ts";
+import { ApiResponse, UserInfoResponse } from "@/generate/response/responses.ts";
+import { searchUserInfoApi } from "@/generate/api-client/user-management.api.ts";
+
+// shared utils
 import {
 	SearchUserViewModel,
 	UserInfoViewModel,
 } from "@/@types/viewmodel/user-management/user-management.viewmodel.ts";
-import { computed, h, onMounted, reactive } from "vue";
+import { getDate } from "@/shared/date-format.ts";
+import { genderConstant } from "@/constant/gender.ts";
 import { userRoleConstant } from "@/constant/user-role.ts";
 import { accountStatus } from "@/constant/account-status.ts";
-import { SearchOutlined } from "@ant-design/icons-vue";
-import { searchUserInfoApi } from "@/generate/api-client/user-management.api.ts";
-import { ApiResponse } from "@/generate/response/api-response.ts";
-import { UserInfoResponse } from "@/generate/response/user-info-response.ts";
-import { SearchUserRequest } from "@/generate/request/search-user-request.ts";
-import { genderConstant } from "@/constant/gender.ts";
 import { responseStatusConstant } from "@/constant/response-status-constant.ts";
-import { getDate } from "@/shared/date-format.ts";
 
 // i18n
 const { t } = useI18n();
@@ -37,6 +44,8 @@ const state = reactive({
 	selectedUserInfo: {} as UserInfoViewModel,
 	// 搜索用户表单
 	searchUser: {} as SearchUserViewModel,
+	// 注册对话框显示状态
+	registerDialogVisible: false as boolean,
 });
 
 onMounted(async () => {
@@ -56,6 +65,11 @@ const searchUserInfoList = async () => {
 	} else {
 		message.error(searchUserInfoResponse.message);
 	}
+};
+
+// 注册
+const registerUser = () => {
+	state.registerDialogVisible = true;
 };
 
 // 修改用户信息
@@ -168,7 +182,7 @@ const convertUserInfoResponseToUserInfoViewModel = (userInfoResponse: UserInfoRe
 		<a-input v-model:value="state.searchUser.userAccount" :placeholder="t('app.account')" allow-clear />
 		<a-input v-model:value="state.searchUser.userName" :placeholder="t('app.userName')" allow-clear />
 		<a-button type="primary" @click="searchUserInfoList()" :icon="h(SearchOutlined)" />
-		<a-button type="default">{{ t("app.register") }}</a-button>
+		<a-button type="default" @click="registerUser">{{ t("app.register") }}</a-button>
 		<a-button type="primary" :disabled="userManagementButtonsDisabled" @click="updateUserInfo">
 			{{ t("app.modifyUserInfo") }}
 		</a-button>
@@ -220,6 +234,7 @@ const convertUserInfoResponseToUserInfoViewModel = (userInfoResponse: UserInfoRe
 			</template>
 		</template>
 	</a-table>
+	<RegisterDialog v-model:dialogVisible="state.registerDialogVisible" @updateUserInfo="searchUserInfoList" />
 </template>
 
 <style scoped></style>
