@@ -10,17 +10,19 @@ import { useI18n } from "vue-i18n";
 import { reactive, ref } from "vue";
 
 // components
+import { message } from "ant-design-vue";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons-vue";
 import BreadCrumb from "@/components/system-layout/component/BreadCrumb.vue";
 
-// shared utils
-import { clearUserInfo, getAvatarUrl, getUserId } from "@/shared/user-info.ts";
+// api
 import { LogoutRequest } from "@/generate/request/requests.ts";
-import { logoutApi } from "@/generate/api-client/user-management.api.ts";
 import { ApiResponse } from "@/generate/response/responses.ts";
-import { responseStatusConstant } from "@/constant/response-status-constant.ts";
-import { message } from "ant-design-vue";
+import { logoutApi } from "@/generate/api-client/user-management.api.ts";
+
+// shared utils
 import router from "@/router";
+import { clearUserInfo, getAvatarUrl, getUserId } from "@/shared/user-info.ts";
+import { responseStatusConstant } from "@/constant/response-status-constant.ts";
 
 // i18n
 const { t } = useI18n();
@@ -47,7 +49,7 @@ const sideNavInfo = reactive({
 		{
 			navId: "1",
 			title: t("app.userManagement"),
-			path: "/userManagement",
+			path: "/user-management",
 			child: [],
 		},
 	],

@@ -9,15 +9,17 @@ import { message } from "ant-design-vue";
 import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
 import LoginUserInfoViewModel from "@/@types/viewmodel/login.viewmodel.ts";
 
-// shared utils
-import { ApiResponse, UserInfoResponse } from "@/generate/response/responses.ts";
+// api
 import { LoginRequest } from "@/generate/request/login-request.ts";
 import { loginApi } from "@/generate/api-client/user-management.api.ts";
-import { passwordCheck, userAccountCheck } from "@/shared/form-schema.ts";
-import { responseStatusConstant } from "@/constant/response-status-constant.ts";
+import { ApiResponse, UserInfoResponse } from "@/generate/response/responses.ts";
+
+// shared utils
+import router from "@/router";
 import { saveUserInfo } from "@/shared/user-info.ts";
 import { userStatusConstant } from "@/constant/user-status-constant.ts";
-import router from "@/router";
+import { passwordCheck, userAccountCheck } from "@/shared/form-schema.ts";
+import { responseStatusConstant } from "@/constant/response-status-constant.ts";
 
 const formRef = ref();
 

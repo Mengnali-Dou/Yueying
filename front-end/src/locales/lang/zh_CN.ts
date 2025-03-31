@@ -9,9 +9,32 @@ export default {
 		// 动作
 		login: "登录",
 		logout: "退出登录",
+		register: "注册",
+		modifyUserInfo: "修改用户信息",
+		resetPassword: "重置密码",
+		deleteUser: "删除用户",
 
 		// 表单
+		userId: "用户ID",
 		account: "账号",
+		userName: "用户名",
 		password: "密码",
+		gender: "性别",
+		phone: "电话",
+		email: "Email",
+		registerDateTime: "注册时间",
+		userRole: "用户角色",
+		userStatus: "账号状态",
+		normalUser: "普通用户",
+		systemAdmin: "系统管理员",
+		cinemaAdmin: "影院管理员",
+		eventAdmin: "活动管理员",
+		normalAccount: "正常",
+		passwordReset: "密码重置",
+		cancellation: "注销",
+
+		// 数据
+		male: "男",
+		female: "女",
 	},
 };

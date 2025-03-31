@@ -1,4 +1,4 @@
-import { LoginRequest, LogoutRequest } from "@/generate/request/requests.ts";
+import { LoginRequest, LogoutRequest, SearchUserRequest } from "@/generate/request/requests.ts";
 import requestApi from "@/generate/api-client/request.api.ts";
 
 /**
@@ -24,5 +24,17 @@ export const logoutApi = (logoutRequest: LogoutRequest) => {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		data: logoutRequest,
+	});
+};
+
+/**
+ * 搜索用户API
+ * @param searchUserRequest 搜索用户请求体
+ */
+export const searchUserInfoApi = (searchUserRequest: SearchUserRequest) => {
+	return requestApi({
+		url: `/user/search?userId=${searchUserRequest.userId}&userAccount=${searchUserRequest.userAccount}&userName=${searchUserRequest.userName}`,
+		method: "GET",
+		headers: { "Content-Type": "application/json" },
 	});
 };

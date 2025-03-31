@@ -1,9 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { userManagementRoutes } from "@/router/user-management/user-management-router.ts";
 
-const Home = import("@/views/Home.vue");
-const Login = import("@/views/Login.vue");
+const Home = () => import("@/views/Home.vue");
+const Login = () => import("@/views/Login.vue");
 
-const SystemLayout = import("@/components/system-layout/SystemLayout.vue");
+const SystemLayout = () => import("@/components/system-layout/SystemLayout.vue");
 
 const routers = [
 	{
@@ -20,6 +21,7 @@ const routers = [
 					breadcrumbName: "首页",
 				},
 			},
+			...userManagementRoutes,
 		],
 	},
 	{

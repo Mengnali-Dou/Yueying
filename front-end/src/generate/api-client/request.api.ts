@@ -21,7 +21,7 @@ requestApi.interceptors.response.use(
 				return;
 			});
 		}
-		return error.response.data;
+		return error.response;
 	},
 );
 
