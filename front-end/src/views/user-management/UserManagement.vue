@@ -29,6 +29,7 @@ import { genderConstant } from "@/constant/gender.ts";
 import { userRoleConstant } from "@/constant/user-role.ts";
 import { accountStatus } from "@/constant/account-status.ts";
 import { responseStatusConstant } from "@/constant/response-status-constant.ts";
+import UpdateUserInfoDialog from "@/views/user-management/component/UpdateUserInfoDialog.vue";
 
 // i18n
 const { t } = useI18n();
@@ -46,6 +47,8 @@ const state = reactive({
 	searchUser: {} as SearchUserViewModel,
 	// 注册对话框显示状态
 	registerDialogVisible: false as boolean,
+	// 修改用户信息对话框显示状态
+	updateUserInfoDialogVisible: false as boolean,
 });
 
 onMounted(async () => {
@@ -74,7 +77,7 @@ const registerUser = () => {
 
 // 修改用户信息
 const updateUserInfo = () => {
-	console.log("updateUserInfo");
+	state.updateUserInfoDialogVisible = true;
 };
 
 // 重置密码
@@ -235,6 +238,11 @@ const convertUserInfoResponseToUserInfoViewModel = (userInfoResponse: UserInfoRe
 		</template>
 	</a-table>
 	<RegisterDialog v-model:dialogVisible="state.registerDialogVisible" @updateUserInfo="searchUserInfoList" />
+	<UpdateUserInfoDialog
+		v-model:dialogVisible="state.updateUserInfoDialogVisible"
+		:modelValue="state.selectedUserInfo"
+		@updateUserInfo="searchUserInfoList"
+	/>
 </template>
 
 <style scoped></style>

@@ -1,4 +1,10 @@
-import { LoginRequest, LogoutRequest, RegisterRequest, SearchUserRequest } from "@/generate/request/requests.ts";
+import {
+	LoginRequest,
+	LogoutRequest,
+	RegisterRequest,
+	SearchUserRequest,
+	UpdateUserInfoRequest,
+} from "@/generate/request/requests.ts";
 import requestApi from "@/generate/api-client/request.api.ts";
 
 /**
@@ -49,5 +55,18 @@ export const searchUserInfoApi = (searchUserRequest: SearchUserRequest) => {
 		url: `/user/search?userAccount=${searchUserRequest.userAccount}&userName=${searchUserRequest.userName}`,
 		method: "GET",
 		headers: { "Content-Type": "application/json" },
+	});
+};
+
+/**
+ * 修改用户信息API
+ * @param updateUserInfoRequest 修改用户信息请求体
+ */
+export const updateUserInfoApi = (updateUserInfoRequest: UpdateUserInfoRequest) => {
+	return requestApi({
+		url: "/user/update",
+		method: "PUT",
+		headers: { "Content-Type": "application/json" },
+		data: updateUserInfoRequest,
 	});
 };

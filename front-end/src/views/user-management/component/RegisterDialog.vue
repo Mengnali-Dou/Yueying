@@ -1,15 +1,22 @@
 <script setup lang="ts">
+// frameworks
 import { useI18n } from "vue-i18n";
 import { computed, reactive, ref } from "vue";
-import { RegisterViewModel } from "@/@types/viewmodel/user-management/user-management.viewmodel.ts";
-import { genderConstant } from "@/constant/gender.ts";
+
+// components
 import { Rule } from "ant-design-vue/es/form";
-import { emailCheck, passwordCheck, phoneCheck, userAccountCheck } from "@/shared/form-schema.ts";
-import { registerApi } from "@/generate/api-client/user-management.api.ts";
-import { RegisterRequest } from "@/generate/request/register-request.ts";
-import { ApiResponse } from "@/generate/response/api-response.ts";
-import { responseStatusConstant } from "@/constant/response-status-constant.ts";
 import { message } from "ant-design-vue";
+
+// api
+import { RegisterRequest } from "@/generate/request/requests.ts";
+import { ApiResponse } from "@/generate/response/responses.ts";
+import { registerApi } from "@/generate/api-client/user-management.api.ts";
+
+// shared utils
+import { genderConstant } from "@/constant/gender.ts";
+import { responseStatusConstant } from "@/constant/response-status-constant.ts";
+import { emailCheck, passwordCheck, phoneCheck, userAccountCheck } from "@/shared/form-schema.ts";
+import { RegisterViewModel } from "@/@types/viewmodel/user-management/user-management.viewmodel.ts";
 
 const formRef = ref();
 

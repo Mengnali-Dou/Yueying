@@ -1,6 +1,7 @@
 export default {
 	message: {
 		pleaseInputValue: "请输入{inputValue}",
+		pleaseSelectGender: "请选择性别",
 	},
 	app: {
 		// 页面
