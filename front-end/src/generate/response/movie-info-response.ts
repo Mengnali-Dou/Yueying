@@ -1,7 +1,7 @@
 /**
  * 影片信息
  */
-export interface MovieInfoViewModel {
+export interface MovieInfoResponse {
 	// id
 	movieId: number;
 
@@ -28,15 +28,4 @@ export interface MovieInfoViewModel {
 
 	// 影片简介
 	movieProfile?: string;
-}
-
-/**
- * 搜索影片信息
- */
-export interface SearchMovieInfoViewModel {
-	// 影片名
-	movieName?: string;
-
-	// 影片类型
-	movieType?: string;
 }

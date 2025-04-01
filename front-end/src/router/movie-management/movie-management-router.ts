@@ -1,5 +1,5 @@
-const MovieManagement = import("@/views/movie-management/MovieManagement.vue");
-const EmptyLayout = import("@/components/EmptyLayout.vue");
+const MovieManagement = () => import("@/views/movie-management/MovieManagement.vue");
+const EmptyLayout = () => import("@/components/EmptyLayout.vue");
 
 export const movieManagementRoutes = [
 	{

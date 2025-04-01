@@ -6,38 +6,53 @@ export default {
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
-import { computed, h, reactive } from "vue";
+import { computed, h, onMounted, reactive } from "vue";
 import { SearchOutlined } from "@ant-design/icons-vue";
-import { TableColumnsType } from "ant-design-vue";
-import { MovieInfoViewModel } from "@/@types/viewmodel/movie-management/movie-management.viewmodel.ts";
+import { message, TableColumnsType } from "ant-design-vue";
+import {
+	MovieInfoViewModel,
+	SearchMovieInfoViewModel,
+} from "@/@types/viewmodel/movie-management/movie-management.viewmodel.ts";
+import { SearchMovieInfoRequest } from "@/generate/request/search-movie-info-request.ts";
+import { searchMovieInfoApi } from "@/generate/api-client/movie-management.api.ts";
+import { ApiResponse } from "@/generate/response/api-response.ts";
+import { MovieInfoResponse } from "@/generate/response/movie-info-response.ts";
+import { responseStatusConstant } from "@/constant/response-status-constant.ts";
+import { getDateTime } from "@/shared/date-format.ts";
 
 // i18n
 const { t } = useI18n();
 
 type Key = string | number;
 
+onMounted(async () => {
+	await searchMovieInfoList();
+});
+
 const state = reactive({
+	// 搜索影片信息表单
+	searchMovieInfoForm: {} as SearchMovieInfoViewModel,
 	// 选择影片信息
 	selectMovieInfo: {} as MovieInfoViewModel,
 	// 影片信息列表
-	movieInfoList: [
-		{
-			movieId: 12341234,
-			movieName: "影片名影片名影片名影片名影片名",
-			movieType: "影片类型,影片类型,影片类型,影片类型",
-			releaseDate: "2025-04-01 00:00:00",
-			movieDuration: "888分钟",
-			mainActor: "演员A,演员B,演员C",
-			movieProfile: "影片简介影片简介影片简介影片简介影片简介影片简介影片简介影片简介影片简介影片简介影片简介影片简介",
-		},
-	] as MovieInfoViewModel[],
+	movieInfoList: [] as MovieInfoViewModel[],
 	// 选择行
 	selectedKeys: [] as Key[],
 });
 
 // 搜索影片
-const searchMovieInfoList = () => {
-	console.log("searchMovieInfoList");
+const searchMovieInfoList = async () => {
+	state.movieInfoList = [] as MovieInfoViewModel[];
+	const searchMovieInfoResponse = (
+		await searchMovieInfoApi(convertSearchMovieInfoViewModelToSearchMovieInfoRequest(state.searchMovieInfoForm))
+	).data as ApiResponse<MovieInfoResponse[]>;
+	if (searchMovieInfoResponse.status === responseStatusConstant.OK) {
+		searchMovieInfoResponse.data.forEach((item) => {
+			state.movieInfoList.push(convertMovieInfoResponseToMovieInfoViewModel(item));
+		});
+	} else {
+		message.error(searchMovieInfoResponse.message);
+	}
 };
 
 // 添加影片
@@ -72,6 +87,29 @@ const onSelectAll = () => {
 		state.selectedKeys = [] as Key[];
 		state.selectMovieInfo = {} as MovieInfoViewModel;
 	}
+};
+
+const convertSearchMovieInfoViewModelToSearchMovieInfoRequest = (
+	searchMovieInfoViewModel: SearchMovieInfoViewModel,
+): SearchMovieInfoRequest => {
+	return {
+		movieName: searchMovieInfoViewModel.movieName ?? "",
+		movieType: searchMovieInfoViewModel.movieType ?? "",
+	} as SearchMovieInfoRequest;
+};
+
+const convertMovieInfoResponseToMovieInfoViewModel = (movieInfoResponse: MovieInfoResponse): MovieInfoViewModel => {
+	return {
+		movieId: movieInfoResponse.movieId,
+		movieName: movieInfoResponse.movieName,
+		movieType: movieInfoResponse.movieType,
+		movieCoverLarge: movieInfoResponse.movieCoverLarge ?? "",
+		movieCoverSmall: movieInfoResponse.movieCoverSmall ?? "",
+		releaseDate: getDateTime(movieInfoResponse.releaseDate),
+		movieDuration: movieInfoResponse.movieDuration,
+		mainActor: movieInfoResponse.mainActor ?? "--",
+		movieProfile: movieInfoResponse.movieProfile ?? "--",
+	} as MovieInfoViewModel;
 };
 
 // 修改、删除影片按钮激活状态
