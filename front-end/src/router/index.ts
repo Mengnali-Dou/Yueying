@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { userManagementRoutes } from "@/router/user-management/user-management-router.ts";
+import { movieManagementRoutes } from "@/router/movie-management/movie-management-router.ts";
 
 const Home = () => import("@/views/Home.vue");
 const Login = () => import("@/views/Login.vue");
@@ -22,6 +23,7 @@ const routers = [
 				},
 			},
 			...userManagementRoutes,
+			...movieManagementRoutes,
 		],
 	},
 	{

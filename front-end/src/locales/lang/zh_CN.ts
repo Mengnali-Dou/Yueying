@@ -9,6 +9,7 @@ export default {
 		loginTitle: "登录",
 		home: "首页",
 		userManagement: "用户管理",
+		movieManagement: "影片管理",
 
 		// 动作
 		login: "登录",
@@ -19,6 +20,9 @@ export default {
 		deleteUser: "删除用户",
 		cancel: "取消",
 		confirm: "确定",
+		addMovie: "添加影片",
+		updateMovieInfo: "修改影片信息",
+		deleteMovie: "删除影片",
 
 		// 表单
 		userId: "用户ID",
@@ -38,6 +42,13 @@ export default {
 		normalAccount: "正常",
 		passwordReset: "密码重置",
 		cancellation: "注销",
+		movieName: "影片名",
+		movieType: "影片类型",
+		movieId: "影片ID",
+		releaseDate: "上映时间",
+		movieDuration: "影片时长",
+		mainActor: "主要演员",
+		movieProfile: "影片简介",
 
 		// 数据
 		male: "男",

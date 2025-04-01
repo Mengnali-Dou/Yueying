@@ -52,6 +52,12 @@ const sideNavInfo = reactive({
 			path: "/user-management",
 			child: [],
 		},
+		{
+			navId: "2",
+			title: t("app.movieManagement"),
+			path: "/movie-management",
+			child: [],
+		},
 	],
 });
 
