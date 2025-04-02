@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yueying.backendapi.model.domain.MovieType;
 import com.yueying.backendapi.model.domain.request.AddMovieTypeRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieTypeRequest;
+import com.yueying.backendapi.model.domain.request.UpdateMovieTypeRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
 import com.yueying.backendapi.model.domain.response.MovieTypeDto;
 import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.yueying.backendapi.constant.MovieMessage.*;
 import static com.yueying.backendapi.constant.ResponseStatus.*;
 import static com.yueying.backendapi.constant.UniversalConstant.*;
 
@@ -69,6 +71,42 @@ public class MovieTypeServiceImpl extends ServiceImpl<MovieTypeMapper, MovieType
         boolean addMovieType = this.save(movieType);
         if (!addMovieType) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, FAILED_TO_INSERT, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> updateMovieType(UpdateMovieTypeRequest updateMovieTypeRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 必要参数是否为空
+        if (StringUtils.isBlank(updateMovieTypeRequest.getMovieTypeName()) || updateMovieTypeRequest.getMovieTypeId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 是否存在
+        QueryWrapper<MovieType> movieTypeQueryWrapper = new QueryWrapper<>();
+        movieTypeQueryWrapper.eq("movie_type_id", updateMovieTypeRequest.getMovieTypeId());
+        if (movieTypeMapper.selectCount(movieTypeQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, MOVIE_TYPE_NONENTITY, errorResponseDto));
+        }
+
+        // 修改
+        MovieType movieType = new MovieType();
+        movieType.setMovieTypeId(updateMovieTypeRequest.getMovieTypeId());
+        movieType.setMovieType(updateMovieTypeRequest.getMovieTypeName());
+
+        boolean updateMovieType = this.updateById(movieType);
+        if (!updateMovieType) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, FAILED_TO_UPDATE, errorResponseDto));
         }
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();

@@ -4,6 +4,7 @@ import com.yueying.backendapi.model.domain.MovieType;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yueying.backendapi.model.domain.request.AddMovieTypeRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieTypeRequest;
+import com.yueying.backendapi.model.domain.request.UpdateMovieTypeRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
@@ -28,4 +29,12 @@ public interface MovieTypeService extends IService<MovieType> {
      * @return 是否添加成功
      */
     ResponseEntity<Object> addMovieType(AddMovieTypeRequest addMovieTypeRequest, HttpServletRequest httpServletRequest);
+
+    /**
+     * 修改影片类型
+     * @param updateMovieTypeRequest 修改影片类型请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否修改成功
+     */
+    ResponseEntity<Object> updateMovieType(UpdateMovieTypeRequest updateMovieTypeRequest, HttpServletRequest httpServletRequest);
 }

@@ -65,6 +65,11 @@ public class MovieController {
         return movieTypeService.addMovieType(addMovieTypeRequest, httpServletRequest);
     }
 
+    @PutMapping("/update-type")
+    private ResponseEntity<Object> updateMovieType(@RequestBody UpdateMovieTypeRequest updateMovieTypeRequest, HttpServletRequest httpServletRequest) {
+        return movieTypeService.updateMovieType(updateMovieTypeRequest, httpServletRequest);
+    }
+
     @GetMapping("/search-session")
     private ResponseEntity<Object> searchMovieSession(@RequestParam Long sessionId, @RequestParam Long movieId, @RequestParam Long cinemaId, @RequestParam String movieRunDate) {
         SearchMovieSessionRequest searchMovieSessionRequest = new SearchMovieSessionRequest();
