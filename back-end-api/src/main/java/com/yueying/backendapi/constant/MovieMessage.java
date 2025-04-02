@@ -28,4 +28,10 @@ public class MovieMessage {
      * 座位类型-普通座位
      */
     public static final Integer SEAT_TYPE_NORMAL = 0;
+
+    /**
+     * http请求错误信息
+     * 影片类型不存在
+     */
+    public static final String MOVIE_TYPE_NONENTITY = "影片类型不存在";
 }

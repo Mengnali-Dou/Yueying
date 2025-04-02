@@ -19,9 +19,14 @@ public class MovieInfoDto {
     private String movieName;
 
     /**
+     * 影片类型id
+     */
+    private Integer movieTypeId;
+
+    /**
      * 影片类型
      */
-    private String movieType;
+    private String movieTypeName;
 
     /**
      * 影片封面（大）

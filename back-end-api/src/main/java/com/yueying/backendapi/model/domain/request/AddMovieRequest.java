@@ -21,9 +21,9 @@ public class AddMovieRequest implements Serializable {
     private String movieName;
 
     /**
-     * 影片类型
+     * 影片类型id
      */
-    private String movieType;
+    private Integer movieTypeId;
 
     /**
      * 影片封面（大）

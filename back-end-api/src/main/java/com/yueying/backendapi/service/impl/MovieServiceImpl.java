@@ -3,7 +3,9 @@ package com.yueying.backendapi.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yueying.backendapi.mapper.MovieMapper;
+import com.yueying.backendapi.mapper.MovieTypeMapper;
 import com.yueying.backendapi.model.domain.Movie;
+import com.yueying.backendapi.model.domain.MovieType;
 import com.yueying.backendapi.model.domain.request.AddMovieRequest;
 import com.yueying.backendapi.model.domain.request.DeleteMovieRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieRequest;
@@ -15,6 +17,7 @@ import com.yueying.backendapi.service.MovieService;
 import com.yueying.backendapi.utils.PublicMethods;
 import com.yueying.backendapi.utils.ResponseData;
 import com.yueying.backendapi.utils.UserPublicClass;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +43,16 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
     @Resource
     private MovieMapper movieMapper;
 
+    @Resource
+    private MovieTypeMapper movieTypeMapper;
+
+    private static MovieTypeMapper staticMovieTypeMapper;
+
+    @PostConstruct
+    private void init() {
+        staticMovieTypeMapper = movieTypeMapper;
+    }
+
     @Override
     public ResponseEntity<Object> searchMovieInfo(SearchMovieRequest searchMovieRequest) {
 
@@ -60,7 +73,7 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
         ErrorResponseDto errorResponseDto = new ErrorResponseDto();
 
         // 参数是否为空
-        if (!StringUtils.isNoneBlank(addMovieRequest.getMovieName(), addMovieRequest.getMovieType(), addMovieRequest.getReleaseDate(), addMovieRequest.getMovieDuration())) {
+        if (!StringUtils.isNoneBlank(addMovieRequest.getMovieName(), addMovieRequest.getReleaseDate(), addMovieRequest.getMovieDuration()) || addMovieRequest.getMovieTypeId() < 0) {
             return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
         }
 
@@ -69,12 +82,18 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
             return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
         }
 
+        // 影片类型是否存在
+        QueryWrapper<MovieType> movieTypeQueryWrapper = new QueryWrapper<>();
+        movieTypeQueryWrapper.eq("movie_type_id", addMovieRequest.getMovieTypeId());
+        if (movieTypeMapper.selectCount(movieTypeQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, MOVIE_TYPE_NONENTITY, errorResponseDto));
+        }
+
         // 添加
         Movie movie = new Movie();
         movie.setMovieName(addMovieRequest.getMovieName());
 
-        // TODO: 数据表需要tb_movie_type，完善数据表后修改插入对应id
-        movie.setMovieTypeId(StringUtils.isBlank(addMovieRequest.getMovieType()) ? 0 : 1);
+        movie.setMovieTypeId(addMovieRequest.getMovieTypeId());
 
         if (StringUtils.isNotBlank(addMovieRequest.getMovieCoverLarge())) {
             movie.setMovieCoverLarge(addMovieRequest.getMovieCoverLarge());
@@ -123,9 +142,14 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
             movie.setMovieName(updateMovieRequest.getMovieName());
         }
 
-        // TODO: 数据表需要tb_movie_type，完善数据表后修改插入对应id
-        if (StringUtils.isNotBlank(updateMovieRequest.getMovieType())) {
-            movie.setMovieTypeId(1);
+        if (updateMovieRequest.getMovieTypeId() >= 0) {
+            // 影片类型是否存在
+            QueryWrapper<MovieType> movieTypeQueryWrapper = new QueryWrapper<>();
+            movieTypeQueryWrapper.eq("movie_type_id", updateMovieRequest.getMovieTypeId());
+            if (movieTypeMapper.selectCount(movieTypeQueryWrapper) <= 0) {
+                return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, MOVIE_TYPE_NONENTITY, errorResponseDto));
+            }
+            movie.setMovieTypeId(updateMovieRequest.getMovieTypeId());
         }
 
         if (StringUtils.isNotBlank(updateMovieRequest.getMovieCoverLarge())) {
@@ -197,8 +221,8 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
         MovieInfoDto movieInfoDto = new MovieInfoDto();
         movieInfoDto.setMovieId(movie.getMovieId());
         movieInfoDto.setMovieName(movie.getMovieName());
-        // TODO: 数据表需要tb_movie_type，完善数据表后在这里用id查询并返回
-        movieInfoDto.setMovieType(movie.getMovieTypeId().toString());
+        movieInfoDto.setMovieTypeId(movie.getMovieTypeId());
+        movieInfoDto.setMovieName(staticMovieTypeMapper.selectById(movie.getMovieTypeId()).getMovieType());
         movieInfoDto.setMovieCoverLarge(movie.getMovieCoverLarge());
         movieInfoDto.setMovieCoverSmall(movie.getMovieCoverSmall());
         movieInfoDto.setReleaseDate(PublicMethods.dateTimeConvertToString(movie.getReleaseDate()));
