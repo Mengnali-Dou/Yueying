@@ -2,6 +2,8 @@ package com.yueying.backendapi.service;
 
 import com.yueying.backendapi.model.domain.MovieType;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yueying.backendapi.model.domain.request.SearchMovieTypeRequest;
+import org.springframework.http.ResponseEntity;
 
 /**
 * @author <a href="mengnalidou.icu">mengnali_dou</a>
@@ -10,4 +12,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface MovieTypeService extends IService<MovieType> {
 
+    /**
+     * 搜索影片类型
+     * @param searchMovieTypeRequest 搜索影片类型请求体
+     * @return 影片类型列表
+     */
+    ResponseEntity<Object> searchMovieType(SearchMovieTypeRequest searchMovieTypeRequest);
 }

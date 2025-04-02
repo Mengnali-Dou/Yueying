@@ -4,6 +4,7 @@ import com.yueying.backendapi.model.domain.request.*;
 import com.yueying.backendapi.service.MovieService;
 import com.yueying.backendapi.service.MovieSessionSeatService;
 import com.yueying.backendapi.service.MovieSessionService;
+import com.yueying.backendapi.service.MovieTypeService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,9 @@ public class MovieController {
 
     @Resource
     private MovieService movieService;
+
+    @Resource
+    private MovieTypeService movieTypeService;
 
     @Resource
     private MovieSessionService movieSessionService;
@@ -47,6 +51,13 @@ public class MovieController {
         DeleteMovieRequest deleteMovieRequest = new DeleteMovieRequest();
         deleteMovieRequest.setMovieId(movieId);
         return movieService.deleteMovie(deleteMovieRequest, httpServletRequest);
+    }
+
+    @GetMapping("/search-type")
+    private ResponseEntity<Object> searchMovieType(@RequestParam Integer movieTypeId) {
+        SearchMovieTypeRequest searchMovieTypeRequest = new SearchMovieTypeRequest();
+        searchMovieTypeRequest.setMovieTypeId(movieTypeId);
+        return movieTypeService.searchMovieType(searchMovieTypeRequest);
     }
 
     @GetMapping("/search-session")
