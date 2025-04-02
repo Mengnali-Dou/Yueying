@@ -60,6 +60,11 @@ public class MovieController {
         return movieTypeService.searchMovieType(searchMovieTypeRequest);
     }
 
+    @PostMapping("/add-type")
+    private ResponseEntity<Object> addMovieType(@RequestBody AddMovieTypeRequest addMovieTypeRequest, HttpServletRequest httpServletRequest) {
+        return movieTypeService.addMovieType(addMovieTypeRequest, httpServletRequest);
+    }
+
     @GetMapping("/search-session")
     private ResponseEntity<Object> searchMovieSession(@RequestParam Long sessionId, @RequestParam Long movieId, @RequestParam Long cinemaId, @RequestParam String movieRunDate) {
         SearchMovieSessionRequest searchMovieSessionRequest = new SearchMovieSessionRequest();

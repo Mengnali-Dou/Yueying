@@ -3,12 +3,18 @@ package com.yueying.backendapi.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yueying.backendapi.model.domain.MovieType;
+import com.yueying.backendapi.model.domain.request.AddMovieTypeRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieTypeRequest;
+import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
 import com.yueying.backendapi.model.domain.response.MovieTypeDto;
+import com.yueying.backendapi.model.domain.response.SuccessResponseDto;
 import com.yueying.backendapi.service.MovieTypeService;
 import com.yueying.backendapi.mapper.MovieTypeMapper;
 import com.yueying.backendapi.utils.ResponseData;
+import com.yueying.backendapi.utils.UserPublicClass;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +46,33 @@ public class MovieTypeServiceImpl extends ServiceImpl<MovieTypeMapper, MovieType
         }
 
         return ResponseEntity.ok(ResponseData.responseData(OK, SEARCH_SUCCESSFULLY, convertToDtoList(movieTypeMapper.selectList(movieTypeQueryWrapper))));
+    }
+
+    @Override
+    public ResponseEntity<Object> addMovieType(AddMovieTypeRequest addMovieTypeRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 必要参数是否为空
+        if (StringUtils.isBlank(addMovieTypeRequest.getMovieTypeName())) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 添加
+        MovieType movieType = new MovieType();
+        movieType.setMovieType(addMovieTypeRequest.getMovieTypeName());
+        boolean addMovieType = this.save(movieType);
+        if (!addMovieType) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, FAILED_TO_INSERT, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
     }
 
     /**
