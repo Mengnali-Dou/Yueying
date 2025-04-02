@@ -70,6 +70,13 @@ public class MovieController {
         return movieTypeService.updateMovieType(updateMovieTypeRequest, httpServletRequest);
     }
 
+    @DeleteMapping("/delete-type")
+    private ResponseEntity<Object> deleteMovieType(@RequestParam Long movieTypeId, HttpServletRequest httpServletRequest) {
+        DeleteMovieTypeRequest deleteMovieTypeRequest = new DeleteMovieTypeRequest();
+        deleteMovieTypeRequest.setMovieTypeId(movieTypeId);
+        return movieTypeService.deleteMovieType(deleteMovieTypeRequest, httpServletRequest);
+    }
+
     @GetMapping("/search-session")
     private ResponseEntity<Object> searchMovieSession(@RequestParam Long sessionId, @RequestParam Long movieId, @RequestParam Long cinemaId, @RequestParam String movieRunDate) {
         SearchMovieSessionRequest searchMovieSessionRequest = new SearchMovieSessionRequest();

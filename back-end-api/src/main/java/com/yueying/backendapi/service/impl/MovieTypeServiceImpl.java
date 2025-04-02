@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yueying.backendapi.model.domain.MovieType;
 import com.yueying.backendapi.model.domain.request.AddMovieTypeRequest;
+import com.yueying.backendapi.model.domain.request.DeleteMovieTypeRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieTypeRequest;
 import com.yueying.backendapi.model.domain.request.UpdateMovieTypeRequest;
 import com.yueying.backendapi.model.domain.response.ErrorResponseDto;
@@ -111,6 +112,38 @@ public class MovieTypeServiceImpl extends ServiceImpl<MovieTypeMapper, MovieType
 
         SuccessResponseDto successResponseDto = new SuccessResponseDto();
         return ResponseEntity.ok(ResponseData.responseData(OK, INSERT_SUCCESSFULLY, successResponseDto));
+    }
+
+    @Override
+    public ResponseEntity<Object> deleteMovieType(DeleteMovieTypeRequest deleteMovieTypeRequest, HttpServletRequest httpServletRequest) {
+
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto();
+
+        // 必要参数是否为空
+        if (deleteMovieTypeRequest.getMovieTypeId() <= 0) {
+            return ResponseEntity.status(BAD_REQUEST).body(ResponseData.responseData(BAD_REQUEST, PARAMETER_CANNOT_BE_NULL, errorResponseDto));
+        }
+
+        // 验证权限
+        if (UserPublicClass.isAdmin(httpServletRequest)) {
+            return ResponseEntity.status(UNAUTHORIZED).body(ResponseData.responseData(UNAUTHORIZED, INSUFFICIENT_AUTHORITY, errorResponseDto));
+        }
+
+        // 是否存在
+        QueryWrapper<MovieType> movieTypeQueryWrapper = new QueryWrapper<>();
+        movieTypeQueryWrapper.eq("movie_type_id", deleteMovieTypeRequest.getMovieTypeId());
+        if (movieTypeMapper.selectCount(movieTypeQueryWrapper) <= 0) {
+            return ResponseEntity.status(NOT_FOUND).body(ResponseData.responseData(NOT_FOUND, MOVIE_TYPE_NONENTITY, errorResponseDto));
+        }
+
+        // 删除
+        boolean deleted = this.removeById(deleteMovieTypeRequest.getMovieTypeId());
+        if (!deleted) {
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ResponseData.responseData(INTERNAL_SERVER_ERROR, DELETE_FAILED, errorResponseDto));
+        }
+
+        SuccessResponseDto successResponseDto = new SuccessResponseDto();
+        return ResponseEntity.ok(ResponseData.responseData(OK, DELETE_SUCCESSFULLY, successResponseDto));
     }
 
     /**

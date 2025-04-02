@@ -3,6 +3,7 @@ package com.yueying.backendapi.service;
 import com.yueying.backendapi.model.domain.MovieType;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yueying.backendapi.model.domain.request.AddMovieTypeRequest;
+import com.yueying.backendapi.model.domain.request.DeleteMovieTypeRequest;
 import com.yueying.backendapi.model.domain.request.SearchMovieTypeRequest;
 import com.yueying.backendapi.model.domain.request.UpdateMovieTypeRequest;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,4 +38,12 @@ public interface MovieTypeService extends IService<MovieType> {
      * @return 是否修改成功
      */
     ResponseEntity<Object> updateMovieType(UpdateMovieTypeRequest updateMovieTypeRequest, HttpServletRequest httpServletRequest);
+
+    /**
+     * 删除影片类型
+     * @param deleteMovieTypeRequest 删除影片类型请求体
+     * @param httpServletRequest http请求信息
+     * @return 是否删除成功
+     */
+    ResponseEntity<Object> deleteMovieType(DeleteMovieTypeRequest deleteMovieTypeRequest, HttpServletRequest httpServletRequest);
 }
