@@ -61,7 +61,7 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
             queryWrapper.like("movie_name", searchMovieRequest.getMovieName());
         }
         if (searchMovieRequest.getMovieTypeId() > 0) {
-            queryWrapper.like("movie_type", searchMovieRequest.getMovieTypeId());
+            queryWrapper.like("movie_type_id", searchMovieRequest.getMovieTypeId());
         }
 
         return ResponseEntity.ok(ResponseData.responseData(OK, SEARCH_SUCCESSFULLY, convertToDtoList(movieMapper.selectList(queryWrapper))));
@@ -222,7 +222,7 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
         movieInfoDto.setMovieId(movie.getMovieId());
         movieInfoDto.setMovieName(movie.getMovieName());
         movieInfoDto.setMovieTypeId(movie.getMovieTypeId());
-        movieInfoDto.setMovieName(staticMovieTypeMapper.selectById(movie.getMovieTypeId()).getMovieType());
+        movieInfoDto.setMovieTypeName(staticMovieTypeMapper.selectById(movie.getMovieTypeId()).getMovieType());
         movieInfoDto.setMovieCoverLarge(movie.getMovieCoverLarge());
         movieInfoDto.setMovieCoverSmall(movie.getMovieCoverSmall());
         movieInfoDto.setReleaseDate(PublicMethods.dateTimeConvertToString(movie.getReleaseDate()));

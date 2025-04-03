@@ -27,11 +27,11 @@ public class MovieController {
     private MovieSessionSeatService movieSessionSeatService;
 
     @GetMapping("/search")
-    public ResponseEntity<Object> SearchMovieInfo(@RequestParam String movieName, @RequestParam String movieType) {
+    public ResponseEntity<Object> SearchMovieInfo(@RequestParam String movieName, @RequestParam Integer movieTypeId) {
 
         SearchMovieRequest searchMovieRequest = new SearchMovieRequest();
         searchMovieRequest.setMovieName(movieName);
-        searchMovieRequest.setMovieType(movieType);
+        searchMovieRequest.setMovieTypeId(movieTypeId);
 
         return movieService.searchMovieInfo(searchMovieRequest);
     }
