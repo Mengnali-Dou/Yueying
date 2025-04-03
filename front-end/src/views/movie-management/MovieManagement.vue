@@ -11,14 +11,18 @@ import { SearchOutlined } from "@ant-design/icons-vue";
 import { message, TableColumnsType } from "ant-design-vue";
 import {
 	MovieInfoViewModel,
+	MovieTypeInfoViewModel,
 	SearchMovieInfoViewModel,
 } from "@/@types/viewmodel/movie-management/movie-management.viewmodel.ts";
 import { SearchMovieInfoRequest } from "@/generate/request/search-movie-info-request.ts";
-import { searchMovieInfoApi } from "@/generate/api-client/movie-management.api.ts";
+import { searchMovieInfoApi, searchMovieTypeApi } from "@/generate/api-client/movie-management.api.ts";
 import { ApiResponse } from "@/generate/response/api-response.ts";
 import { MovieInfoResponse } from "@/generate/response/movie-info-response.ts";
 import { responseStatusConstant } from "@/constant/response-status-constant.ts";
 import { getDateTime } from "@/shared/date-format.ts";
+import AddMovieDialog from "@/views/movie-management/component/AddMovieDialog.vue";
+import { SearchMovieTypeRequest } from "@/generate/request/search-movie-type-request.ts";
+import { MovieTypeInfoResponse } from "@/generate/response/movie-type-info-response.ts";
 
 // i18n
 const { t } = useI18n();
@@ -27,6 +31,7 @@ type Key = string | number;
 
 onMounted(async () => {
 	await searchMovieInfoList();
+	await searchMovieTypeInfoList();
 });
 
 const state = reactive({
@@ -36,8 +41,14 @@ const state = reactive({
 	selectMovieInfo: {} as MovieInfoViewModel,
 	// 影片信息列表
 	movieInfoList: [] as MovieInfoViewModel[],
+	// 影片类型信息
+	movieTypeInfo: [] as MovieTypeInfoViewModel[],
+	// 选择影片类型id
+	selectMovieTypeId: 0 as number,
 	// 选择行
 	selectedKeys: [] as Key[],
+	// 添加影片对话框显示状态
+	addMovieDialogVisible: false,
 });
 
 // 搜索影片
@@ -55,9 +66,23 @@ const searchMovieInfoList = async () => {
 	}
 };
 
+// 搜索影片类型
+const searchMovieTypeInfoList = async () => {
+	const searchMovieTypeInfoResponse = (
+		await searchMovieTypeApi(convertToSearchMovieTypeRequest(state.selectMovieTypeId))
+	).data as ApiResponse<MovieTypeInfoResponse[]>;
+	if (searchMovieTypeInfoResponse.status === responseStatusConstant.OK) {
+		searchMovieTypeInfoResponse.data.forEach((item) => {
+			state.movieTypeInfo.push(convertMovieTypeInfoResponseToMovieTypeInfoViewModel(item));
+		});
+	} else {
+		message.error(searchMovieTypeInfoResponse.message);
+	}
+};
+
 // 添加影片
 const addMovie = () => {
-	console.log("addMovie");
+	state.addMovieDialogVisible = true;
 };
 
 // 修改影片信息
@@ -94,7 +119,7 @@ const convertSearchMovieInfoViewModelToSearchMovieInfoRequest = (
 ): SearchMovieInfoRequest => {
 	return {
 		movieName: searchMovieInfoViewModel.movieName ?? "",
-		movieType: searchMovieInfoViewModel.movieType ?? "",
+		movieTypeId: searchMovieInfoViewModel.movieTypeId ?? 0,
 	} as SearchMovieInfoRequest;
 };
 
@@ -102,7 +127,8 @@ const convertMovieInfoResponseToMovieInfoViewModel = (movieInfoResponse: MovieIn
 	return {
 		movieId: movieInfoResponse.movieId,
 		movieName: movieInfoResponse.movieName,
-		movieType: movieInfoResponse.movieType,
+		movieTypeId: movieInfoResponse.movieTypeId,
+		movieTypeName: movieInfoResponse.movieTypeName,
 		movieCoverLarge: movieInfoResponse.movieCoverLarge ?? "",
 		movieCoverSmall: movieInfoResponse.movieCoverSmall ?? "",
 		releaseDate: getDateTime(movieInfoResponse.releaseDate),
@@ -110,6 +136,21 @@ const convertMovieInfoResponseToMovieInfoViewModel = (movieInfoResponse: MovieIn
 		mainActor: movieInfoResponse.mainActor ?? "--",
 		movieProfile: movieInfoResponse.movieProfile ?? "--",
 	} as MovieInfoViewModel;
+};
+
+const convertToSearchMovieTypeRequest = (movieTypeId: number): SearchMovieTypeRequest => {
+	return {
+		movieTypeId: movieTypeId ?? 0,
+	} as SearchMovieTypeRequest;
+};
+
+const convertMovieTypeInfoResponseToMovieTypeInfoViewModel = (
+	movieTypeInfoResponse: MovieTypeInfoResponse,
+): MovieTypeInfoViewModel => {
+	return {
+		movieTypeId: movieTypeInfoResponse.movieTypeId,
+		movieTypeName: movieTypeInfoResponse.movieType,
+	} as MovieTypeInfoViewModel;
 };
 
 // 修改、删除影片按钮激活状态
@@ -133,8 +174,8 @@ const columns: TableColumnsType = [
 	},
 	{
 		title: t("app.movieType"),
-		dataIndex: "movieType",
-		key: "movieType",
+		dataIndex: "movieTypeName",
+		key: "movieTypeName",
 		width: 120,
 	},
 	{ title: t("app.releaseDate"), dataIndex: "releaseDate", key: "releaseDate", width: 100 },
@@ -152,7 +193,15 @@ const columns: TableColumnsType = [
 <template>
 	<a-space direction="horizontal">
 		<a-input :placeholder="t('app.movieName')" />
-		<a-input :placeholder="t('app.movieType')" />
+		<a-select
+			v-model:value="state.searchMovieInfoForm.movieTypeId"
+			:placeholder="t('app.movieType')"
+			style="min-width: 150px"
+		>
+			<a-select-option v-for="item in state.movieTypeInfo" :value="item.movieTypeId" :Key="item.movieTypeId">
+				{{ item.movieTypeName }}
+			</a-select-option>
+		</a-select>
 		<a-button type="primary" @click="searchMovieInfoList()" :icon="h(SearchOutlined)" />
 		<a-button type="primary" @click="addMovie">{{ t("app.addMovie") }}</a-button>
 		<a-button type="primary" :disabled="movieManagementButtonsDisabled" @click="updateMovieInfo">
@@ -183,6 +232,7 @@ const columns: TableColumnsType = [
 			</template>
 		</template>
 	</a-table>
+	<AddMovieDialog v-model:dialogVisible="state.addMovieDialogVisible" @updateMovieInfo="searchMovieInfoList" />
 </template>
 
 <style scoped></style>

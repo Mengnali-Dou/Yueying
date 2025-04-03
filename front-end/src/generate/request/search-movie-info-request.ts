@@ -7,5 +7,5 @@ export interface SearchMovieInfoRequest {
 	movieName?: string;
 
 	// 影片类型
-	movieType?: string;
+	movieTypeId?: number;
 }

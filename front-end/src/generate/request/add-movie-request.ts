@@ -1,18 +1,13 @@
 /**
- * 影片信息
+ * 添加影片请求体
+ * @author <a href="mengnalidou.icu">mengnali_dou</a>
  */
-export interface MovieInfoResponse {
-	// id
-	movieId: number;
-
+export interface AddMovieRequest {
 	// 影片名
 	movieName: string;
 
 	// 影片类型id
 	movieTypeId: number;
-
-	// 影片类型
-	movieTypeName: string;
 
 	// 影片封面--大
 	movieCoverLarge?: string;

@@ -8,8 +8,11 @@ export interface MovieInfoViewModel {
 	// 影片名
 	movieName: string;
 
+	// 影片类型id
+	movieTypeId: number;
+
 	// 影片类型
-	movieType: string;
+	movieTypeName: string;
 
 	// 影片封面--大
 	movieCoverLarge?: string;
@@ -38,5 +41,16 @@ export interface SearchMovieInfoViewModel {
 	movieName?: string;
 
 	// 影片类型
-	movieType?: string;
+	movieTypeId?: number;
+}
+
+/**
+ * 影片类型信息
+ */
+export interface MovieTypeInfoViewModel {
+	// 影片类型id
+	movieTypeId: number;
+
+	// 影片类型
+	movieTypeName: string;
 }
