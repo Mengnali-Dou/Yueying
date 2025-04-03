@@ -60,8 +60,8 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
         if (StringUtils.isNotBlank(searchMovieRequest.getMovieName())) {
             queryWrapper.like("movie_name", searchMovieRequest.getMovieName());
         }
-        if (StringUtils.isNotBlank(searchMovieRequest.getMovieType())) {
-            queryWrapper.like("movie_type", searchMovieRequest.getMovieType());
+        if (searchMovieRequest.getMovieTypeId() > 0) {
+            queryWrapper.like("movie_type", searchMovieRequest.getMovieTypeId());
         }
 
         return ResponseEntity.ok(ResponseData.responseData(OK, SEARCH_SUCCESSFULLY, convertToDtoList(movieMapper.selectList(queryWrapper))));

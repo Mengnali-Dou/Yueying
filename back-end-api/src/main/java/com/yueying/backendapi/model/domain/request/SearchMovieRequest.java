@@ -21,7 +21,7 @@ public class SearchMovieRequest implements Serializable {
     private String movieName;
 
     /**
-     * 电影类别
+     * 电影类别id
      */
-    private String movieType;
+    private Integer movieTypeId;
 }
