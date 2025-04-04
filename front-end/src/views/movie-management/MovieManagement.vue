@@ -232,7 +232,11 @@ const columns: TableColumnsType = [
 			</template>
 		</template>
 	</a-table>
-	<AddMovieDialog v-model:dialogVisible="state.addMovieDialogVisible" @updateMovieInfo="searchMovieInfoList" />
+	<AddMovieDialog
+		v-model:dialogVisible="state.addMovieDialogVisible"
+		:movieTypeInfo="state.movieTypeInfo"
+		@updateMovieInfo="searchMovieInfoList"
+	/>
 </template>
 
 <style scoped></style>
