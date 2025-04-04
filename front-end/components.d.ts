@@ -39,6 +39,7 @@ declare module 'vue' {
     ATextarea: typeof import('ant-design-vue/es')['Textarea']
     ATimePicker: typeof import('ant-design-vue/es')['TimePicker']
     BreadCrumb: typeof import('./src/components/system-layout/component/BreadCrumb.vue')['default']
+    DeleteDialog: typeof import('./src/components/DeleteDialog.vue')['default']
     EmptyLayout: typeof import('./src/components/EmptyLayout.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

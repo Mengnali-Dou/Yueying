@@ -13,10 +13,11 @@ import { computed, h, onMounted, reactive } from "vue";
 import { SearchOutlined } from "@ant-design/icons-vue";
 import { message, TableColumnsType } from "ant-design-vue";
 import AddMovieDialog from "@/views/movie-management/component/AddMovieDialog.vue";
+import UpdateMovieInfoDialog from "@/views/movie-management/component/UpdateMovieInfoDialog.vue";
 
 // api
-import { SearchMovieInfoRequest } from "@/generate/request/requests.ts";
-import { ApiResponse, MovieInfoResponse } from "@/generate/response/responses.ts";
+import { SearchMovieInfoRequest, SearchMovieTypeRequest } from "@/generate/request/requests.ts";
+import { ApiResponse, MovieInfoResponse, MovieTypeInfoResponse } from "@/generate/response/responses.ts";
 import { searchMovieInfoApi, searchMovieTypeApi } from "@/generate/api-client/movie-management.api.ts";
 
 // shared utils
@@ -27,9 +28,6 @@ import {
 } from "@/@types/viewmodel/movie-management/movie-management.viewmodel.ts";
 import { getDateTime } from "@/shared/date-format.ts";
 import { responseStatusConstant } from "@/constant/response-status-constant.ts";
-import { MovieTypeInfoResponse } from "@/generate/response/movie-type-info-response.ts";
-import { SearchMovieTypeRequest } from "@/generate/request/search-movie-type-request.ts";
-import UpdateMovieInfoDialog from "@/views/movie-management/component/UpdateMovieInfoDialog.vue";
 
 // i18n
 const { t } = useI18n();

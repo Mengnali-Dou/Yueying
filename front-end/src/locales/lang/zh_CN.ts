@@ -3,6 +3,7 @@ export default {
 		pleaseInputValue: "请输入{inputValue}",
 		pleaseSelectGender: "请选择性别",
 		confirmThatYouWantToDeleteTheUser: "确认要删除用户“{userName}”吗？",
+		confirmThatYouWantToDelete: "确认要删除{deleteType}“{deleteName}”吗？",
 	},
 	app: {
 		// 页面
@@ -16,6 +17,7 @@ export default {
 		login: "登录",
 		logout: "退出登录",
 		register: "注册",
+		delete: "删除",
 		modifyUserInfo: "修改用户信息",
 		resetPassword: "重置密码",
 		deleteUser: "删除用户",
@@ -26,6 +28,7 @@ export default {
 		deleteMovie: "删除影片",
 
 		// 表单
+		user: "用户",
 		userId: "用户ID",
 		account: "账号",
 		userName: "用户名",
@@ -43,6 +46,7 @@ export default {
 		normalAccount: "正常",
 		passwordReset: "密码重置",
 		cancellation: "注销",
+		movie: "影片",
 		movieName: "影片名",
 		movieType: "影片类型",
 		movieId: "影片ID",

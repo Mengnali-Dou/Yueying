@@ -1,14 +1,21 @@
 <script setup lang="ts">
+// frameworks
+import { computed } from "vue";
 import { useI18n } from "vue-i18n";
+
+// components
+import { message } from "ant-design-vue";
+
+// api
+import { ApiResponse } from "@/generate/response/api-response.ts";
+import { updateMovieInfoApi } from "@/generate/api-client/movie-management.api.ts";
+import { UpdateMovieInfoRequest } from "@/generate/request/update-movie-info-request.ts";
+
+// shared utils
 import {
 	MovieInfoViewModel,
 	MovieTypeInfoViewModel,
 } from "@/@types/viewmodel/movie-management/movie-management.viewmodel.ts";
-import { computed } from "vue";
-import { updateMovieInfoApi } from "@/generate/api-client/movie-management.api.ts";
-import { UpdateMovieInfoRequest } from "@/generate/request/update-movie-info-request.ts";
-import { ApiResponse } from "@/generate/response/api-response.ts";
-import { message } from "ant-design-vue";
 import { responseStatusConstant } from "@/constant/response-status-constant.ts";
 
 const { t } = useI18n();

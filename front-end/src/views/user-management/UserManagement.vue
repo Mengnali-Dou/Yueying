@@ -12,12 +12,14 @@ import { computed, h, onMounted, reactive } from "vue";
 // components
 import { SearchOutlined } from "@ant-design/icons-vue";
 import { message, TableColumnsType } from "ant-design-vue";
+import DeleteDialog from "@/components/DeleteDialog.vue";
 import RegisterDialog from "@/views/user-management/component/RegisterDialog.vue";
+import UpdateUserInfoDialog from "@/views/user-management/component/UpdateUserInfoDialog.vue";
 
 // api
 import { SearchUserRequest } from "@/generate/request/requests.ts";
 import { ApiResponse, UserInfoResponse } from "@/generate/response/responses.ts";
-import { searchUserInfoApi } from "@/generate/api-client/user-management.api.ts";
+import { deleteUserApi, searchUserInfoApi } from "@/generate/api-client/user-management.api.ts";
 
 // shared utils
 import {
@@ -29,8 +31,6 @@ import { genderConstant } from "@/constant/gender.ts";
 import { userRoleConstant } from "@/constant/user-role.ts";
 import { accountStatus } from "@/constant/account-status.ts";
 import { responseStatusConstant } from "@/constant/response-status-constant.ts";
-import UpdateUserInfoDialog from "@/views/user-management/component/UpdateUserInfoDialog.vue";
-import DeleteUserDialog from "@/views/user-management/component/DeleteUserDialog.vue";
 
 // i18n
 const { t } = useI18n();
@@ -89,8 +89,20 @@ const resetPassword = () => {
 };
 
 // 删除用户
-const deleteUser = () => {
+const deleteUserButtonClicked = () => {
 	state.deleteUserDialogVisible = true;
+};
+
+// 删除用户请求
+const deleteUser = async () => {
+	const deleteUserResponse = (await deleteUserApi(state.selectedUserInfo.userId)).data as ApiResponse<string>;
+	if (deleteUserResponse.status === responseStatusConstant.OK) {
+		message.success(deleteUserResponse.message);
+		state.deleteUserDialogVisible = false;
+		await searchUserInfoList();
+	} else {
+		message.error(deleteUserResponse.message);
+	}
 };
 
 // 选择行
@@ -195,7 +207,7 @@ const convertUserInfoResponseToUserInfoViewModel = (userInfoResponse: UserInfoRe
 		<a-button type="primary" :disabled="userManagementButtonsDisabled" @click="resetPassword">
 			{{ t("app.resetPassword") }}
 		</a-button>
-		<a-button type="primary" :disabled="userManagementButtonsDisabled" @click="deleteUser" danger>
+		<a-button type="primary" :disabled="userManagementButtonsDisabled" @click="deleteUserButtonClicked" danger>
 			{{ t("app.deleteUser") }}
 		</a-button>
 	</a-space>
@@ -246,10 +258,11 @@ const convertUserInfoResponseToUserInfoViewModel = (userInfoResponse: UserInfoRe
 		:modelValue="state.selectedUserInfo"
 		@updateUserInfo="searchUserInfoList"
 	/>
-	<DeleteUserDialog
+	<DeleteDialog
 		v-model:dialogVisible="state.deleteUserDialogVisible"
-		:modelValue="state.selectedUserInfo"
-		@updateUserInfo="searchUserInfoList"
+		:deleteName="state.selectedUserInfo.userName ?? ''"
+		:deleteType="t('app.user')"
+		@confirmDelete="deleteUser"
 	/>
 </template>
 
