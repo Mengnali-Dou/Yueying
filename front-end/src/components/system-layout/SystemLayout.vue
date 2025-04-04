@@ -55,8 +55,15 @@ const sideNavInfo = reactive({
 		{
 			navId: "2",
 			title: t("app.movieManagement"),
-			path: "/movie-management",
-			child: [],
+			path: "",
+			child: [
+				{
+					navId: "2-1",
+					title: t("app.movieInfo"),
+					path: "/movie-management",
+					child: [],
+				},
+			],
 		},
 	],
 });

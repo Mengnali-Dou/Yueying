@@ -29,6 +29,7 @@ import { getDateTime } from "@/shared/date-format.ts";
 import { responseStatusConstant } from "@/constant/response-status-constant.ts";
 import { MovieTypeInfoResponse } from "@/generate/response/movie-type-info-response.ts";
 import { SearchMovieTypeRequest } from "@/generate/request/search-movie-type-request.ts";
+import UpdateMovieInfoDialog from "@/views/movie-management/component/UpdateMovieInfoDialog.vue";
 
 // i18n
 const { t } = useI18n();
@@ -55,6 +56,8 @@ const state = reactive({
 	selectedKeys: [] as Key[],
 	// 添加影片对话框显示状态
 	addMovieDialogVisible: false,
+	// 修改影片信息对话框显示状态
+	updateMovieDialogVisible: false,
 });
 
 // 搜索影片
@@ -93,7 +96,7 @@ const addMovie = () => {
 
 // 修改影片信息
 const updateMovieInfo = () => {
-	console.log("updateMovieInfo");
+	state.updateMovieDialogVisible = true;
 };
 
 // 删除影片
@@ -227,7 +230,7 @@ const columns: TableColumnsType = [
 			onSelect: onSelect,
 			onSelectAll: onSelectAll,
 		}"
-		row-key="userId"
+		row-key="movieId"
 		style="margin-top: 10px"
 	>
 		<template #bodyCell="{ column, record }">
@@ -240,6 +243,12 @@ const columns: TableColumnsType = [
 	</a-table>
 	<AddMovieDialog
 		v-model:dialogVisible="state.addMovieDialogVisible"
+		:movieTypeInfo="state.movieTypeInfo"
+		@updateMovieInfo="searchMovieInfoList"
+	/>
+	<UpdateMovieInfoDialog
+		v-model:dialogVisible="state.updateMovieDialogVisible"
+		:modelValue="state.selectMovieInfo"
 		:movieTypeInfo="state.movieTypeInfo"
 		@updateMovieInfo="searchMovieInfoList"
 	/>

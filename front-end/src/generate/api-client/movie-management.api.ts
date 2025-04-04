@@ -1,4 +1,9 @@
-import { AddMovieRequest, SearchMovieInfoRequest, SearchMovieTypeRequest } from "@/generate/request/requests.ts";
+import {
+	AddMovieRequest,
+	SearchMovieInfoRequest,
+	SearchMovieTypeRequest,
+	UpdateMovieInfoRequest,
+} from "@/generate/request/requests.ts";
 import requestApi from "@/generate/api-client/request.api.ts";
 
 /**
@@ -23,6 +28,19 @@ export const addMovieApi = (addMovieRequest: AddMovieRequest) => {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		data: addMovieRequest,
+	});
+};
+
+/**
+ * 修改影片信息
+ * @param updateMovieInfoRequest 修改影片信息请求体
+ */
+export const updateMovieInfoApi = (updateMovieInfoRequest: UpdateMovieInfoRequest) => {
+	return requestApi({
+		url: "/movie/update",
+		method: "PUT",
+		headers: { "Content-Type": "application/json" },
+		data: updateMovieInfoRequest,
 	});
 };
 
