@@ -5,24 +5,30 @@ export default {
 </script>
 
 <script setup lang="ts">
+// frameworks
 import { useI18n } from "vue-i18n";
 import { computed, h, onMounted, reactive } from "vue";
+
+// components
 import { SearchOutlined } from "@ant-design/icons-vue";
 import { message, TableColumnsType } from "ant-design-vue";
+import AddMovieDialog from "@/views/movie-management/component/AddMovieDialog.vue";
+
+// api
+import { SearchMovieInfoRequest } from "@/generate/request/requests.ts";
+import { ApiResponse, MovieInfoResponse } from "@/generate/response/responses.ts";
+import { searchMovieInfoApi, searchMovieTypeApi } from "@/generate/api-client/movie-management.api.ts";
+
+// shared utils
 import {
 	MovieInfoViewModel,
 	MovieTypeInfoViewModel,
 	SearchMovieInfoViewModel,
 } from "@/@types/viewmodel/movie-management/movie-management.viewmodel.ts";
-import { SearchMovieInfoRequest } from "@/generate/request/search-movie-info-request.ts";
-import { searchMovieInfoApi, searchMovieTypeApi } from "@/generate/api-client/movie-management.api.ts";
-import { ApiResponse } from "@/generate/response/api-response.ts";
-import { MovieInfoResponse } from "@/generate/response/movie-info-response.ts";
-import { responseStatusConstant } from "@/constant/response-status-constant.ts";
 import { getDateTime } from "@/shared/date-format.ts";
-import AddMovieDialog from "@/views/movie-management/component/AddMovieDialog.vue";
-import { SearchMovieTypeRequest } from "@/generate/request/search-movie-type-request.ts";
+import { responseStatusConstant } from "@/constant/response-status-constant.ts";
 import { MovieTypeInfoResponse } from "@/generate/response/movie-type-info-response.ts";
+import { SearchMovieTypeRequest } from "@/generate/request/search-movie-type-request.ts";
 
 // i18n
 const { t } = useI18n();

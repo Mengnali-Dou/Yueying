@@ -1,16 +1,23 @@
 <script setup lang="ts">
+// frameworks
 import { useI18n } from "vue-i18n";
+import { computed, reactive, ref } from "vue";
+import { Rule } from "ant-design-vue/es/form";
+
+// api
+import { ApiResponse } from "@/generate/response/responses.ts";
+import { AddMovieRequest } from "@/generate/request/requests.ts";
+import { addMovieApi } from "@/generate/api-client/movie-management.api.ts";
+
+// components
+import { message } from "ant-design-vue";
+
+// shared utils
 import {
 	MovieInfoViewModel,
 	MovieTypeInfoViewModel,
 } from "@/@types/viewmodel/movie-management/movie-management.viewmodel.ts";
-import { computed, reactive, ref } from "vue";
-import { Rule } from "ant-design-vue/es/form";
-import { AddMovieRequest } from "@/generate/request/add-movie-request.ts";
-import { addMovieApi } from "@/generate/api-client/movie-management.api.ts";
-import { ApiResponse } from "@/generate/response/api-response.ts";
 import { responseStatusConstant } from "@/constant/response-status-constant.ts";
-import { message } from "ant-design-vue";
 import { getDateTime, getTime } from "@/shared/date-format.ts";
 
 const formRef = ref();
