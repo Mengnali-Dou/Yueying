@@ -45,6 +45,18 @@ export const updateMovieInfoApi = (updateMovieInfoRequest: UpdateMovieInfoReques
 };
 
 /**
+ * 删除影片
+ * @param movieId 影片id
+ */
+export const deleteMovieApi = (movieId: number) => {
+	return requestApi({
+		url: `/movie/delete?movieId=${movieId}`,
+		method: "DELETE",
+		headers: { "Content-Type": "application/json" },
+	});
+};
+
+/**
  * 搜索影片类型
  * @param searchMovieTypeRequest 搜索影片类型请求体
  */

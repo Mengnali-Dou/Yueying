@@ -11,6 +11,7 @@ import { computed, h, onMounted, reactive } from "vue";
 
 // components
 import { SearchOutlined } from "@ant-design/icons-vue";
+import DeleteDialog from "@/components/DeleteDialog.vue";
 import { message, TableColumnsType } from "ant-design-vue";
 import AddMovieDialog from "@/views/movie-management/component/AddMovieDialog.vue";
 import UpdateMovieInfoDialog from "@/views/movie-management/component/UpdateMovieInfoDialog.vue";
@@ -18,7 +19,7 @@ import UpdateMovieInfoDialog from "@/views/movie-management/component/UpdateMovi
 // api
 import { SearchMovieInfoRequest, SearchMovieTypeRequest } from "@/generate/request/requests.ts";
 import { ApiResponse, MovieInfoResponse, MovieTypeInfoResponse } from "@/generate/response/responses.ts";
-import { searchMovieInfoApi, searchMovieTypeApi } from "@/generate/api-client/movie-management.api.ts";
+import { deleteMovieApi, searchMovieInfoApi, searchMovieTypeApi } from "@/generate/api-client/movie-management.api.ts";
 
 // shared utils
 import {
@@ -56,6 +57,8 @@ const state = reactive({
 	addMovieDialogVisible: false,
 	// 修改影片信息对话框显示状态
 	updateMovieDialogVisible: false,
+	// 删除影片信息对话框显示状态
+	deleteMovieDialogVisible: false,
 });
 
 // 搜索影片
@@ -97,9 +100,21 @@ const updateMovieInfo = () => {
 	state.updateMovieDialogVisible = true;
 };
 
+// 删除影片按钮按下
+const deleteMovieButtonClicked = () => {
+	state.deleteMovieDialogVisible = true;
+};
+
 // 删除影片
-const deleteMovie = () => {
-	console.log("deleteMovie");
+const deleteMovie = async () => {
+	const deleteMovieResponse = (await deleteMovieApi(state.selectMovieInfo.movieId)).data as ApiResponse<string>;
+	if (deleteMovieResponse.status === responseStatusConstant.OK) {
+		message.success(deleteMovieResponse.message);
+		state.deleteMovieDialogVisible = false;
+		await searchMovieInfoList();
+	} else {
+		message.error(deleteMovieResponse.message);
+	}
 };
 
 // 选择行
@@ -214,7 +229,7 @@ const columns: TableColumnsType = [
 		<a-button type="primary" :disabled="movieManagementButtonsDisabled" @click="updateMovieInfo">
 			{{ t("app.updateMovieInfo") }}
 		</a-button>
-		<a-button type="primary" :disabled="movieManagementButtonsDisabled" @click="deleteMovie" danger>
+		<a-button type="primary" :disabled="movieManagementButtonsDisabled" @click="deleteMovieButtonClicked" danger>
 			{{ t("app.deleteMovie") }}
 		</a-button>
 	</a-space>
@@ -249,6 +264,12 @@ const columns: TableColumnsType = [
 		:modelValue="state.selectMovieInfo"
 		:movieTypeInfo="state.movieTypeInfo"
 		@updateMovieInfo="searchMovieInfoList"
+	/>
+	<DeleteDialog
+		v-model:dialogVisible="state.deleteMovieDialogVisible"
+		:deleteName="state.selectMovieInfo.movieName ?? ''"
+		:deleteType="t('app.movie')"
+		@confirmDelete="deleteMovie"
 	/>
 </template>
 
