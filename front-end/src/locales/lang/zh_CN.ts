@@ -12,6 +12,7 @@ export default {
 		userManagement: "用户管理",
 		movieManagement: "影片管理",
 		movieInfo: "影片信息",
+		movieTypeManagement: "影片类型管理",
 
 		// 动作
 		login: "登录",
