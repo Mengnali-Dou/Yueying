@@ -24,6 +24,7 @@ export default {
 		deleteUser: "删除用户",
 		cancel: "取消",
 		confirm: "确定",
+		confirmUpdate: "确认修改",
 		addMovie: "添加影片",
 		updateMovieInfo: "修改影片信息",
 		deleteMovie: "删除影片",

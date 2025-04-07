@@ -5,6 +5,7 @@ import {
 	UpdateMovieInfoRequest,
 } from "@/generate/request/requests.ts";
 import requestApi from "@/generate/api-client/request.api.ts";
+import { UpdateMovieTypeRequest } from "@/generate/request/update-movie-type-request.ts";
 
 /**
  * 搜索影片信息
@@ -65,5 +66,18 @@ export const searchMovieTypeApi = (searchMovieTypeRequest: SearchMovieTypeReques
 		url: `/movie/search-type?movieTypeId=${searchMovieTypeRequest.movieTypeId}`,
 		method: "GET",
 		headers: { "Content-Type": "application/json" },
+	});
+};
+
+/**
+ * 修改影片类型
+ * @param updateMovieTypeRequest 修改影片类型请求体
+ */
+export const updateMovieTypeApi = (updateMovieTypeRequest: UpdateMovieTypeRequest) => {
+	return requestApi({
+		url: "/movie/update-type",
+		method: "PUT",
+		headers: { "Content-Type": "application/json" },
+		data: updateMovieTypeRequest,
 	});
 };

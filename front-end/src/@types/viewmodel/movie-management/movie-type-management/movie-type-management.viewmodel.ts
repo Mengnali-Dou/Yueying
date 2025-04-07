@@ -7,4 +7,7 @@ export interface MovieTypeManagementViewModel {
 
 	// 影片类型
 	movieType: string;
+
+	// 是否修改
+	isUpdate: boolean;
 }
