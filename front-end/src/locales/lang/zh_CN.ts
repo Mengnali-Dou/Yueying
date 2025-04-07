@@ -27,6 +27,7 @@ export default {
 		addMovie: "添加影片",
 		updateMovieInfo: "修改影片信息",
 		deleteMovie: "删除影片",
+		updateMovieType: "修改影片类型",
 
 		// 表单
 		user: "用户",
@@ -55,6 +56,7 @@ export default {
 		movieDuration: "影片时长",
 		mainActor: "主要演员",
 		movieProfile: "影片简介",
+		movieTypeId: "影片类型ID",
 
 		// 数据
 		male: "男",
