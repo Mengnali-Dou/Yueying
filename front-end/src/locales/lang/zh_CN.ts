@@ -26,6 +26,7 @@ export default {
 		confirm: "确定",
 		confirmUpdate: "确认修改",
 		addMovie: "添加影片",
+		addMovieType: "添加影片类型",
 		updateMovieInfo: "修改影片信息",
 		deleteMovie: "删除影片",
 		updateMovieType: "修改影片类型",

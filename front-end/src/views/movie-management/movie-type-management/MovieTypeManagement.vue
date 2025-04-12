@@ -20,6 +20,7 @@ import { searchMovieTypeApi, updateMovieTypeApi } from "@/generate/api-client/mo
 // shared utils
 import { responseStatusConstant } from "@/constant/response-status-constant.ts";
 import { MovieTypeManagementViewModel } from "@/@types/viewmodel/movie-management/movie-type-management/movie-type-management.viewmodel.ts";
+import AddMovieTypeDialog from "@/views/movie-management/movie-type-management/component/AddMovieTypeDialog.vue";
 
 // i18n
 const { t } = useI18n();
@@ -39,6 +40,8 @@ const state = reactive({
 	selectedMovieTypeInfo: {} as MovieTypeManagementViewModel,
 	// 选择行
 	selectedKeys: [] as Key[],
+	// 添加影片类型对话框显示状态
+	addMovieTypeDialogVisible: false as boolean,
 });
 
 // 搜索影片类型
@@ -53,6 +56,11 @@ const searchMovieTypeInfo = async () => {
 	} else {
 		message.error(searchMovieTypeInfoResponse.message);
 	}
+};
+
+// 添加影片类型
+const addMovieType = () => {
+	state.addMovieTypeDialogVisible = true;
 };
 
 // 修改影片类型
@@ -140,6 +148,7 @@ const columns: TableColumnsType = [
 </script>
 
 <template>
+	<a-button type="primary" @click="addMovieType">{{ t("app.addMovieType") }}</a-button>
 	<a-table
 		:columns="columns"
 		:data-source="state.movieTypeInfoList"
@@ -181,6 +190,7 @@ const columns: TableColumnsType = [
 			</template>
 		</template>
 	</a-table>
+	<AddMovieTypeDialog v-model:dialogVisible="state.addMovieTypeDialogVisible" @updateMovieType="searchMovieTypeInfo" />
 </template>
 
 <style scoped></style>

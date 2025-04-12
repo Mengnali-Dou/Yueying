@@ -1,4 +1,5 @@
 export * from "@/generate/request/add-movie-request.ts";
+export * from "@/generate/request/add-movie-type-request.ts";
 export * from "@/generate/request/login-request.ts";
 export * from "@/generate/request/logout-request.ts";
 export * from "@/generate/request/register-request.ts";

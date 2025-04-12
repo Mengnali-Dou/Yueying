@@ -1,5 +1,6 @@
 import {
 	AddMovieRequest,
+	AddMovieTypeRequest,
 	SearchMovieInfoRequest,
 	SearchMovieTypeRequest,
 	UpdateMovieInfoRequest,
@@ -66,6 +67,19 @@ export const searchMovieTypeApi = (searchMovieTypeRequest: SearchMovieTypeReques
 		url: `/movie/search-type?movieTypeId=${searchMovieTypeRequest.movieTypeId}`,
 		method: "GET",
 		headers: { "Content-Type": "application/json" },
+	});
+};
+
+/**
+ * 添加影片类型
+ * @param addMovieTypeRequest 添加影片类型请求体
+ */
+export const addMovieTypeApi = (addMovieTypeRequest: AddMovieTypeRequest) => {
+	return requestApi({
+		url: "/movie/add-type",
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		data: addMovieTypeRequest,
 	});
 };
 
