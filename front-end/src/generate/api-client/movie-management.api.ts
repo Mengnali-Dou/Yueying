@@ -95,3 +95,15 @@ export const updateMovieTypeApi = (updateMovieTypeRequest: UpdateMovieTypeReques
 		data: updateMovieTypeRequest,
 	});
 };
+
+/**
+ * 删除影片类型
+ * @param movieTypeId 影片类型ID
+ */
+export const deleteMovieTypeApi = (movieTypeId: number) => {
+	return requestApi({
+		url: `/movie/delete-type?movieTypeId=${movieTypeId}`,
+		method: "DELETE",
+		headers: { "Content-Type": "application/json" },
+	});
+};

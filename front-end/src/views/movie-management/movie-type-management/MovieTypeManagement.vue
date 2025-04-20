@@ -15,12 +15,17 @@ import { message, TableColumnsType } from "ant-design-vue";
 // api
 import { ApiResponse, MovieTypeInfoResponse } from "@/generate/response/responses.ts";
 import { SearchMovieTypeRequest, UpdateMovieTypeRequest } from "@/generate/request/requests.ts";
-import { searchMovieTypeApi, updateMovieTypeApi } from "@/generate/api-client/movie-management.api.ts";
+import {
+	deleteMovieTypeApi,
+	searchMovieTypeApi,
+	updateMovieTypeApi,
+} from "@/generate/api-client/movie-management.api.ts";
 
 // shared utils
 import { responseStatusConstant } from "@/constant/response-status-constant.ts";
 import { MovieTypeManagementViewModel } from "@/@types/viewmodel/movie-management/movie-type-management/movie-type-management.viewmodel.ts";
 import AddMovieTypeDialog from "@/views/movie-management/movie-type-management/component/AddMovieTypeDialog.vue";
+import DeleteDialog from "@/components/DeleteDialog.vue";
 
 // i18n
 const { t } = useI18n();
@@ -42,6 +47,12 @@ const state = reactive({
 	selectedKeys: [] as Key[],
 	// 添加影片类型对话框显示状态
 	addMovieTypeDialogVisible: false as boolean,
+	// 删除影片类型对话框显示状态
+	deleteMovieTypeDialogVisible: false as boolean,
+	// 删除影片类型名
+	deleteMovieTypeName: "" as string,
+	// 删除影片类型id
+	deleteMovieTypeId: 0 as number,
 });
 
 // 搜索影片类型
@@ -80,7 +91,22 @@ const updateMovieType = async (movieTypeId: number, movieType: string, index: nu
 };
 
 // 删除影片类型
-const deleteMovieType = () => {};
+const deleteMovieType = async (movieTypeId?: number, movieTypeName?: string) => {
+	if (!state.deleteMovieTypeDialogVisible) {
+		state.deleteMovieTypeDialogVisible = true;
+		state.deleteMovieTypeName = movieTypeName ?? "";
+		state.deleteMovieTypeId = movieTypeId ?? 0;
+	} else {
+		const deleteMovieTypeResponse = (await deleteMovieTypeApi(state.deleteMovieTypeId)).data as ApiResponse<string>;
+		if (deleteMovieTypeResponse.status === responseStatusConstant.OK) {
+			message.success(deleteMovieTypeResponse.message);
+			await searchMovieTypeInfo();
+			state.deleteMovieTypeDialogVisible = false;
+		} else {
+			message.error(deleteMovieTypeResponse.message);
+		}
+	}
+};
 
 // 选择行
 const onSelect = (selectedRowKeys: MovieTypeManagementViewModel) => {
@@ -184,13 +210,21 @@ const columns: TableColumnsType = [
 						</a-button>
 					</a-col>
 					<a-col>
-						<a-button @click="deleteMovieType" type="primary" danger>{{ t("app.delete") }}</a-button>
+						<a-button @click="deleteMovieType(record.movieTypeId, record.movieType)" type="primary" danger>
+							{{ t("app.delete") }}
+						</a-button>
 					</a-col>
 				</a-row>
 			</template>
 		</template>
 	</a-table>
 	<AddMovieTypeDialog v-model:dialogVisible="state.addMovieTypeDialogVisible" @updateMovieType="searchMovieTypeInfo" />
+	<DeleteDialog
+		v-model:dialogVisible="state.deleteMovieTypeDialogVisible"
+		:deleteName="state.deleteMovieTypeName ?? ''"
+		:deleteType="t('app.movieType')"
+		@confirmDelete="deleteMovieType"
+	/>
 </template>
 
 <style scoped></style>
