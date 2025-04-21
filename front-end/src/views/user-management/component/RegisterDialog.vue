@@ -71,7 +71,7 @@ const registerSchema: Record<string, Rule[]> = {
 	userName: [
 		{
 			required: true,
-			message: t("message.pleaseInputValue", { inputValue: t("app.userName") }),
+			message: t("message.pleaseInputValue", { inputValue: t("form.userName") }),
 			trigger: "blur",
 		},
 	],
@@ -103,9 +103,9 @@ const convertRegisterViewModelToRegisterRequest = (registerViewModel: RegisterVi
 <template>
 	<a-modal
 		v-model:open="dialogVisible"
-		:title="t('app.register')"
-		:ok-text="t('app.confirm')"
-		:cancel-text="t('app.cancel')"
+		:title="t('action.register')"
+		:ok-text="t('action.confirm')"
+		:cancel-text="t('action.cancel')"
 		@ok="userRegister"
 	>
 		<a-form
@@ -115,29 +115,29 @@ const convertRegisterViewModelToRegisterRequest = (registerViewModel: RegisterVi
 			:label-col="{ span: 4 }"
 			:wrapper-col="{ span: 18 }"
 		>
-			<a-form-item name="userAccount" :label="t('app.account')">
+			<a-form-item name="userAccount" :label="t('form.account')">
 				<a-input v-model:value="state.registerUserInfo.userAccount" :maxlength="24" />
 			</a-form-item>
-			<a-form-item name="userName" :label="t('app.userName')">
+			<a-form-item name="userName" :label="t('form.userName')">
 				<a-input v-model:value="state.registerUserInfo.userName" />
 			</a-form-item>
-			<a-form-item name="password" :label="t('app.password')">
+			<a-form-item name="password" :label="t('form.password')">
 				<a-input v-model:value="state.registerUserInfo.password" />
 			</a-form-item>
-			<a-form-item name="gender" :label="t('app.gender')">
+			<a-form-item name="gender" :label="t('form.gender')">
 				<a-radio-group v-model:value="state.registerUserInfo.gender">
 					<a-radio :value="genderConstant.male.code">
-						{{ t("app.male") }}
+						{{ t("data.male") }}
 					</a-radio>
 					<a-radio :value="genderConstant.female.code">
-						{{ t("app.female") }}
+						{{ t("data.female") }}
 					</a-radio>
 				</a-radio-group>
 			</a-form-item>
-			<a-form-item name="phone" :label="t('app.phone')">
+			<a-form-item name="phone" :label="t('form.phone')">
 				<a-input v-model:value="state.registerUserInfo.phone" :maxlength="11" />
 			</a-form-item>
-			<a-form-item name="email" :label="t('app.email')">
+			<a-form-item name="email" :label="t('form.email')">
 				<a-input v-model:value="state.registerUserInfo.email" />
 			</a-form-item>
 		</a-form>

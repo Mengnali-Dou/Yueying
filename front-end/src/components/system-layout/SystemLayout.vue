@@ -141,7 +141,7 @@ const logout = async () => {
 					</div>
 					<a-popover placement="bottomRight">
 						<template #content>
-							<a-button danger type="text" @click="logout">{{ t("app.logout") }}</a-button>
+							<a-button danger type="text" @click="logout">{{ t("action.logout") }}</a-button>
 						</template>
 						<a-avatar id="avatar" :src="state.avatarUrl" size="large" />
 					</a-popover>

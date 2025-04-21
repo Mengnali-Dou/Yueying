@@ -85,18 +85,18 @@ const convertLoginUserInfoViewModelToLoginRequest = (loginUserInfoViewModel: Log
 		<a-flex style="width: 100%; height: 90%" align="center" justify="center">
 			<a-card id="login-card">
 				<div class="login-page-title">
-					{{ t("app.loginTitle") }}
+					{{ t("app.login") }}
 				</div>
 				<a-form ref="formRef" :rules="loginSchema" :model="state.userInfo" class="login-form">
 					<a-form-item name="userAccount">
-						<a-input v-model:value="state.userInfo.userAccount" :placeholder="t('app.account')" size="large" autofocus>
+						<a-input v-model:value="state.userInfo.userAccount" :placeholder="t('form.account')" size="large" autofocus>
 							<template #prefix>
 								<UserOutlined />
 							</template>
 						</a-input>
 					</a-form-item>
 					<a-form-item name="password">
-						<a-input-password v-model:value="state.userInfo.password" :placeholder="t('app.password')" size="large">
+						<a-input-password v-model:value="state.userInfo.password" :placeholder="t('form.password')" size="large">
 							<template #prefix>
 								<LockOutlined />
 							</template>
@@ -104,7 +104,7 @@ const convertLoginUserInfoViewModelToLoginRequest = (loginUserInfoViewModel: Log
 					</a-form-item>
 					<a-form-item>
 						<a-button style="width: 100%" type="primary" size="large" :disabled="loginButtonDisabled" @click="login">
-							{{ t("app.login") }}
+							{{ t("action.login") }}
 						</a-button>
 					</a-form-item>
 				</a-form>

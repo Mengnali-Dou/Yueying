@@ -31,9 +31,9 @@ const confirmDelete = () => {
 <template>
 	<a-modal
 		v-model:open="dialogVisible"
-		:title="t('app.delete') + props.deleteType"
-		:ok-text="t('app.confirm')"
-		:cancel-text="t('app.cancel')"
+		:title="t('action.delete') + props.deleteType"
+		:ok-text="t('action.confirm')"
+		:cancel-text="t('action.cancel')"
 		@ok="confirmDelete"
 	>
 		{{

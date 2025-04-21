@@ -132,40 +132,40 @@ const userManagementButtonsDisabled = computed(() => {
 // 表头
 const columns: TableColumnsType = [
 	{
-		title: t("app.userId"),
+		title: t("form.userId"),
 		width: 80,
 		dataIndex: "userId",
 		key: "userId",
 	},
 	{
-		title: t("app.account"),
+		title: t("form.account"),
 		width: 100,
 		dataIndex: "userAccount",
 		key: "userAccount",
 	},
 	{
-		title: t("app.userName"),
+		title: t("form.userName"),
 		dataIndex: "userName",
 		key: "userName",
 		width: 100,
 	},
-	{ title: t("app.gender"), dataIndex: "gender", key: "gender", width: 50 },
-	{ title: t("app.phone"), dataIndex: "phone", key: "phone", width: 100 },
-	{ title: t("app.email"), dataIndex: "email", key: "email", width: 150 },
+	{ title: t("form.gender"), dataIndex: "gender", key: "gender", width: 50 },
+	{ title: t("form.phone"), dataIndex: "phone", key: "phone", width: 100 },
+	{ title: t("form.email"), dataIndex: "email", key: "email", width: 150 },
 	{
-		title: t("app.registerDateTime"),
+		title: t("form.registerDateTime"),
 		dataIndex: "createTime",
 		key: "createTime",
 		width: 150,
 	},
 	{
-		title: t("app.userRole"),
+		title: t("form.userRole"),
 		dataIndex: "userRole",
 		key: "userRole",
 		width: 100,
 	},
 	{
-		title: t("app.userStatus"),
+		title: t("form.userStatus"),
 		dataIndex: "userStatus",
 		key: "userStatus",
 		width: 100,
@@ -185,7 +185,7 @@ const convertUserInfoResponseToUserInfoViewModel = (userInfoResponse: UserInfoRe
 		userName: userInfoResponse.userName,
 		userAccount: userInfoResponse.userAccount,
 		avatarUrl: userInfoResponse.avatarUrl,
-		gender: userInfoResponse.gender === genderConstant.male.code ? t("app.male") : t("app.female"),
+		gender: userInfoResponse.gender === genderConstant.male.code ? t("data.male") : t("data.female"),
 		phone: userInfoResponse.phone,
 		email: userInfoResponse.email,
 		createTime: getDate(userInfoResponse.createTime),
@@ -197,18 +197,18 @@ const convertUserInfoResponseToUserInfoViewModel = (userInfoResponse: UserInfoRe
 
 <template>
 	<a-space direction="horizontal">
-		<a-input v-model:value="state.searchUser.userAccount" :placeholder="t('app.account')" allow-clear />
-		<a-input v-model:value="state.searchUser.userName" :placeholder="t('app.userName')" allow-clear />
+		<a-input v-model:value="state.searchUser.userAccount" :placeholder="t('form.account')" allow-clear />
+		<a-input v-model:value="state.searchUser.userName" :placeholder="t('form.userName')" allow-clear />
 		<a-button type="primary" @click="searchUserInfoList()" :icon="h(SearchOutlined)" />
-		<a-button type="default" @click="registerUser">{{ t("app.register") }}</a-button>
+		<a-button type="default" @click="registerUser">{{ t("action.register") }}</a-button>
 		<a-button type="primary" :disabled="userManagementButtonsDisabled" @click="updateUserInfo">
-			{{ t("app.modifyUserInfo") }}
+			{{ t("action.modifyUserInfo") }}
 		</a-button>
 		<a-button type="primary" :disabled="userManagementButtonsDisabled" @click="resetPassword">
-			{{ t("app.resetPassword") }}
+			{{ t("action.resetPassword") }}
 		</a-button>
 		<a-button type="primary" :disabled="userManagementButtonsDisabled" @click="deleteUserButtonClicked" danger>
-			{{ t("app.deleteUser") }}
+			{{ t("action.deleteUser") }}
 		</a-button>
 	</a-space>
 	<a-table
@@ -227,27 +227,27 @@ const convertUserInfoResponseToUserInfoViewModel = (userInfoResponse: UserInfoRe
 		<template #bodyCell="{ column, record }">
 			<template v-if="column.key === 'userRole'">
 				<a-tag v-if="record.userRole === userRoleConstant.normalUser.code" color="blue">
-					{{ t("app.normalUser") }}
+					{{ t("status.normalUser") }}
 				</a-tag>
 				<a-tag v-if="record.userRole === userRoleConstant.admin.code" color="red">
-					{{ t("app.systemAdmin") }}
+					{{ t("status.systemAdmin") }}
 				</a-tag>
 				<a-tag v-if="record.userRole === userRoleConstant.cinemaAdmin.code" color="green">
-					{{ t("app.cinemaAdmin") }}
+					{{ t("status.cinemaAdmin") }}
 				</a-tag>
 				<a-tag v-if="record.userRole === userRoleConstant.eventAdmin.code" color="cyan">
-					{{ t("app.eventAdmin") }}
+					{{ t("status.eventAdmin") }}
 				</a-tag>
 			</template>
 			<template v-if="column.key === 'userStatus'">
 				<a-tag v-if="record.userStatus === accountStatus.normal.code" color="green">
-					{{ t("app.normalAccount") }}
+					{{ t("status.normalAccount") }}
 				</a-tag>
 				<a-tag v-if="record.userStatus === accountStatus.passwordReset.code" color="pink">
-					{{ t("app.passwordReset") }}
+					{{ t("status.passwordReset") }}
 				</a-tag>
 				<a-tag v-if="record.userStatus === accountStatus.cancellation.code" color="red">
-					{{ t("app.cancellation") }}
+					{{ t("status.cancellation") }}
 				</a-tag>
 			</template>
 		</template>

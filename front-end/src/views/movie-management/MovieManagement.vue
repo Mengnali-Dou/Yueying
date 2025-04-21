@@ -183,28 +183,28 @@ const movieManagementButtonsDisabled = computed(() => {
 // 表头
 const columns: TableColumnsType = [
 	{
-		title: t("app.movieId"),
+		title: t("form.movieId"),
 		width: 50,
 		dataIndex: "movieId",
 		key: "movieId",
 	},
 	{
-		title: t("app.movieName"),
+		title: t("form.movieName"),
 		width: 120,
 		dataIndex: "movieName",
 		key: "movieName",
 	},
 	{
-		title: t("app.movieType"),
+		title: t("form.movieType"),
 		dataIndex: "movieTypeName",
 		key: "movieTypeName",
 		width: 120,
 	},
-	{ title: t("app.releaseDate"), dataIndex: "releaseDate", key: "releaseDate", width: 100 },
-	{ title: t("app.movieDuration"), dataIndex: "movieDuration", key: "movieDuration", width: 50 },
-	{ title: t("app.mainActor"), dataIndex: "mainActor", key: "mainActor", width: 100 },
+	{ title: t("form.releaseDate"), dataIndex: "releaseDate", key: "releaseDate", width: 100 },
+	{ title: t("form.movieDuration"), dataIndex: "movieDuration", key: "movieDuration", width: 50 },
+	{ title: t("form.mainActor"), dataIndex: "mainActor", key: "mainActor", width: 100 },
 	{
-		title: t("app.movieProfile"),
+		title: t("form.movieProfile"),
 		dataIndex: "movieProfile",
 		key: "movieProfile",
 		width: 150,
@@ -214,10 +214,10 @@ const columns: TableColumnsType = [
 
 <template>
 	<a-space direction="horizontal">
-		<a-input :placeholder="t('app.movieName')" />
+		<a-input :placeholder="t('form.movieName')" />
 		<a-select
 			v-model:value="state.searchMovieInfoForm.movieTypeId"
-			:placeholder="t('app.movieType')"
+			:placeholder="t('form.movieType')"
 			style="min-width: 150px"
 		>
 			<a-select-option v-for="item in state.movieTypeInfo" :value="item.movieTypeId" :Key="item.movieTypeId">
@@ -225,12 +225,12 @@ const columns: TableColumnsType = [
 			</a-select-option>
 		</a-select>
 		<a-button type="primary" @click="searchMovieInfoList()" :icon="h(SearchOutlined)" />
-		<a-button type="primary" @click="addMovie">{{ t("app.addMovie") }}</a-button>
+		<a-button type="primary" @click="addMovie">{{ t("action.addMovie") }}</a-button>
 		<a-button type="primary" :disabled="movieManagementButtonsDisabled" @click="updateMovieInfo">
-			{{ t("app.updateMovieInfo") }}
+			{{ t("action.updateMovieInfo") }}
 		</a-button>
 		<a-button type="primary" :disabled="movieManagementButtonsDisabled" @click="deleteMovieButtonClicked" danger>
-			{{ t("app.deleteMovie") }}
+			{{ t("action.deleteMovie") }}
 		</a-button>
 	</a-space>
 	<a-table
@@ -268,7 +268,7 @@ const columns: TableColumnsType = [
 	<DeleteDialog
 		v-model:dialogVisible="state.deleteMovieDialogVisible"
 		:deleteName="state.selectMovieInfo.movieName ?? ''"
-		:deleteType="t('app.movie')"
+		:deleteType="t('form.movie')"
 		@confirmDelete="deleteMovie"
 	/>
 </template>

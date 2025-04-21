@@ -68,32 +68,32 @@ const convertToDto = (movieInfoViewModel: MovieInfoViewModel): UpdateMovieInfoRe
 <template>
 	<a-modal
 		v-model:open="dialogVisible"
-		:title="t('app.addMovie')"
-		:ok-text="t('app.confirm')"
-		:cancel-text="t('app.cancel')"
+		:title="t('action.addMovie')"
+		:ok-text="t('action.confirm')"
+		:cancel-text="t('action.cancel')"
 		@ok="addMovie"
 	>
 		<a-form ref="formRef" :model="props.modelValue" :label-col="{ span: 4 }" :wrapper-col="{ span: 18 }">
-			<a-form-item name="movieName" :label="t('app.movieName')">
+			<a-form-item name="movieName" :label="t('form.movieName')">
 				<a-input v-model:value="props.modelValue.movieName" />
 			</a-form-item>
-			<a-form-item name="movieTypeId" :label="t('app.movieType')">
+			<a-form-item name="movieTypeId" :label="t('form.movieType')">
 				<a-select v-model:value="props.modelValue.movieTypeId">
 					<a-select-option v-for="item in props.movieTypeInfo" :value="item.movieTypeId" :key="item.movieTypeId">
 						{{ item.movieTypeName }}
 					</a-select-option>
 				</a-select>
 			</a-form-item>
-			<a-form-item name="releaseDate" :label="t('app.releaseDate')">
+			<a-form-item name="releaseDate" :label="t('form.releaseDate')">
 				<a-input v-model:value="props.modelValue.releaseDate" />
 			</a-form-item>
-			<a-form-item name="movieDuration" :label="t('app.movieDuration')">
+			<a-form-item name="movieDuration" :label="t('form.movieDuration')">
 				<a-input v-model:value="props.modelValue.movieDuration" />
 			</a-form-item>
-			<a-form-item name="mainActor" :label="t('app.mainActor')">
+			<a-form-item name="mainActor" :label="t('form.mainActor')">
 				<a-input v-model:value="props.modelValue.mainActor" />
 			</a-form-item>
-			<a-form-item name="movieProfile" :label="t('app.movieProfile')">
+			<a-form-item name="movieProfile" :label="t('form.movieProfile')">
 				<a-textarea v-model:value="props.modelValue.movieProfile" />
 			</a-form-item>
 		</a-form>

@@ -68,31 +68,31 @@ const convertUserInfoViewModelToUpdateUserInfoRequest = (
 <template>
 	<a-modal
 		v-model:open="dialogVisible"
-		:title="t('app.modifyUserInfo')"
-		:ok-text="t('app.confirm')"
-		:cancel-text="t('app.cancel')"
+		:title="t('action.modifyUserInfo')"
+		:ok-text="t('action.confirm')"
+		:cancel-text="t('action.cancel')"
 		@ok="confirmUpdateUserInfo"
 	>
 		<a-form :model="props.modelValue" :label-col="{ span: 4 }" :wrapper-col="{ span: 18 }">
-			<a-form-item :label="t('app.userId')">
+			<a-form-item :label="t('form.userId')">
 				<a-input v-model:value="props.modelValue.userId" disabled />
 			</a-form-item>
-			<a-form-item :label="t('app.account')">
+			<a-form-item :label="t('form.account')">
 				<a-input v-model:value="props.modelValue.userAccount" disabled />
 			</a-form-item>
-			<a-form-item :label="t('app.userName')">
+			<a-form-item :label="t('form.userName')">
 				<a-input v-model:value="props.modelValue.userName" />
 			</a-form-item>
-			<a-form-item :label="$t('app.gender')">
+			<a-form-item :label="t('form.gender')">
 				<a-radio-group v-model:value="props.modelValue.gender">
-					<a-radio :value="genderConstant.male.gender">{{ t("app.male") }}</a-radio>
-					<a-radio :value="genderConstant.female.gender">{{ t("app.female") }}</a-radio>
+					<a-radio :value="genderConstant.male.gender">{{ t("data.male") }}</a-radio>
+					<a-radio :value="genderConstant.female.gender">{{ t("data.female") }}</a-radio>
 				</a-radio-group>
 			</a-form-item>
-			<a-form-item :label="t('app.phone')">
+			<a-form-item :label="t('form.phone')">
 				<a-input v-model:value="props.modelValue.phone" />
 			</a-form-item>
-			<a-form-item :label="t('app.email')">
+			<a-form-item :label="t('form.email')">
 				<a-input v-model:value="props.modelValue.email" />
 			</a-form-item>
 		</a-form>

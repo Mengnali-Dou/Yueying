@@ -82,16 +82,20 @@ const convertMovieInfoViewModelToAddMovieRequest = (movieInfoViewModel: MovieInf
 // 表单格式校验
 const addMovieFormSchema: Record<string, Rule[]> = {
 	movieName: [
-		{ required: true, message: t("message.pleaseInputValue", { inputValue: t("app.movieName") }), trigger: "blur" },
+		{ required: true, message: t("message.pleaseInputValue", { inputValue: t("form.movieName") }), trigger: "blur" },
 	],
 	movieTypeId: [
-		{ required: true, message: t("message.pleaseInputValue", { inputValue: t("app.movieType") }), trigger: "blur" },
+		{ required: true, message: t("message.pleaseInputValue", { inputValue: t("form.movieType") }), trigger: "blur" },
 	],
 	releaseDate: [
-		{ required: true, message: t("message.pleaseInputValue", { inputValue: t("app.releaseDate") }), trigger: "blur" },
+		{ required: true, message: t("message.pleaseInputValue", { inputValue: t("form.releaseDate") }), trigger: "blur" },
 	],
 	movieDuration: [
-		{ required: true, message: t("message.pleaseInputValue", { inputValue: t("app.movieDuration") }), trigger: "blur" },
+		{
+			required: true,
+			message: t("message.pleaseInputValue", { inputValue: t("form.movieDuration") }),
+			trigger: "blur",
+		},
 	],
 	movieProfile: [{ max: 200, trigger: "blur" }],
 };
@@ -100,9 +104,9 @@ const addMovieFormSchema: Record<string, Rule[]> = {
 <template>
 	<a-modal
 		v-model:open="dialogVisible"
-		:title="t('app.addMovie')"
-		:ok-text="t('app.confirm')"
-		:cancel-text="t('app.cancel')"
+		:title="t('action.addMovie')"
+		:ok-text="t('action.confirm')"
+		:cancel-text="t('action.cancel')"
 		@ok="addMovie"
 	>
 		<a-form
@@ -112,26 +116,26 @@ const addMovieFormSchema: Record<string, Rule[]> = {
 			:label-col="{ span: 4 }"
 			:wrapper-col="{ span: 18 }"
 		>
-			<a-form-item name="movieName" :label="t('app.movieName')">
+			<a-form-item name="movieName" :label="t('form.movieName')">
 				<a-input v-model:value="state.addMovieInfo.movieName" />
 			</a-form-item>
-			<a-form-item name="movieTypeId" :label="t('app.movieType')">
+			<a-form-item name="movieTypeId" :label="t('form.movieType')">
 				<a-select v-model:value="state.addMovieInfo.movieTypeId">
 					<a-select-option v-for="item in props.movieTypeInfo" :value="item.movieTypeId" :key="item.movieTypeId">
 						{{ item.movieTypeName }}
 					</a-select-option>
 				</a-select>
 			</a-form-item>
-			<a-form-item name="releaseDate" :label="t('app.releaseDate')">
+			<a-form-item name="releaseDate" :label="t('form.releaseDate')">
 				<a-date-picker v-model:value="state.addMovieInfo.releaseDate" show-time />
 			</a-form-item>
-			<a-form-item name="movieDuration" :label="t('app.movieDuration')">
+			<a-form-item name="movieDuration" :label="t('form.movieDuration')">
 				<a-time-picker v-model:value="state.addMovieInfo.movieDuration" />
 			</a-form-item>
-			<a-form-item name="mainActor" :label="t('app.mainActor')">
+			<a-form-item name="mainActor" :label="t('form.mainActor')">
 				<a-input v-model:value="state.addMovieInfo.mainActor" />
 			</a-form-item>
-			<a-form-item name="movieProfile" :label="t('app.movieProfile')">
+			<a-form-item name="movieProfile" :label="t('form.movieProfile')">
 				<a-textarea v-model:value="state.addMovieInfo.movieProfile" />
 			</a-form-item>
 		</a-form>

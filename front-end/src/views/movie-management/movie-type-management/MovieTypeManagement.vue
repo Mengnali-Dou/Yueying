@@ -153,13 +153,13 @@ const convertToUpdateMovieTypeRequest = (movieTypeId: number, movieType: string)
 // 表头
 const columns: TableColumnsType = [
 	{
-		title: t("app.movieTypeId"),
+		title: t("form.movieTypeId"),
 		width: 50,
 		dataIndex: "movieTypeId",
 		key: "movieTypeId",
 	},
 	{
-		title: t("app.movieType"),
+		title: t("form.movieType"),
 		width: 80,
 		dataIndex: "movieType",
 		key: "movieType",
@@ -174,7 +174,7 @@ const columns: TableColumnsType = [
 </script>
 
 <template>
-	<a-button type="primary" @click="addMovieType">{{ t("app.addMovieType") }}</a-button>
+	<a-button type="primary" @click="addMovieType">{{ t("action.addMovieType") }}</a-button>
 	<a-table
 		:columns="columns"
 		:data-source="state.movieTypeInfoList"
@@ -206,12 +206,12 @@ const columns: TableColumnsType = [
 							:disabled="record.movieType.length === 0"
 							type="primary"
 						>
-							{{ record.isUpdate ? t("app.confirmUpdate") : t("app.updateMovieType") }}
+							{{ record.isUpdate ? t("action.confirmUpdate") : t("action.updateMovieType") }}
 						</a-button>
 					</a-col>
 					<a-col>
 						<a-button @click="deleteMovieType(record.movieTypeId, record.movieType)" type="primary" danger>
-							{{ t("app.delete") }}
+							{{ t("action.delete") }}
 						</a-button>
 					</a-col>
 				</a-row>
@@ -222,7 +222,7 @@ const columns: TableColumnsType = [
 	<DeleteDialog
 		v-model:dialogVisible="state.deleteMovieTypeDialogVisible"
 		:deleteName="state.deleteMovieTypeName ?? ''"
-		:deleteType="t('app.movieType')"
+		:deleteType="t('form.movieType')"
 		@confirmDelete="deleteMovieType"
 	/>
 </template>
