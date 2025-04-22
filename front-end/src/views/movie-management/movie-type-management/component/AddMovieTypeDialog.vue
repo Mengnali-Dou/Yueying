@@ -63,7 +63,7 @@ const convertToAddMovieTypeRequest = (movieType: string): AddMovieTypeRequest =>
 // 表单格式校验
 const addMovieTypeFormSchema: Record<string, Rule[]> = {
 	movieType: [
-		{ required: true, message: t("message.pleaseInputValue", { inputValue: t("app.movieType") }), trigger: "blur" },
+		{ required: true, message: t("message.pleaseInputValue", { inputValue: t("form.movieType") }), trigger: "blur" },
 	],
 };
 </script>
@@ -71,9 +71,9 @@ const addMovieTypeFormSchema: Record<string, Rule[]> = {
 <template>
 	<a-modal
 		v-model:open="dialogVisible"
-		:title="t('app.addMovieType')"
-		:ok-text="t('app.confirm')"
-		:cancel-text="t('app.cancel')"
+		:title="t('action.addMovieType')"
+		:ok-text="t('action.confirm')"
+		:cancel-text="t('action.cancel')"
 		@ok="addMovieType"
 	>
 		<a-form
@@ -83,7 +83,7 @@ const addMovieTypeFormSchema: Record<string, Rule[]> = {
 			:label-col="{ span: 4 }"
 			:wrapper-col="{ span: 18 }"
 		>
-			<a-form-item name="movieType" :label="t('app.movieType')">
+			<a-form-item name="movieType" :label="t('form.movieType')">
 				<a-input v-model:value="state.addMovieType.movieType" />
 			</a-form-item>
 		</a-form>
