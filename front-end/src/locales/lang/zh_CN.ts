@@ -6,7 +6,6 @@ export default {
 		confirmThatYouWantToDelete: "确认要删除{deleteType}“{deleteName}”吗？",
 	},
 	app: {
-		// 页面
 		login: "登录",
 		home: "首页",
 		userManagement: "用户管理",
@@ -63,7 +62,6 @@ export default {
 		cancellation: "注销",
 	},
 	data: {
-		// 数据
 		male: "男",
 		female: "女",
 	},
