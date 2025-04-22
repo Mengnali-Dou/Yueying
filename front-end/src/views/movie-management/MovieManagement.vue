@@ -214,7 +214,7 @@ const columns: TableColumnsType = [
 
 <template>
 	<a-space direction="horizontal">
-		<a-input :placeholder="t('form.movieName')" />
+		<a-input v-model:value="state.searchMovieInfoForm.movieName" :placeholder="t('form.movieName')" />
 		<a-select
 			v-model:value="state.searchMovieInfoForm.movieTypeId"
 			:placeholder="t('form.movieType')"
