@@ -40,6 +40,7 @@ declare module 'vue' {
     ATag: typeof import('ant-design-vue/es')['Tag']
     ATextarea: typeof import('ant-design-vue/es')['Textarea']
     ATimePicker: typeof import('ant-design-vue/es')['TimePicker']
+    ATooltip: typeof import('ant-design-vue/es')['Tooltip']
     BreadCrumb: typeof import('./src/components/system-layout/component/BreadCrumb.vue')['default']
     DeleteDialog: typeof import('./src/components/DeleteDialog.vue')['default']
     EmptyLayout: typeof import('./src/components/EmptyLayout.vue')['default']
@@ -48,5 +49,6 @@ declare module 'vue' {
     SystemHeader: typeof import('./src/components/system-layout/SystemHeader.vue')['default']
     SystemLayout: typeof import('./src/components/system-layout/SystemLayout.vue')['default']
     SystemSideBar: typeof import('./src/components/system-layout/SystemSideBar.vue')['default']
+    ToolTipText: typeof import('./src/components/text/ToolTipText.vue')['default']
   }
 }

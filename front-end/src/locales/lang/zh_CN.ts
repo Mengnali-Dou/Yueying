@@ -12,6 +12,8 @@ export default {
 		movieManagement: "影片管理",
 		movieInfo: "影片信息",
 		movieTypeManagement: "影片类型管理",
+		cinemaManagement: "影院管理",
+		cinemaInfo: "影院信息",
 	},
 	action: {
 		login: "登录",
@@ -29,6 +31,9 @@ export default {
 		updateMovieInfo: "修改影片信息",
 		deleteMovie: "删除影片",
 		updateMovieType: "修改影片类型",
+		addCinema: "添加影院",
+		updateCinemaInfo: "修改影院信息",
+		deleteCinema: "删除影院",
 	},
 	form: {
 		user: "用户",
@@ -51,6 +56,13 @@ export default {
 		mainActor: "主要演员",
 		movieProfile: "影片简介",
 		movieTypeId: "影片类型ID",
+		cinemaName: "影院名",
+		cinemaId: "影院ID",
+		cinemaAddress: "影院地址",
+		cinemaProfile: "影院简介",
+		cinemaService: "影院服务",
+		cinemaPhone: "影院电话",
+		cinemaTraffic: "影院交通",
 	},
 	status: {
 		normalUser: "普通用户",
