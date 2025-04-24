@@ -5,7 +5,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { h, onMounted, reactive } from "vue";
+import { computed, h, onMounted, reactive } from "vue";
 import { useI18n } from "vue-i18n";
 import { SearchOutlined } from "@ant-design/icons-vue";
 import { message, TableColumnsType } from "ant-design-vue";
@@ -34,6 +34,11 @@ const state = reactive({
 
 onMounted(async () => {
 	await searchCinemaList();
+});
+
+// 修改、删除影院按钮激活状态
+const cinemaManagementButtonsDisabled = computed(() => {
+	return state.selectedKeys.length === 0;
 });
 
 // 搜索影院
@@ -130,8 +135,12 @@ const columns: TableColumnsType = [
 		<a-input v-model:value="state.searchCinemaName" :placeholder="t('form.cinemaName')" />
 		<a-button type="primary" @click="searchCinemaList()" :icon="h(SearchOutlined)" />
 		<a-button type="primary" @click="addCinema()">{{ t("action.addCinema") }}</a-button>
-		<a-button type="primary" @click="updateCinemaInfo()">{{ t("action.updateCinemaInfo") }}</a-button>
-		<a-button type="primary" @click="deleteCinema()" danger>{{ t("action.deleteCinema") }}</a-button>
+		<a-button type="primary" :disabled="cinemaManagementButtonsDisabled" @click="updateCinemaInfo()">
+			{{ t("action.updateCinemaInfo") }}
+		</a-button>
+		<a-button type="primary" :disabled="cinemaManagementButtonsDisabled" @click="deleteCinema()" danger>
+			{{ t("action.deleteCinema") }}
+		</a-button>
 	</a-space>
 	<a-table
 		:columns="columns"
