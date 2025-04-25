@@ -63,6 +63,7 @@ export default {
 		cinemaService: "影院服务",
 		cinemaPhone: "影院电话",
 		cinemaTraffic: "影院交通",
+		cinema: "影院",
 	},
 	status: {
 		normalUser: "普通用户",

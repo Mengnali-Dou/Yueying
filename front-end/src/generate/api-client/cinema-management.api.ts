@@ -11,3 +11,15 @@ export const searchCinemaInfoApi = (cinemaName?: string) => {
 		headers: { "Content-Type": "application/json" },
 	});
 };
+
+/**
+ * 删除影院
+ * @param cinemaId 影院id
+ */
+export const deleteCinemaApi = (cinemaId: number) => {
+	return requestApi({
+		url: `/cinema/delete?cinemaId=${cinemaId}`,
+		method: "DELETE",
+		headers: { "Content-Type": "application/json" },
+	});
+};

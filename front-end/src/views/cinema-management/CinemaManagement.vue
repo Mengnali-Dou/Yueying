@@ -12,9 +12,10 @@ import { message, TableColumnsType } from "ant-design-vue";
 import { CinemaInfoViewModel } from "@/@types/viewmodel/cinema-management/cinema-management.viewmodel.ts";
 import ToolTipText from "@/components/text/ToolTipText.vue";
 import { ApiResponse } from "@/generate/response/api-response.ts";
-import { searchCinemaInfoApi } from "@/generate/api-client/cinema-management.api.ts";
+import { deleteCinemaApi, searchCinemaInfoApi } from "@/generate/api-client/cinema-management.api.ts";
 import { CinemaInfoResponse } from "@/generate/response/cinema-info-response.ts";
 import { responseStatusConstant } from "@/constant/response-status-constant.ts";
+import DeleteDialog from "@/components/DeleteDialog.vue";
 
 // i18n
 const { t } = useI18n();
@@ -30,6 +31,8 @@ const state = reactive({
 	selectedKeys: [] as Key[],
 	// 选择影院信息
 	selectCinemaInfo: {} as CinemaInfoViewModel,
+	// 删除影院对话框显示状态
+	deleteCinemaDialogVisible: false as boolean,
 });
 
 onMounted(async () => {
@@ -63,7 +66,16 @@ const addCinema = () => {};
 const updateCinemaInfo = () => {};
 
 // 删除影院
-const deleteCinema = () => {};
+const deleteCinema = async () => {
+	const deleteCinemaResponse = (await deleteCinemaApi(state.selectCinemaInfo.cinemaId)).data as ApiResponse;
+	if (deleteCinemaResponse.status === responseStatusConstant.OK) {
+		message.success(deleteCinemaResponse.message);
+		state.deleteCinemaDialogVisible = false;
+		await searchCinemaList();
+	} else {
+		message.error(deleteCinemaResponse.message);
+	}
+};
 
 // 选择行
 const onSelect = (selectedRowKeys: CinemaInfoViewModel) => {
@@ -138,7 +150,12 @@ const columns: TableColumnsType = [
 		<a-button type="primary" :disabled="cinemaManagementButtonsDisabled" @click="updateCinemaInfo()">
 			{{ t("action.updateCinemaInfo") }}
 		</a-button>
-		<a-button type="primary" :disabled="cinemaManagementButtonsDisabled" @click="deleteCinema()" danger>
+		<a-button
+			type="primary"
+			:disabled="cinemaManagementButtonsDisabled"
+			@click="state.deleteCinemaDialogVisible = true"
+			danger
+		>
 			{{ t("action.deleteCinema") }}
 		</a-button>
 	</a-space>
@@ -166,6 +183,12 @@ const columns: TableColumnsType = [
 			</template>
 		</template>
 	</a-table>
+	<DeleteDialog
+		:dialogVisible="state.deleteCinemaDialogVisible"
+		:deleteType="t('form.cinema')"
+		:deleteName="state.selectCinemaInfo.cinemaName"
+		@confirmDelete="deleteCinema"
+	/>
 </template>
 
 <style scoped></style>
