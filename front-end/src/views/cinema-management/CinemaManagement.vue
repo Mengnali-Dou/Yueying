@@ -5,17 +5,23 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { computed, h, onMounted, reactive } from "vue";
+// frameworks
 import { useI18n } from "vue-i18n";
+import { computed, h, onMounted, reactive } from "vue";
+
+// components
 import { SearchOutlined } from "@ant-design/icons-vue";
-import { message, TableColumnsType } from "ant-design-vue";
-import { CinemaInfoViewModel } from "@/@types/viewmodel/cinema-management/cinema-management.viewmodel.ts";
-import ToolTipText from "@/components/text/ToolTipText.vue";
-import { ApiResponse } from "@/generate/response/api-response.ts";
-import { deleteCinemaApi, searchCinemaInfoApi } from "@/generate/api-client/cinema-management.api.ts";
-import { CinemaInfoResponse } from "@/generate/response/cinema-info-response.ts";
-import { responseStatusConstant } from "@/constant/response-status-constant.ts";
 import DeleteDialog from "@/components/DeleteDialog.vue";
+import { message, TableColumnsType } from "ant-design-vue";
+import ToolTipText from "@/components/text/ToolTipText.vue";
+
+// api
+import { ApiResponse, CinemaInfoResponse } from "@/generate/response/responses.ts";
+import { deleteCinemaApi, searchCinemaInfoApi } from "@/generate/api-client/cinema-management.api.ts";
+
+// shared utils
+import { responseStatusConstant } from "@/constant/response-status-constant.ts";
+import { CinemaInfoViewModel } from "@/@types/viewmodel/cinema-management/cinema-management.viewmodel.ts";
 
 // i18n
 const { t } = useI18n();
