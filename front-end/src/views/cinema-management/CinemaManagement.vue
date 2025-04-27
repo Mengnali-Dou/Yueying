@@ -14,6 +14,7 @@ import { SearchOutlined } from "@ant-design/icons-vue";
 import DeleteDialog from "@/components/DeleteDialog.vue";
 import { message, TableColumnsType } from "ant-design-vue";
 import ToolTipText from "@/components/text/ToolTipText.vue";
+import AddCinemaDialog from "@/views/cinema-management/component/AddCinemaDialog.vue";
 
 // api
 import { ApiResponse, CinemaInfoResponse } from "@/generate/response/responses.ts";
@@ -37,6 +38,8 @@ const state = reactive({
 	selectedKeys: [] as Key[],
 	// 选择影院信息
 	selectCinemaInfo: {} as CinemaInfoViewModel,
+	// 添加影院对话框请求体
+	addCinemaDialogVisible: false as boolean,
 	// 删除影院对话框显示状态
 	deleteCinemaDialogVisible: false as boolean,
 });
@@ -64,9 +67,6 @@ const searchCinemaList = async () => {
 		message.error(searchCinemaResponse.message);
 	}
 };
-
-// 添加影院
-const addCinema = () => {};
 
 // 修改影院信息
 const updateCinemaInfo = () => {};
@@ -152,7 +152,7 @@ const columns: TableColumnsType = [
 	<a-space direction="horizontal">
 		<a-input v-model:value="state.searchCinemaName" :placeholder="t('form.cinemaName')" />
 		<a-button type="primary" @click="searchCinemaList()" :icon="h(SearchOutlined)" />
-		<a-button type="primary" @click="addCinema()">{{ t("action.addCinema") }}</a-button>
+		<a-button type="primary" @click="state.addCinemaDialogVisible = true">{{ t("action.addCinema") }}</a-button>
 		<a-button type="primary" :disabled="cinemaManagementButtonsDisabled" @click="updateCinemaInfo()">
 			{{ t("action.updateCinemaInfo") }}
 		</a-button>
@@ -189,10 +189,11 @@ const columns: TableColumnsType = [
 			</template>
 		</template>
 	</a-table>
+	<AddCinemaDialog v-model:dialogVisible="state.addCinemaDialogVisible" @updateCinemaInfo="searchCinemaList" />
 	<DeleteDialog
 		:dialogVisible="state.deleteCinemaDialogVisible"
 		:deleteType="t('form.cinema')"
-		:deleteName="state.selectCinemaInfo.cinemaName"
+		:deleteName="state.selectCinemaInfo.cinemaName ?? ''"
 		@confirmDelete="deleteCinema"
 	/>
 </template>

@@ -1,10 +1,8 @@
 /**
- * 影院信息
+ * 添加影院请求体
+ * @author <a href="mengnalidou.icu">mengnali_dou</a>
  */
-export interface CinemaInfoViewModel {
-	// id
-	cinemaId: number;
-
+export interface AddCinemaRequest {
 	// 影院名
 	cinemaName: string;
 

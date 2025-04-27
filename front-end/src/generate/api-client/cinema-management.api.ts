@@ -1,4 +1,5 @@
 import requestApi from "@/generate/api-client/request.api.ts";
+import { AddCinemaRequest } from "@/generate/request/requests.ts";
 
 /**
  * 搜索影院
@@ -9,6 +10,19 @@ export const searchCinemaInfoApi = (cinemaName?: string) => {
 		url: `/cinema/search?cinemaName=${cinemaName ?? ""}`,
 		method: "GET",
 		headers: { "Content-Type": "application/json" },
+	});
+};
+
+/**
+ * 添加影院
+ * @param addCinemaRequest 添加影院请求体
+ */
+export const addCinemaApi = (addCinemaRequest: AddCinemaRequest) => {
+	return requestApi({
+		url: "/cinema/add",
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		data: addCinemaRequest,
 	});
 };
 
