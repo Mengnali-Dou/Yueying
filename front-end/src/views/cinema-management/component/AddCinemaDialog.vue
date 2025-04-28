@@ -1,14 +1,21 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from "vue";
+// frameworks
 import { useI18n } from "vue-i18n";
-import { CinemaInfoViewModel } from "@/@types/viewmodel/cinema-management/cinema-management.viewmodel.ts";
+import { computed, reactive, ref } from "vue";
 import { Rule } from "ant-design-vue/es/form";
-import { phoneCheck } from "@/shared/form-schema.ts";
-import { addCinemaApi } from "@/generate/api-client/cinema-management.api.ts";
-import { ApiResponse } from "@/generate/response/api-response.ts";
-import { AddCinemaRequest } from "@/generate/request/add-cinema-request.ts";
-import { responseStatusConstant } from "@/constant/response-status-constant.ts";
+
+// components
 import { message } from "ant-design-vue";
+
+// api
+import { ApiResponse } from "@/generate/response/responses.ts";
+import { AddCinemaRequest } from "@/generate/request/requests.ts";
+import { addCinemaApi } from "@/generate/api-client/cinema-management.api.ts";
+
+// shared utils
+import { phoneCheck } from "@/shared/form-schema.ts";
+import { responseStatusConstant } from "@/constant/response-status-constant.ts";
+import { CinemaInfoViewModel } from "@/@types/viewmodel/cinema-management/cinema-management.viewmodel.ts";
 
 const formRef = ref();
 
