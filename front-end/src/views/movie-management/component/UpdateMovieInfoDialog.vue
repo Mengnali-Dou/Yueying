@@ -38,7 +38,7 @@ const dialogVisible = computed({
 });
 
 // 添加影片
-const addMovie = async () => {
+const updateMovieInfo = async () => {
 	const updateMovieInfoResponse = (await updateMovieInfoApi(convertToDto(props.modelValue)))
 		.data as ApiResponse<string>;
 	if (updateMovieInfoResponse.status === responseStatusConstant.OK) {
@@ -71,7 +71,7 @@ const convertToDto = (movieInfoViewModel: MovieInfoViewModel): UpdateMovieInfoRe
 		:title="t('action.addMovie')"
 		:ok-text="t('action.confirm')"
 		:cancel-text="t('action.cancel')"
-		@ok="addMovie"
+		@ok="updateMovieInfo"
 	>
 		<a-form ref="formRef" :model="props.modelValue" :label-col="{ span: 4 }" :wrapper-col="{ span: 18 }">
 			<a-form-item name="movieName" :label="t('form.movieName')">
