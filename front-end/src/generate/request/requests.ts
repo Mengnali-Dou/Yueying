@@ -7,6 +7,7 @@ export * from "@/generate/request/register-request.ts";
 export * from "@/generate/request/search-movie-info-request.ts";
 export * from "@/generate/request/search-movie-type-request.ts";
 export * from "@/generate/request/search-user-request.ts";
+export * from "@/generate/request/update-cinema-info-request.ts";
 export * from "@/generate/request/update-movie-info-request.ts";
 export * from "@/generate/request/update-movie-type-request.ts";
 export * from "@/generate/request/update-user-info-request.ts";

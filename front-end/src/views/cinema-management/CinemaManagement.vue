@@ -15,6 +15,7 @@ import DeleteDialog from "@/components/DeleteDialog.vue";
 import { message, TableColumnsType } from "ant-design-vue";
 import ToolTipText from "@/components/text/ToolTipText.vue";
 import AddCinemaDialog from "@/views/cinema-management/component/AddCinemaDialog.vue";
+import UpdateCinemaInfoDialog from "@/views/cinema-management/component/UpdateCinemaInfoDialog.vue";
 
 // api
 import { ApiResponse, CinemaInfoResponse } from "@/generate/response/responses.ts";
@@ -40,6 +41,8 @@ const state = reactive({
 	selectCinemaInfo: {} as CinemaInfoViewModel,
 	// 添加影院对话框请求体
 	addCinemaDialogVisible: false as boolean,
+	// 修改影院信息请求体
+	updateCinemaInfoDialogVisible: false as boolean,
 	// 删除影院对话框显示状态
 	deleteCinemaDialogVisible: false as boolean,
 });
@@ -67,9 +70,6 @@ const searchCinemaList = async () => {
 		message.error(searchCinemaResponse.message);
 	}
 };
-
-// 修改影院信息
-const updateCinemaInfo = () => {};
 
 // 删除影院
 const deleteCinema = async () => {
@@ -153,7 +153,11 @@ const columns: TableColumnsType = [
 		<a-input v-model:value="state.searchCinemaName" :placeholder="t('form.cinemaName')" />
 		<a-button type="primary" @click="searchCinemaList()" :icon="h(SearchOutlined)" />
 		<a-button type="primary" @click="state.addCinemaDialogVisible = true">{{ t("action.addCinema") }}</a-button>
-		<a-button type="primary" :disabled="cinemaManagementButtonsDisabled" @click="updateCinemaInfo()">
+		<a-button
+			type="primary"
+			:disabled="cinemaManagementButtonsDisabled"
+			@click="state.updateCinemaInfoDialogVisible = true"
+		>
 			{{ t("action.updateCinemaInfo") }}
 		</a-button>
 		<a-button
@@ -190,6 +194,11 @@ const columns: TableColumnsType = [
 		</template>
 	</a-table>
 	<AddCinemaDialog v-model:dialogVisible="state.addCinemaDialogVisible" @updateCinemaInfo="searchCinemaList" />
+	<UpdateCinemaInfoDialog
+		v-model:modelValue="state.selectCinemaInfo"
+		v-model:dialogVisible="state.updateCinemaInfoDialogVisible"
+		@updateCinemaInfo="searchCinemaList"
+	/>
 	<DeleteDialog
 		:dialogVisible="state.deleteCinemaDialogVisible"
 		:deleteType="t('form.cinema')"
